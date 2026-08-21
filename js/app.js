@@ -579,7 +579,11 @@ window.MasterApp = {
     if (vencInput) vencInput.value = d.toISOString().split('T')[0];
 
     this.previewLogo();
-    if (modal) modal.classList.add('active');
+    if (modal) {
+      modal.classList.add('active');
+      const modalBody = modal.querySelector('.modal-body');
+      if (modalBody) modalBody.scrollTop = 0;
+    }
   },
 
   abrirModalEditarCliente(id) {
@@ -620,12 +624,20 @@ window.MasterApp = {
     if (btnExcluir) btnExcluir.style.display = 'block';
 
     this.previewLogo();
-    if (modal) modal.classList.add('active');
+    if (modal) {
+      modal.classList.add('active');
+      const modalBody = modal.querySelector('.modal-body');
+      if (modalBody) modalBody.scrollTop = 0;
+    }
   },
 
   fecharModalCliente() {
     const modal = document.getElementById('modal-cliente');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      const modalBody = modal.querySelector('.modal-body');
+      if (modalBody) modalBody.scrollTop = 0;
+    }
   },
 
   async salvarCliente(e) {
@@ -920,6 +932,51 @@ window.MasterApp = {
     else if (plano.includes('69,90') || plano === 'Mensal Básico') inputValor.value = '69.90';
     else if (plano.includes('239,70') || plano === 'Trimestral') inputValor.value = '239.70';
     else if (plano.includes('899,00') || plano === 'Anual VIP') inputValor.value = '899.00';
+  },
+
+  showToast(mensagem, tipo = 'success') {
+    let toastContainer = document.getElementById('master-toast-container');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.id = 'master-toast-container';
+      toastContainer.style.cssText = 'position: fixed; top: 24px; right: 24px; z-index: 9999999; display: flex; flex-direction: column; gap: 12px; pointer-events: none;';
+      document.body.appendChild(toastContainer);
+    }
+
+    const toast = document.createElement('div');
+    const isSuccess = tipo === 'success';
+    toast.style.cssText = `
+      background: ${isSuccess ? 'linear-gradient(135deg, #059669, #10b981)' : 'linear-gradient(135deg, #1e293b, #0f172a)'};
+      color: #ffffff;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 20px ${isSuccess ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'};
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+      max-width: 420px;
+    `;
+    toast.innerHTML = `<span>${mensagem}</span>`;
+
+    toastContainer.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      toast.style.transform = 'translateY(0)';
+      toast.style.opacity = '1';
+    });
+
+    setTimeout(() => {
+      toast.style.transform = 'translateY(-20px)';
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
   }
 };
 
