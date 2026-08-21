@@ -208,6 +208,7 @@ window.MasterApp = {
             vencimento: c.vencimento,
             status: c.status,
             chaveLicenca: c.chaveLicenca,
+            pinGerente: c.pinGerente || '1234',
             atualizadoEm: new Date().toISOString()
           };
 
@@ -349,7 +350,8 @@ window.MasterApp = {
               valorMensal: data.valorMensal || 89.90,
               vencimento: data.vencimento ? (data.vencimento.includes('T') ? data.vencimento.split('T')[0] : data.vencimento) : '2026-12-31',
               status: data.status || 'ativa',
-              chaveLicenca: data.chaveLicenca || doc.id
+              chaveLicenca: data.chaveLicenca || doc.id,
+              pinGerente: data.pinGerente || '1234'
             });
           }
         });
@@ -559,6 +561,7 @@ window.MasterApp = {
 
     const idInput = document.getElementById('cliente-id');
     const chaveInput = document.getElementById('cli-chave');
+    const pinInput = document.getElementById('cli-pin-gerente');
     const vencInput = document.getElementById('cli-vencimento');
     const logoInput = document.getElementById('cli-logo-url');
     const catInput = document.getElementById('cli-categorias');
@@ -567,6 +570,7 @@ window.MasterApp = {
     if (idInput) idInput.value = '';
     if (btnExcluir) btnExcluir.style.display = 'none';
     if (chaveInput) chaveInput.value = 'LIC-FLOW-' + Math.floor(100000 + Math.random() * 900000);
+    if (pinInput) pinInput.value = '1234';
     if (logoInput) logoInput.value = '';
     if (catInput) catInput.value = this.presetsCategorias.adega.lista.join(', ');
     
@@ -595,6 +599,7 @@ window.MasterApp = {
     const valorInput = document.getElementById('cli-valor');
     const vencInput = document.getElementById('cli-vencimento');
     const chaveInput = document.getElementById('cli-chave');
+    const pinInput = document.getElementById('cli-pin-gerente');
     const statusInput = document.getElementById('cli-status');
     const btnExcluir = document.getElementById('btn-excluir-cliente');
 
@@ -610,6 +615,7 @@ window.MasterApp = {
     if (valorInput) valorInput.value = c.valorMensal || 89.90;
     if (vencInput) vencInput.value = c.vencimento ? (c.vencimento.includes('T') ? c.vencimento.split('T')[0] : c.vencimento) : '';
     if (chaveInput) chaveInput.value = c.chaveLicenca || c.id;
+    if (pinInput) pinInput.value = c.pinGerente || '1234';
     if (statusInput) statusInput.value = c.status || 'ativa';
     if (btnExcluir) btnExcluir.style.display = 'block';
 
@@ -644,6 +650,7 @@ window.MasterApp = {
     const valorMensal = parseFloat(document.getElementById('cli-valor')?.value) || 89.90;
     const vencimento = document.getElementById('cli-vencimento')?.value || '2026-12-31';
     const status = document.getElementById('cli-status')?.value || 'ativa';
+    const pinGerente = document.getElementById('cli-pin-gerente')?.value.trim() || '1234';
 
     const novoCliente = {
       id: idFinal,
@@ -660,7 +667,8 @@ window.MasterApp = {
       valorMensal,
       vencimento,
       status,
-      chaveLicenca
+      chaveLicenca,
+      pinGerente
     };
 
     const docClean = documento.replace(/\D/g, '');
