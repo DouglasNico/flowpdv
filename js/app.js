@@ -1,0 +1,932 @@
+/**
+ * FlowPDV Master SaaS - Gerenciador Central de Licenças & Sincronização Cloud Firestore
+ */
+
+window.MasterApp = {
+  clientes: [],
+  filtroAtual: 'todos',
+
+  presetsCategorias: {
+    adega: {
+      icone: '🍷',
+      lista: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Combos']
+    },
+    mercado: {
+      icone: '🛒',
+      lista: ['Alimentos', 'Carnes & Açougue', 'Bebidas', 'Laticínios & Frios', 'Hortifrúti', 'Padaria', 'Higiene & Limpeza', 'Matinais']
+    },
+    conveniencia: {
+      icone: '🏪',
+      lista: ['Bebidas Geladas', 'Salgados & Lanches', 'Snacks', 'Tabacaria', 'Doces & Chocolates', 'Energéticos', 'Gelo & Carvão']
+    },
+    tabacaria: {
+      icone: '🚬',
+      lista: ['Essências', 'Carvão & Alumínio', 'Sedas & Filtros', 'Isqueiros & Maçaricos', 'Narguiles & Peças', 'Vapes & Pods', 'Bebidas']
+    },
+    padaria: {
+      icone: '🥖',
+      lista: ['Pães', 'Bolos & Doces', 'Salgados', 'Frios & Laticínios', 'Café & Bebidas', 'Mercearia']
+    },
+    geral: {
+      icone: '⚡',
+      lista: ['Bebidas', 'Alimentos', 'Carnes', 'Limpeza', 'Higiene', 'Tabacaria', 'Acessórios']
+    }
+  },
+
+  usuarioLogado: null,
+
+  async init() {
+    this.initAuth();
+    this.bindMascaras();
+  },
+
+  initAuth() {
+    if (!window.FirebaseAuth) {
+      setTimeout(() => this.initAuth(), 150);
+      return;
+    }
+    const { auth, onAuthStateChanged } = window.FirebaseAuth;
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        this.usuarioLogado = user;
+        this.exibirPainelMaster(user);
+      } else {
+        this.usuarioLogado = null;
+        this.exibirTelaLogin();
+      }
+    });
+  },
+
+  exibirTelaLogin() {
+    const loginScreen = document.getElementById('login-screen');
+    const appContainer = document.getElementById('app-container');
+    if (loginScreen) loginScreen.style.display = 'flex';
+    if (appContainer) appContainer.style.display = 'none';
+  },
+
+  async exibirPainelMaster(user) {
+    const loginScreen = document.getElementById('login-screen');
+    const appContainer = document.getElementById('app-container');
+    const userEmailEl = document.getElementById('master-user-email');
+
+    if (loginScreen) loginScreen.style.display = 'none';
+    if (appContainer) appContainer.style.display = 'block';
+    if (userEmailEl && user) userEmailEl.textContent = user.email || 'Super Admin';
+
+    await this.carregarDados();
+    this.renderMetrics();
+    this.renderTabela();
+  },
+
+  async executarLogin(e) {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    const email = document.getElementById('login-email')?.value.trim();
+    const password = document.getElementById('login-password')?.value;
+    const errorEl = document.getElementById('login-error-msg');
+    const btnSubmit = document.getElementById('btn-submit-login');
+
+    if (!email || !password) return;
+
+    if (errorEl) errorEl.style.display = 'none';
+    if (btnSubmit) {
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<span>⏳ Autenticando...</span>';
+    }
+
+    try {
+      if (!window.FirebaseAuth) throw new Error('Firebase Auth não inicializado.');
+      const { auth, signInWithEmailAndPassword } = window.FirebaseAuth;
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      console.error('[Auth Error]', err);
+      if (errorEl) {
+        let msg = '❌ E-mail ou senha incorretos.';
+        if (err.code === 'auth/user-not-found') msg = '❌ Usuário não cadastrado no Firebase.';
+        if (err.code === 'auth/wrong-password') msg = '❌ Senha incorreta.';
+        if (err.code === 'auth/invalid-credential') msg = '❌ Credenciais inválidas. Verifique seu e-mail e senha.';
+        if (err.code === 'auth/invalid-email') msg = '❌ E-mail em formato inválido.';
+        if (err.code === 'auth/too-many-requests') msg = '⚠️ Muitas tentativas. Aguarde alguns instantes.';
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+      }
+    } finally {
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<span>🔐 Entrar no Painel Master</span>';
+      }
+    }
+  },
+
+  async executarLogout() {
+    if (!confirm('Deseja realmente sair do Painel Master?')) return;
+    try {
+      if (!window.FirebaseAuth) return;
+      const { auth, signOut } = window.FirebaseAuth;
+      await signOut(auth);
+    } catch (e) {
+      console.error('[Logout Error]', e);
+    }
+  },
+
+  aplicarPresetCategorias(tipo) {
+    const preset = this.presetsCategorias[tipo];
+    if (!preset) return;
+
+    const iconeEl = document.getElementById('cli-icone');
+    const catEl = document.getElementById('cli-categorias');
+
+    if (iconeEl) iconeEl.value = preset.icone;
+    if (catEl) catEl.value = preset.lista.join(', ');
+  },
+
+  async salvarDados() {
+    const clientesMap = new Map();
+    for (const c of this.clientes) {
+      if (!c) continue;
+      const docClean = (c.documento || '').replace(/\D/g, '');
+      const key = docClean || c.chaveLicenca || c.id;
+      if (!key) continue;
+
+      const existing = clientesMap.get(key);
+      if (!existing) {
+        clientesMap.set(key, c);
+      } else {
+        clientesMap.set(key, {
+          ...existing,
+          ...c,
+          logoUrl: c.logoUrl || existing.logoUrl || '',
+          categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : (existing.categorias || [])
+        });
+      }
+    }
+    this.clientes = Array.from(clientesMap.values());
+
+    try {
+      localStorage.setItem('flowpdv_master_clientes', JSON.stringify(this.clientes));
+      
+      const licAtiva = this.clientes.find(c => c.status === 'ativa');
+      if (licAtiva) {
+        const adegaLic = {
+          cnpj: licAtiva.documento,
+          razaoSocial: licAtiva.nome,
+          icone: licAtiva.icone || '🍷',
+          logoUrl: licAtiva.logoUrl || '',
+          categorias: (licAtiva.categorias && licAtiva.categorias.length > 0) ? licAtiva.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+          status: licAtiva.status,
+          dataExpiracao: (licAtiva.vencimento && licAtiva.vencimento.includes('T')) ? licAtiva.vencimento : (licAtiva.vencimento + 'T23:59:59.000Z'),
+          valorMensal: licAtiva.valorMensal,
+          chavePixSuporte: '19999997777',
+          whatsappSuporte: '(19) 99999-7777',
+          diasTolerancia: 2,
+          chaveLicenca: licAtiva.chaveLicenca
+        };
+        localStorage.setItem('adega_licenca', JSON.stringify(adegaLic));
+        localStorage.setItem('flowpdv_adega_licenca', JSON.stringify(adegaLic));
+      }
+    } catch (err) {
+      console.log('Erro ao salvar localmente:', err);
+    }
+
+    if (window.FirebaseDB && window.FirebaseDB.db) {
+      try {
+        const { db, setDoc, doc } = window.FirebaseDB;
+        for (const c of this.clientes) {
+          const docId = c.id || c.chaveLicenca;
+          const payload = {
+            id: c.id,
+            nome: c.nome,
+            razaoSocial: c.nome,
+            documento: c.documento,
+            cnpj: c.documento,
+            responsavel: c.responsavel,
+            whatsapp: c.whatsapp,
+            icone: c.icone || '🍷',
+            logoUrl: c.logoUrl || '',
+            categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+            plano: c.plano,
+            valorMensal: c.valorMensal,
+            vencimento: c.vencimento,
+            status: c.status,
+            chaveLicenca: c.chaveLicenca,
+            atualizadoEm: new Date().toISOString()
+          };
+
+          await setDoc(doc(db, 'licencas', docId), payload, { merge: true });
+          if (c.chaveLicenca && c.chaveLicenca !== docId) {
+            await setDoc(doc(db, 'licencas', c.chaveLicenca), payload, { merge: true });
+          }
+        }
+        console.log('[Firebase Master] Salvo com sucesso!');
+      } catch (err) {
+        console.log('[Firebase Master] Sync error:', err ? (err.message || err) : '');
+      }
+    }
+  },
+
+  async carregarDados() {
+    let list = [];
+    const saved = localStorage.getItem('flowpdv_master_clientes');
+    if (saved) {
+      try {
+        list = JSON.parse(saved);
+      } catch (e) {
+        list = [];
+      }
+    }
+
+    if (!Array.isArray(list) || list.length === 0) {
+      list = this.getDefaultClientes();
+      localStorage.setItem('flowpdv_master_clientes', JSON.stringify(list));
+    }
+
+    this.clientes = list;
+    this.renderMetrics();
+    this.renderTabela();
+
+    await this.sincronizarComNuvemFirestore();
+  },
+
+  getDefaultClientes() {
+    const hoje = new Date();
+    const em15Dias = new Date(hoje.getTime() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const em3Dias = new Date(hoje.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const ha5Dias = new Date(hoje.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    return [
+      {
+        id: 'CLI-002',
+        nome: 'Adega & Depósito Central',
+        documento: '45.123.789/0001-20',
+        responsavel: 'Marcos Oliveira',
+        whatsapp: '(19) 99876-5432',
+        icone: '🍷',
+        logoUrl: '',
+        categorias: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Combos'],
+        plano: 'Mensal Pro',
+        valorMensal: 89.90,
+        vencimento: em15Dias,
+        status: 'ativa',
+        chaveLicenca: 'LIC-FLOW-884210'
+      },
+      {
+        id: 'CLI-001',
+        nome: 'Adega do Douglas',
+        documento: '12.345.678/0001-90',
+        responsavel: 'Douglas Nico',
+        whatsapp: '(19) 99999-7777',
+        icone: '🍷',
+        logoUrl: '',
+        categorias: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+        plano: 'Mensal Pro',
+        valorMensal: 89.90,
+        vencimento: em15Dias,
+        status: 'ativa',
+        chaveLicenca: 'LIC-FLOW-268008'
+      },
+      {
+        id: 'CLI-003',
+        nome: 'Conveniência Posto Real',
+        documento: '38.456.123/0001-88',
+        responsavel: 'Fernanda Lima',
+        whatsapp: '(19) 98111-2222',
+        icone: '🏪',
+        logoUrl: '',
+        categorias: ['Bebidas Geladas', 'Salgados & Lanches', 'Snacks', 'Tabacaria', 'Doces & Chocolates', 'Energéticos', 'Gelo & Carvão'],
+        plano: 'Mensal Pro',
+        valorMensal: 89.90,
+        vencimento: em3Dias,
+        status: 'ativa',
+        chaveLicenca: 'LIC-FLOW-993144'
+      },
+      {
+        id: 'CLI-004',
+        nome: 'Mercadinho do Bairro',
+        documento: '19.888.777/0001-44',
+        responsavel: 'Carlos Santos',
+        whatsapp: '(19) 97444-5555',
+        icone: '🛒',
+        logoUrl: '',
+        categorias: ['Alimentos', 'Carnes & Açougue', 'Bebidas', 'Laticínios & Frios', 'Hortifrúti', 'Padaria', 'Higiene & Limpeza'],
+        plano: 'Mensal Básico',
+        valorMensal: 69.90,
+        vencimento: ha5Dias,
+        status: 'bloqueada',
+        chaveLicenca: 'LIC-FLOW-110293'
+      }
+    ];
+  },
+
+  restaurarClientesPadrao() {
+    this.clientes = this.getDefaultClientes();
+    this.salvarDados();
+    this.renderMetrics();
+    this.renderTabela();
+  },
+
+  async onFirebaseReady() {
+    await this.sincronizarComNuvemFirestore();
+  },
+
+  async sincronizarComNuvemFirestore() {
+    if (window.FirebaseDB && window.FirebaseDB.db) {
+      try {
+        const { db, collection, getDocs } = window.FirebaseDB;
+        const querySnapshot = await getDocs(collection(db, 'licencas'));
+        const cloudClientes = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data) {
+            cloudClientes.push({
+              id: data.id || ('CLI-' + (data.chaveLicenca || doc.id).slice(-4)),
+              nome: data.nome || data.razaoSocial || 'Adega',
+              documento: data.documento || data.cnpj || '00.000.000/0001-00',
+              responsavel: data.responsavel || 'Responsável',
+              whatsapp: data.whatsapp || '(19) 99999-7777',
+              icone: data.icone || '🍷',
+              logoUrl: data.logoUrl || '',
+              categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+              plano: data.plano || 'Mensal Pro',
+              valorMensal: data.valorMensal || 89.90,
+              vencimento: data.vencimento ? (data.vencimento.includes('T') ? data.vencimento.split('T')[0] : data.vencimento) : '2026-12-31',
+              status: data.status || 'ativa',
+              chaveLicenca: data.chaveLicenca || doc.id
+            });
+          }
+        });
+
+        if (cloudClientes.length > 0) {
+          const localLogosMap = new Map();
+          const localCatsMap = new Map();
+          (this.clientes || []).forEach(c => {
+            if (c) {
+              const k1 = (c.documento || '').replace(/\D/g, '');
+              if (c.logoUrl) {
+                if (k1) localLogosMap.set(k1, c.logoUrl);
+                if (c.id) localLogosMap.set(c.id, c.logoUrl);
+                if (c.chaveLicenca) localLogosMap.set(c.chaveLicenca, c.logoUrl);
+              }
+              if (c.categorias && c.categorias.length > 0) {
+                if (k1) localCatsMap.set(k1, c.categorias);
+                if (c.id) localCatsMap.set(c.id, c.categorias);
+                if (c.chaveLicenca) localCatsMap.set(c.chaveLicenca, c.categorias);
+              }
+            }
+          });
+
+          const dedupMap = new Map();
+          for (const cCloud of cloudClientes) {
+            const cnpjClean = (cCloud.documento || '').replace(/\D/g, '');
+            const key = cnpjClean || cCloud.chaveLicenca || cCloud.id;
+
+            const localLogo = localLogosMap.get(cCloud.chaveLicenca) || localLogosMap.get(cCloud.id) || localLogosMap.get(cnpjClean) || '';
+            const logoUrlFinal = cCloud.logoUrl || localLogo || '';
+
+            const localCats = localCatsMap.get(cCloud.chaveLicenca) || localCatsMap.get(cCloud.id) || localCatsMap.get(cnpjClean) || null;
+            const catsFinal = (cCloud.categorias && cCloud.categorias.length > 0) ? cCloud.categorias : (localCats || ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos']);
+
+            const itemFormatado = {
+              ...cCloud,
+              logoUrl: logoUrlFinal,
+              categorias: catsFinal
+            };
+
+            const existing = dedupMap.get(key);
+            if (!existing) {
+              dedupMap.set(key, itemFormatado);
+            } else {
+              if (!existing.logoUrl && itemFormatado.logoUrl) {
+                existing.logoUrl = itemFormatado.logoUrl;
+              }
+              if ((!existing.categorias || existing.categorias.length === 0) && itemFormatado.categorias) {
+                existing.categorias = itemFormatado.categorias;
+              }
+            }
+          }
+
+          this.clientes = Array.from(dedupMap.values());
+          this.renderMetrics();
+          this.renderTabela();
+        }
+      } catch (err) {
+        console.log('[Firebase Master] Erro ao carregar da nuvem:', err);
+      }
+    }
+  },
+
+  renderMetrics() {
+    const ativas = this.clientes.filter(c => c && c.status === 'ativa');
+    const bloqueadas = this.clientes.filter(c => c && c.status === 'bloqueada');
+    const vencendo = this.clientes.filter(c => {
+      if (!c || c.status !== 'ativa') return false;
+      const dias = this.calcularDiasRestantes(c.vencimento);
+      return dias <= 5 && dias >= 0;
+    });
+    const mrr = ativas.reduce((acc, c) => acc + (parseFloat(c.valorMensal) || 0), 0);
+
+    const mrrEl = document.getElementById('metric-mrr');
+    const ativasEl = document.getElementById('metric-ativas');
+    const vencendoEl = document.getElementById('metric-vencendo');
+    const bloqEl = document.getElementById('metric-bloqueadas');
+
+    if (mrrEl) mrrEl.textContent = 'R$ ' + mrr.toFixed(2).replace('.', ',');
+    if (ativasEl) ativasEl.textContent = ativas.length;
+    if (vencendoEl) vencendoEl.textContent = vencendo.length;
+    if (bloqEl) bloqEl.textContent = bloqueadas.length;
+  },
+
+  formatarDataExibicao(vencStr) {
+    if (!vencStr) return 'Sem Data';
+    try {
+      const clean = vencStr.includes('T') ? vencStr.split('T')[0] : vencStr;
+      const parts = clean.split('-');
+      if (parts.length === 3) {
+        return parts[2] + '/' + parts[1] + '/' + parts[0];
+      }
+      const d = new Date(vencStr);
+      if (!isNaN(d.getTime())) return d.toLocaleDateString('pt-BR');
+    } catch(e) {}
+    return 'Data N/D';
+  },
+
+  calcularDiasRestantes(vencimentoStr) {
+    if (!vencimentoStr) return 0;
+    try {
+      const clean = vencimentoStr.includes('T') ? vencimentoStr.split('T')[0] : vencimentoStr;
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      const venc = new Date(clean + 'T12:00:00');
+      if (isNaN(venc.getTime())) return 30;
+      return Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24));
+    } catch(e) {
+      return 30;
+    }
+  },
+
+  renderTabela() {
+    const tbody = document.getElementById('master-table-tbody') || document.getElementById('tabela-clientes-tbody');
+    if (!tbody) return;
+
+    try {
+      const termoBusca = (document.getElementById('master-search-input')?.value || document.getElementById('search-input')?.value || '').toLowerCase().trim();
+      
+      let lista = (this.clientes || []).filter(c => {
+        if (!c) return false;
+        if (this.filtroAtual === 'ativas') return c.status === 'ativa';
+        if (this.filtroAtual === 'bloqueadas') return c.status === 'bloqueada';
+        if (this.filtroAtual === 'vencendo') {
+          const dias = this.calcularDiasRestantes(c.vencimento);
+          return dias <= 5 && dias >= 0 && c.status === 'ativa';
+        }
+        return true;
+      });
+
+      if (termoBusca) {
+        lista = lista.filter(c => 
+          (c.nome && c.nome.toLowerCase().includes(termoBusca)) ||
+          (c.documento && c.documento.includes(termoBusca)) ||
+          (c.chaveLicenca && c.chaveLicenca.toLowerCase().includes(termoBusca))
+        );
+      }
+
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 32px; color: var(--text-dim);">Nenhum cliente encontrado.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = lista.map(c => {
+        const diasRestantes = this.calcularDiasRestantes(c.vencimento);
+        const isAtivo = c.status === 'ativa';
+
+        let statusBadge = '';
+        if (!isAtivo) {
+          statusBadge = '<span class="badge badge-bloqueada">🛑 Bloqueada</span>';
+        } else if (diasRestantes <= 0) {
+          statusBadge = '<span class="badge badge-bloqueada">⚠️ Vencida</span>';
+        } else if (diasRestantes <= 5) {
+          statusBadge = '<span class="badge badge-vencendo">⏳ Vence em ' + diasRestantes + 'd</span>';
+        } else {
+          statusBadge = '<span class="badge badge-ativa">🟢 Ativa (' + diasRestantes + 'd)</span>';
+        }
+
+        const logoHtml = c.logoUrl && c.logoUrl.length > 5
+          ? '<img src="' + c.logoUrl + '" style="width: 40px; height: 40px; object-fit: contain; border-radius: 8px; background: #0f172a; border: 1px solid rgba(255,255,255,0.15);">'
+          : '<div style="width: 40px; height: 40px; border-radius: 8px; background: #1e293b; display: flex; align-items: center; justify-content: center; font-size: 20px;">' + (c.icone || '🍷') + '</div>';
+
+        const dataStr = this.formatarDataExibicao(c.vencimento);
+        const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
+
+        return '<tr>' +
+            '<td>' +
+              '<div style="display: flex; align-items: center; gap: 12px;">' +
+                logoHtml +
+                '<div>' +
+                  '<strong style="color: var(--text-main); font-size: 14px; display: block;">' + c.nome + '</strong>' +
+                  '<span style="font-size: 12px; color: var(--text-dim);">' + (c.documento || 'Sem Documento') + ' • <strong style="color: #a78bfa;">' + numCats + ' categorias</strong></span>' +
+                '</div>' +
+              '</div>' +
+            '</td>' +
+            '<td>' +
+              '<span style="color: var(--text-main); font-size: 13px;">' + (c.whatsapp || '-') + '</span>' +
+              '<span style="display: block; font-size: 11px; color: var(--text-dim);">' + (c.responsavel || '') + '</span>' +
+            '</td>' +
+            '<td>' +
+              '<span style="font-size: 12px; color: var(--accent-cyan); font-weight: 700;">' + c.plano + '</span>' +
+              '<span style="display: block; font-size: 11px; color: var(--text-dim);">R$ ' + parseFloat(c.valorMensal || 0).toFixed(2).replace('.', ',') + '/mês</span>' +
+            '</td>' +
+            '<td>' +
+              '<strong style="font-family: monospace; font-size: 13px; color: var(--text-main);">' + dataStr + '</strong>' +
+            '</td>' +
+            '<td>' + statusBadge + '</td>' +
+            '<td>' +
+              '<code style="font-family: monospace; font-size: 11px; color: #818cf8; background: rgba(99, 102, 241, 0.1); padding: 4px 8px; border-radius: 6px;">' + (c.chaveLicenca || c.id) + '</code>' +
+            '</td>' +
+            '<td style="text-align: right;">' +
+              '<button type="button" class="btn-editar-modern" onclick="MasterApp.abrirModalEditarCliente(\'' + c.id + '\')">' +
+                '✏️ Editar' +
+              '</button>' +
+            '</td>' +
+          '</tr>';
+      }).join('');
+    } catch(err) {
+      console.error('[MasterApp] Erro ao renderizar tabela:', err);
+    }
+  },
+
+  abrirModalNovoCliente() {
+    const modal = document.getElementById('modal-cliente');
+    const form = document.getElementById('form-cliente');
+    if (form) form.reset();
+
+    const idInput = document.getElementById('cliente-id');
+    const chaveInput = document.getElementById('cli-chave');
+    const vencInput = document.getElementById('cli-vencimento');
+    const logoInput = document.getElementById('cli-logo-url');
+    const catInput = document.getElementById('cli-categorias');
+    const btnExcluir = document.getElementById('btn-excluir-cliente');
+
+    if (idInput) idInput.value = '';
+    if (btnExcluir) btnExcluir.style.display = 'none';
+    if (chaveInput) chaveInput.value = 'LIC-FLOW-' + Math.floor(100000 + Math.random() * 900000);
+    if (logoInput) logoInput.value = '';
+    if (catInput) catInput.value = this.presetsCategorias.adega.lista.join(', ');
+    
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    if (vencInput) vencInput.value = d.toISOString().split('T')[0];
+
+    this.previewLogo();
+    if (modal) modal.classList.add('active');
+  },
+
+  abrirModalEditarCliente(id) {
+    const c = this.clientes.find(item => item && (item.id === id || item.chaveLicenca === id));
+    if (!c) return;
+
+    const modal = document.getElementById('modal-cliente');
+    const idInput = document.getElementById('cliente-id');
+    const nomeInput = document.getElementById('cli-nome');
+    const docInput = document.getElementById('cli-documento');
+    const respInput = document.getElementById('cli-responsavel');
+    const zapInput = document.getElementById('cli-whatsapp');
+    const iconeInput = document.getElementById('cli-icone');
+    const logoInput = document.getElementById('cli-logo-url');
+    const catInput = document.getElementById('cli-categorias');
+    const planoInput = document.getElementById('cli-plano');
+    const valorInput = document.getElementById('cli-valor');
+    const vencInput = document.getElementById('cli-vencimento');
+    const chaveInput = document.getElementById('cli-chave');
+    const statusInput = document.getElementById('cli-status');
+    const btnExcluir = document.getElementById('btn-excluir-cliente');
+
+    if (idInput) idInput.value = c.id;
+    if (nomeInput) nomeInput.value = c.nome || '';
+    if (docInput) docInput.value = c.documento || '';
+    if (respInput) respInput.value = c.responsavel || '';
+    if (zapInput) zapInput.value = c.whatsapp || '';
+    if (iconeInput) iconeInput.value = c.icone || '🍷';
+    if (logoInput) logoInput.value = c.logoUrl || '';
+    if (catInput) catInput.value = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.join(', ') : this.presetsCategorias.adega.lista.join(', ');
+    if (planoInput) planoInput.value = c.plano || 'Mensal Pro';
+    if (valorInput) valorInput.value = c.valorMensal || 89.90;
+    if (vencInput) vencInput.value = c.vencimento ? (c.vencimento.includes('T') ? c.vencimento.split('T')[0] : c.vencimento) : '';
+    if (chaveInput) chaveInput.value = c.chaveLicenca || c.id;
+    if (statusInput) statusInput.value = c.status || 'ativa';
+    if (btnExcluir) btnExcluir.style.display = 'block';
+
+    this.previewLogo();
+    if (modal) modal.classList.add('active');
+  },
+
+  fecharModalCliente() {
+    const modal = document.getElementById('modal-cliente');
+    if (modal) modal.classList.remove('active');
+  },
+
+  async salvarCliente(e) {
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
+
+    const idInput = document.getElementById('cliente-id');
+    const id = idInput ? idInput.value : '';
+    const chaveLicenca = document.getElementById('cli-chave')?.value.trim() || ('LIC-FLOW-' + Date.now().toString().slice(-6));
+    const idFinal = id || ('CLI-' + chaveLicenca.slice(-4));
+
+    const nome = document.getElementById('cli-nome')?.value.trim() || 'Cliente';
+    const documento = document.getElementById('cli-documento')?.value.trim() || '';
+    const responsavel = document.getElementById('cli-responsavel')?.value.trim() || '';
+    const whatsapp = document.getElementById('cli-whatsapp')?.value.trim() || '';
+    const icone = document.getElementById('cli-icone')?.value || '🍷';
+    const logoUrl = document.getElementById('cli-logo-url')?.value.trim() || '';
+    const categoriasRaw = document.getElementById('cli-categorias')?.value.trim() || '';
+    const categorias = categoriasRaw ? categoriasRaw.split(',').map(s => s.trim()).filter(Boolean) : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'];
+    const plano = document.getElementById('cli-plano')?.value || 'Mensal Pro';
+    const valorMensal = parseFloat(document.getElementById('cli-valor')?.value) || 89.90;
+    const vencimento = document.getElementById('cli-vencimento')?.value || '2026-12-31';
+    const status = document.getElementById('cli-status')?.value || 'ativa';
+
+    const novoCliente = {
+      id: idFinal,
+      nome,
+      razaoSocial: nome,
+      documento,
+      cnpj: documento,
+      responsavel,
+      whatsapp,
+      icone,
+      logoUrl,
+      categorias,
+      plano,
+      valorMensal,
+      vencimento,
+      status,
+      chaveLicenca
+    };
+
+    const docClean = documento.replace(/\D/g, '');
+    const idx = this.clientes.findIndex(c => 
+      (id && c.id === id) ||
+      (chaveLicenca && c.chaveLicenca === chaveLicenca) ||
+      (docClean && (c.documento || '').replace(/\D/g, '') === docClean)
+    );
+
+    if (idx >= 0) {
+      this.clientes[idx] = {
+        ...this.clientes[idx],
+        ...novoCliente
+      };
+    } else {
+      this.clientes.unshift(novoCliente);
+    }
+
+    this.fecharModalCliente();
+    this.renderMetrics();
+    this.renderTabela();
+
+    await this.salvarDados();
+    this.renderMetrics();
+    this.renderTabela();
+
+    this.showToast('🎉 Licença de "' + nome + '" atualizada com sucesso!');
+  },
+
+  async adicionarDias(id, dias) {
+    const c = this.clientes.find(item => item.id === id || item.chaveLicenca === id);
+    if (!c) return;
+
+    const baseData = new Date(c.vencimento > new Date().toISOString().split('T')[0] ? c.vencimento : new Date());
+    baseData.setDate(baseData.getDate() + dias);
+    c.vencimento = baseData.toISOString().split('T')[0];
+    c.status = 'ativa';
+
+    this.renderMetrics();
+    this.renderTabela();
+    await this.salvarDados();
+    this.renderMetrics();
+    this.renderTabela();
+    this.showToast('🎉 +' + dias + ' dias adicionados para "' + c.nome + '"!');
+  },
+
+  async toggleBloqueio(id) {
+    const c = this.clientes.find(item => item.id === id || item.chaveLicenca === id);
+    if (!c) return;
+
+    c.status = c.status === 'ativa' ? 'bloqueada' : 'ativa';
+
+    this.renderMetrics();
+    this.renderTabela();
+    await this.salvarDados();
+    this.renderMetrics();
+    this.renderTabela();
+    this.showToast('Status alterado para ' + c.status.toUpperCase());
+  },
+
+  async excluirClienteModal() {
+    const idInput = document.getElementById('cliente-id');
+    const id = idInput ? idInput.value : '';
+    if (!id) return;
+
+    if (!confirm('Deseja realmente excluir esta licença do sistema e da nuvem?')) return;
+
+    if (window.FirebaseDB && window.FirebaseDB.db) {
+      try {
+        const { db, deleteDoc, doc } = window.FirebaseDB;
+        const c = this.clientes.find(item => item.id === id);
+        await deleteDoc(doc(db, 'licencas', id));
+        if (c && c.chaveLicenca) {
+          await deleteDoc(doc(db, 'licencas', c.chaveLicenca));
+        }
+      } catch (e) {
+        console.log('Erro ao excluir no Firestore:', e);
+      }
+    }
+
+    this.clientes = this.clientes.filter(item => item.id !== id);
+    this.fecharModalCliente();
+    this.renderMetrics();
+    this.renderTabela();
+    await this.salvarDados();
+    this.renderMetrics();
+    this.renderTabela();
+    this.showToast('🗑️ Licença excluída com sucesso!');
+  },
+
+  previewLogo() {
+    const url = document.getElementById('cli-logo-url')?.value.trim() || '';
+    const box = document.getElementById('cli-logo-preview-box');
+    const imgDiv = document.getElementById('cli-logo-img-preview');
+
+    if (!box || !imgDiv) return;
+
+    if (url && (url.startsWith('http') || url.startsWith('data:image'))) {
+      imgDiv.innerHTML = '<img src="' + url + '" style="width: 100%; height: 100%; object-fit: contain;">';
+      box.style.display = 'flex';
+    } else {
+      imgDiv.innerHTML = '';
+      box.style.display = 'none';
+    }
+  },
+
+  fazerUploadLogoComputador(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const statusTitle = document.getElementById('cli-logo-status-title');
+    if (statusTitle) statusTitle.textContent = '⏳ Processando imagem...';
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 240;
+        canvas.height = 240;
+
+        ctx.clearRect(0, 0, 240, 240);
+        const scale = Math.min(240 / img.width, 240 / img.height);
+        const nw = img.width * scale;
+        const nh = img.height * scale;
+        const dx = (240 - nw) / 2;
+        const dy = (240 - nh) / 2;
+        ctx.drawImage(img, 0, 0, img.width, img.height, dx, dy, nw, nh);
+
+        const dataUrl = canvas.toDataURL('image/png');
+        
+        const inputUrl = document.getElementById('cli-logo-url');
+        if (inputUrl) {
+          inputUrl.value = dataUrl;
+        }
+
+        if (statusTitle) statusTitle.textContent = '🎉 Foto do computador pronta!';
+        this.previewLogo();
+      };
+      img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  },
+
+  showToast(msg) {
+    let toast = document.getElementById('master-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'master-toast';
+      toast.style.cssText = 'position: fixed; bottom: 24px; right: 24px; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; padding: 14px 22px; border-radius: 10px; font-weight: 800; font-size: 14px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); z-index: 99999; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100px); opacity: 0; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2);';
+      document.body.appendChild(toast);
+    }
+
+    toast.textContent = msg;
+    toast.style.transform = 'translateY(0)';
+    toast.style.opacity = '1';
+
+    setTimeout(() => {
+      toast.style.transform = 'translateY(100px)';
+      toast.style.opacity = '0';
+    }, 3500);
+  },
+
+  bindMascaras() {
+    const docInput = document.getElementById('cli-documento');
+    const zapInput = document.getElementById('cli-whatsapp');
+    const searchInput = document.getElementById('master-search-input');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => this.renderTabela());
+    }
+
+    if (docInput) {
+      docInput.addEventListener('input', (e) => {
+        e.target.value = this.formatarDocumento(e.target.value);
+      });
+    }
+
+    if (zapInput) {
+      zapInput.addEventListener('input', (e) => {
+        e.target.value = this.formatarTelefone(e.target.value);
+      });
+    }
+  },
+
+  formatarDocumento(v) {
+    if (!v) return '';
+    v = v.replace(/\D/g, '');
+    if (v.length <= 11) {
+      return v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4')
+               .replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3')
+               .replace(/(\d{3})(\d{1,3})/, '$1.$2');
+    } else {
+      v = v.substring(0, 14);
+      return v.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5')
+               .replace(/^(\d{2})(\d{3})(\d{3})(\d{1,4})/, '$1.$2.$3/$4')
+               .replace(/^(\d{2})(\d{3})(\d{1,3})/, '$1.$2.$3')
+               .replace(/^(\d{2})(\d{1,3})/, '$1.$2');
+    }
+  },
+
+  formatarTelefone(v) {
+    if (!v) return '';
+    v = v.replace(/\D/g, '').substring(0, 11);
+    if (v.length > 10) {
+      return v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+    } else if (v.length > 6) {
+      return v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
+    } else if (v.length > 2) {
+      return v.replace(/^(\d{2})(\d{0,5})$/, '($1) $2');
+    }
+    return v;
+  },
+
+  setFiltro(filtro) {
+    this.filtroAtual = filtro;
+    const btns = document.querySelectorAll('.filter-btn');
+    btns.forEach(b => b.classList.remove('active'));
+    if (window.event && window.event.target) window.event.target.classList.add('active');
+    this.renderTabela();
+  },
+
+  setDiasRapidosForm(dias) {
+    const input = document.getElementById('cli-vencimento');
+    if (!input) return;
+    const d = new Date();
+    d.setDate(d.getDate() + dias);
+    input.value = d.toISOString().split('T')[0];
+  },
+
+  adicionarDiasPersonalizadosForm() {
+    const inputDias = document.getElementById('cli-dias-add');
+    const inputVenc = document.getElementById('cli-vencimento');
+    const dias = parseInt(inputDias?.value) || 30;
+    if (!inputVenc) return;
+
+    const base = new Date(inputVenc.value > new Date().toISOString().split('T')[0] ? inputVenc.value : new Date());
+    base.setDate(base.getDate() + dias);
+    inputVenc.value = base.toISOString().split('T')[0];
+  },
+
+  atualizarValorPlano() {
+    const plano = document.getElementById('cli-plano').value;
+    const inputValor = document.getElementById('cli-valor');
+    if (plano.includes('89,90') || plano === 'Mensal Pro') inputValor.value = '89.90';
+    else if (plano.includes('69,90') || plano === 'Mensal Básico') inputValor.value = '69.90';
+    else if (plano.includes('239,70') || plano === 'Trimestral') inputValor.value = '239.70';
+    else if (plano.includes('899,00') || plano === 'Anual VIP') inputValor.value = '899.00';
+  }
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.MasterApp) window.MasterApp.init();
+  });
+} else {
+  if (window.MasterApp) window.MasterApp.init();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' || e.key === 'Esc') {
+    if (window.MasterApp && typeof window.MasterApp.fecharModalCliente === 'function') {
+      window.MasterApp.fecharModalCliente();
+    }
+  }
+});
