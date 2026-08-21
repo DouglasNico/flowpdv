@@ -323,6 +323,9 @@ window.MasterApp = {
     this.clientes = this.getDefaultClientes();
     this.salvarDados();
     this.renderMetrics();
+    this.renderTabela();
+  },
+
   async onFirebaseReady() {
     await this.sincronizarComNuvemFirestore();
     this.iniciarOuvinteNuvemRealtime();
