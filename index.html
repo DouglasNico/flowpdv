@@ -283,7 +283,12 @@
 
             <div class="form-group span-2">
               <label>Chave de Licença (Auto-gerada / Editável)</label>
-              <input type="text" id="cli-chave" style="background: #0f172a; font-family: 'JetBrains Mono'; font-weight: 700; color: #4f46e5;">
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="cli-chave" style="flex: 1; background: #0f172a; font-family: 'JetBrains Mono'; font-weight: 700; color: #4f46e5;">
+                <button type="button" class="btn-sec" style="background: #334155; color: #fff; height: 42px; font-weight: 700; padding: 0 14px;" onclick="MasterApp.copiarChaveLicenca(document.getElementById('cli-chave').value)">
+                  📋 Copiar
+                </button>
+              </div>
             </div>
 
             <!-- SENHA / PIN DO GERENTE NO PDV -->

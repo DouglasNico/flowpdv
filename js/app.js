@@ -540,7 +540,12 @@ window.MasterApp = {
             '</td>' +
             '<td>' + statusBadge + '</td>' +
             '<td>' +
-              '<code style="font-family: monospace; font-size: 11px; color: #818cf8; background: rgba(99, 102, 241, 0.1); padding: 4px 8px; border-radius: 6px;">' + (c.chaveLicenca || c.id) + '</code>' +
+              '<div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(99, 102, 241, 0.08); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.2);">' +
+                '<code style="font-family: monospace; font-size: 12px; font-weight: 700; color: #818cf8;">' + (c.chaveLicenca || c.id) + '</code>' +
+                '<button type="button" onclick="MasterApp.copiarChaveLicenca(\'' + (c.chaveLicenca || c.id) + '\')" title="Copiar Chave de Licença" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; border-radius: 6px; padding: 2px 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s;" onmouseover="this.style.background=\'#4f46e5\'; this.style.color=\'#fff\';" onmouseout="this.style.background=\'rgba(255,255,255,0.08)\'; this.style.color=\'#e2e8f0\';">' +
+                  '📋 Copiar' +
+                '</button>' +
+              '</div>' +
             '</td>' +
             '<td style="text-align: right;">' +
               '<button type="button" class="btn-editar-modern" onclick="MasterApp.abrirModalEditarCliente(\'' + c.id + '\')">' +
@@ -707,7 +712,7 @@ window.MasterApp = {
     this.renderMetrics();
     this.renderTabela();
 
-    this.showToast('🎉 Licença de "' + nome + '" atualizada com sucesso!');
+    this.showToast('🎉 "' + nome + '" atualizada com sucesso!');
   },
 
   async adicionarDias(id, dias) {
@@ -977,6 +982,35 @@ window.MasterApp = {
       toast.style.opacity = '0';
       setTimeout(() => toast.remove(), 300);
     }, 4000);
+  },
+
+  copiarChaveLicenca(chave) {
+    if (!chave) return;
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(chave).then(() => {
+          this.showToast('📋 Chave copiada: ' + chave, 'success');
+        }).catch(() => {
+          this.fallbackCopiar(chave);
+        });
+      } else {
+        this.fallbackCopiar(chave);
+      }
+    } catch(e) {
+      this.fallbackCopiar(chave);
+    }
+  },
+
+  fallbackCopiar(texto) {
+    const tempInput = document.createElement('input');
+    tempInput.value = texto;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    try {
+      document.execCommand('copy');
+      this.showToast('📋 Chave copiada: ' + texto, 'success');
+    } catch (err) {}
+    document.body.removeChild(tempInput);
   }
 };
 
