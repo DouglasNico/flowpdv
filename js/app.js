@@ -368,11 +368,17 @@ window.MasterApp = {
               const key = docClean || c.chaveLicenca || c.id;
               const existing = dedupMap.get(key);
               if (!existing) {
-                dedupMap.set(key, c);
+                dedupMap.set(key, {
+                  ...c,
+                  terminaisAtivos: Array.isArray(c.terminaisAtivos) ? [...c.terminaisAtivos] : []
+                });
               } else {
-                if (c.terminaisAtivos && c.terminaisAtivos.length > 0) {
-                  existing.terminaisAtivos = c.terminaisAtivos;
-                }
+                const combinedTerms = new Set([
+                  ...(Array.isArray(existing.terminaisAtivos) ? existing.terminaisAtivos : []),
+                  ...(Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos : [])
+                ]);
+                existing.terminaisAtivos = Array.from(combinedTerms);
+                if (c.limiteTerminais) existing.limiteTerminais = c.limiteTerminais;
               }
             }
             this.clientes = Array.from(dedupMap.values());
@@ -454,7 +460,10 @@ window.MasterApp = {
 
             const existing = dedupMap.get(key);
             if (!existing) {
-              dedupMap.set(key, itemFormatado);
+              dedupMap.set(key, {
+                ...itemFormatado,
+                terminaisAtivos: Array.isArray(itemFormatado.terminaisAtivos) ? [...itemFormatado.terminaisAtivos] : []
+              });
             } else {
               if (!existing.logoUrl && itemFormatado.logoUrl) {
                 existing.logoUrl = itemFormatado.logoUrl;
@@ -462,6 +471,12 @@ window.MasterApp = {
               if ((!existing.categorias || existing.categorias.length === 0) && itemFormatado.categorias) {
                 existing.categorias = itemFormatado.categorias;
               }
+              const combinedTerms = new Set([
+                ...(Array.isArray(existing.terminaisAtivos) ? existing.terminaisAtivos : []),
+                ...(Array.isArray(itemFormatado.terminaisAtivos) ? itemFormatado.terminaisAtivos : [])
+              ]);
+              existing.terminaisAtivos = Array.from(combinedTerms);
+              if (itemFormatado.limiteTerminais) existing.limiteTerminais = itemFormatado.limiteTerminais;
             }
           }
 
