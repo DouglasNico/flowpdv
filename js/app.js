@@ -209,6 +209,8 @@ window.MasterApp = {
             status: c.status,
             chaveLicenca: c.chaveLicenca,
             pinGerente: c.pinGerente || '1234',
+            limiteTerminais: Math.max(1, parseInt(c.limiteTerminais) || 1),
+            terminaisAtivos: Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos : [],
             atualizadoEm: new Date().toISOString()
           };
 
@@ -321,11 +323,64 @@ window.MasterApp = {
     this.clientes = this.getDefaultClientes();
     this.salvarDados();
     this.renderMetrics();
-    this.renderTabela();
-  },
-
   async onFirebaseReady() {
     await this.sincronizarComNuvemFirestore();
+    this.iniciarOuvinteNuvemRealtime();
+  },
+
+  iniciarOuvinteNuvemRealtime() {
+    if (window.FirebaseDB && window.FirebaseDB.db && window.FirebaseDB.onSnapshot) {
+      try {
+        const { db, collection, onSnapshot } = window.FirebaseDB;
+        onSnapshot(collection(db, 'licencas'), (snapshot) => {
+          const cloudClientes = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data) {
+              cloudClientes.push({
+                id: data.id || ('CLI-' + (data.chaveLicenca || doc.id).slice(-4)),
+                nome: data.nome || data.razaoSocial || 'Adega',
+                documento: data.documento || data.cnpj || '00.000.000/0001-00',
+                responsavel: data.responsavel || 'Responsável',
+                whatsapp: data.whatsapp || '(19) 99999-7777',
+                icone: data.icone || '🍷',
+                logoUrl: data.logoUrl || '',
+                categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+                plano: data.plano || 'Mensal Pro',
+                valorMensal: data.valorMensal || 89.90,
+                vencimento: data.vencimento ? (data.vencimento.includes('T') ? data.vencimento.split('T')[0] : data.vencimento) : '2026-12-31',
+                status: data.status || 'ativa',
+                chaveLicenca: data.chaveLicenca || doc.id,
+                pinGerente: data.pinGerente || '1234',
+                limiteTerminais: parseInt(data.limiteTerminais) || 1,
+                terminaisAtivos: Array.isArray(data.terminaisAtivos) ? data.terminaisAtivos : []
+              });
+            }
+          });
+
+          if (cloudClientes.length > 0) {
+            const dedupMap = new Map();
+            for (const c of cloudClientes) {
+              const docClean = (c.documento || '').replace(/\D/g, '');
+              const key = docClean || c.chaveLicenca || c.id;
+              const existing = dedupMap.get(key);
+              if (!existing) {
+                dedupMap.set(key, c);
+              } else {
+                if (c.terminaisAtivos && c.terminaisAtivos.length > 0) {
+                  existing.terminaisAtivos = c.terminaisAtivos;
+                }
+              }
+            }
+            this.clientes = Array.from(dedupMap.values());
+            this.renderMetrics();
+            this.renderTabela();
+          }
+        });
+      } catch (e) {
+        console.log('[Firebase Master] Erro no realtime listener:', e);
+      }
+    }
   },
 
   async sincronizarComNuvemFirestore() {
@@ -351,7 +406,9 @@ window.MasterApp = {
               vencimento: data.vencimento ? (data.vencimento.includes('T') ? data.vencimento.split('T')[0] : data.vencimento) : '2026-12-31',
               status: data.status || 'ativa',
               chaveLicenca: data.chaveLicenca || doc.id,
-              pinGerente: data.pinGerente || '1234'
+              pinGerente: data.pinGerente || '1234',
+              limiteTerminais: parseInt(data.limiteTerminais) || 1,
+              terminaisAtivos: Array.isArray(data.terminaisAtivos) ? data.terminaisAtivos : []
             });
           }
         });
