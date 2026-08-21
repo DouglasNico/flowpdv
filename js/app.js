@@ -515,6 +515,9 @@ window.MasterApp = {
           : '<div style="width: 40px; height: 40px; border-radius: 8px; background: #1e293b; display: flex; align-items: center; justify-content: center; font-size: 20px;">' + (c.icone || '🍷') + '</div>';
 
         const dataStr = this.formatarDataExibicao(c.vencimento);
+        const maxTerm = parseInt(c.limiteTerminais) || 1;
+        const ativosTerm = Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos.length : 0;
+        const termBadge = '<span style="font-size: 11px; color: ' + (ativosTerm >= maxTerm ? '#f87171' : '#38bdf8') + '; font-weight: 700; display: block; margin-top: 3px;">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
         const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
 
         return '<tr>' +
@@ -538,7 +541,7 @@ window.MasterApp = {
             '<td>' +
               '<strong style="font-family: monospace; font-size: 13px; color: var(--text-main);">' + dataStr + '</strong>' +
             '</td>' +
-            '<td>' + statusBadge + '</td>' +
+            '<td>' + statusBadge + termBadge + '</td>' +
             '<td>' +
               '<div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(99, 102, 241, 0.08); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.2);">' +
                 '<code style="font-family: monospace; font-size: 12px; font-weight: 700; color: #818cf8;">' + (c.chaveLicenca || c.id) + '</code>' +
@@ -567,6 +570,8 @@ window.MasterApp = {
     const idInput = document.getElementById('cliente-id');
     const chaveInput = document.getElementById('cli-chave');
     const pinInput = document.getElementById('cli-pin-gerente');
+    const limiteInput = document.getElementById('cli-limite-terminais');
+    const termInfoBox = document.getElementById('cli-terminais-info-box');
     const vencInput = document.getElementById('cli-vencimento');
     const logoInput = document.getElementById('cli-logo-url');
     const catInput = document.getElementById('cli-categorias');
@@ -576,6 +581,8 @@ window.MasterApp = {
     if (btnExcluir) btnExcluir.style.display = 'none';
     if (chaveInput) chaveInput.value = 'LIC-FLOW-' + Math.floor(100000 + Math.random() * 900000);
     if (pinInput) pinInput.value = '1234';
+    if (limiteInput) limiteInput.value = '1';
+    if (termInfoBox) termInfoBox.style.display = 'none';
     if (logoInput) logoInput.value = '';
     if (catInput) catInput.value = this.presetsCategorias.adega.lista.join(', ');
     
@@ -609,6 +616,9 @@ window.MasterApp = {
     const vencInput = document.getElementById('cli-vencimento');
     const chaveInput = document.getElementById('cli-chave');
     const pinInput = document.getElementById('cli-pin-gerente');
+    const limiteInput = document.getElementById('cli-limite-terminais');
+    const contagemTerm = document.getElementById('cli-terminais-contagem');
+    const termInfoBox = document.getElementById('cli-terminais-info-box');
     const statusInput = document.getElementById('cli-status');
     const btnExcluir = document.getElementById('btn-excluir-cliente');
 
@@ -625,6 +635,12 @@ window.MasterApp = {
     if (vencInput) vencInput.value = c.vencimento ? (c.vencimento.includes('T') ? c.vencimento.split('T')[0] : c.vencimento) : '';
     if (chaveInput) chaveInput.value = c.chaveLicenca || c.id;
     if (pinInput) pinInput.value = c.pinGerente || '1234';
+    if (limiteInput) limiteInput.value = c.limiteTerminais || 1;
+    
+    const ativos = Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos.length : 0;
+    if (contagemTerm) contagemTerm.textContent = ativos + ' / ' + (c.limiteTerminais || 1);
+    if (termInfoBox) termInfoBox.style.display = 'flex';
+
     if (statusInput) statusInput.value = c.status || 'ativa';
     if (btnExcluir) btnExcluir.style.display = 'block';
 
@@ -668,6 +684,9 @@ window.MasterApp = {
     const vencimento = document.getElementById('cli-vencimento')?.value || '2026-12-31';
     const status = document.getElementById('cli-status')?.value || 'ativa';
     const pinGerente = document.getElementById('cli-pin-gerente')?.value.trim() || '1234';
+    const limiteTerminais = Math.max(1, parseInt(document.getElementById('cli-limite-terminais')?.value) || 1);
+
+    const cExistente = this.clientes.find(item => item && (item.id === idFinal || item.chaveLicenca === chaveLicenca));
 
     const novoCliente = {
       id: idFinal,
@@ -685,7 +704,9 @@ window.MasterApp = {
       vencimento,
       status,
       chaveLicenca,
-      pinGerente
+      pinGerente,
+      limiteTerminais,
+      terminaisAtivos: Array.isArray(cExistente?.terminaisAtivos) ? cExistente.terminaisAtivos : []
     };
 
     const docClean = documento.replace(/\D/g, '');
@@ -713,6 +734,28 @@ window.MasterApp = {
     this.renderTabela();
 
     this.showToast('🎉 "' + nome + '" atualizada com sucesso!');
+  },
+
+  async desvincularTerminaisClienteModal() {
+    const idInput = document.getElementById('cliente-id');
+    const id = idInput ? idInput.value : '';
+    if (!id) return;
+
+    const c = this.clientes.find(item => item && (item.id === id || item.chaveLicenca === id));
+    if (!c) return;
+
+    if (!confirm('Deseja realmente desvincular todos os computadores desta licença? Eles precisarão conectar novamente ao abrir o FlowPDV.')) {
+      return;
+    }
+
+    c.terminaisAtivos = [];
+    await this.salvarDados();
+    
+    const contagemTerm = document.getElementById('cli-terminais-contagem');
+    if (contagemTerm) contagemTerm.textContent = '0 / ' + (c.limiteTerminais || 1);
+
+    this.renderTabela();
+    this.showToast('🔄 Computadores desvinculados com sucesso na nuvem!');
   },
 
   async adicionarDias(id, dias) {
