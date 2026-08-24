@@ -605,16 +605,25 @@ window.MasterApp = {
                 '</div>' +
               '</div>' +
             '</td>' +
+            '<td class="cell-chave" data-label="Chave">' +
+              '<span class="mobile-td-label">🔑 Chave:</span>' +
+              '<div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(99, 102, 241, 0.08); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.2);">' +
+                '<code style="font-family: monospace; font-size: 12px; font-weight: 700; color: #818cf8;">' + (c.chaveLicenca || c.id) + '</code>' +
+                '<button type="button" onclick="MasterApp.copiarChaveLicenca(\'' + (c.chaveLicenca || c.id) + '\')" title="Copiar Chave de Licença" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; border-radius: 6px; padding: 2px 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s;" onmouseover="this.style.background=\'#4f46e5\'; this.style.color=\'#fff\';" onmouseout="this.style.background=\'rgba(255,255,255,0.08)\'; this.style.color=\'#e2e8f0\';">' +
+                  '📋 Copiar' +
+                '</button>' +
+              '</div>' +
+            '</td>' +
             '<td class="cell-contato" data-label="WhatsApp / Contato">' +
               '<span class="mobile-td-label">📱 Contato:</span>' +
-              '<div style="text-align: right;">' +
+              '<div>' +
                 '<a href="https://wa.me/55' + (c.whatsapp || '').replace(/\D/g, '') + '" target="_blank" style="color: #38bdf8; font-size: 13px; font-weight: 700; text-decoration: none;">' + (c.whatsapp || '-') + '</a>' +
                 '<span style="display: block; font-size: 11px; color: var(--text-dim);">' + (c.responsavel || '') + '</span>' +
               '</div>' +
             '</td>' +
             '<td class="cell-plano" data-label="Plano">' +
               '<span class="mobile-td-label">🏷️ Plano:</span>' +
-              '<div style="text-align: right;">' +
+              '<div>' +
                 '<span style="font-size: 12px; color: var(--accent-cyan); font-weight: 700;">' + c.plano + '</span>' +
                 '<span style="display: block; font-size: 11px; color: var(--text-dim);">R$ ' + parseFloat(c.valorMensal || 0).toFixed(2).replace('.', ',') + '/mês</span>' +
               '</div>' +
@@ -625,18 +634,9 @@ window.MasterApp = {
             '</td>' +
             '<td class="cell-status" data-label="Status">' +
               '<span class="mobile-td-label">⚡ Status / Terminais:</span>' +
-              '<div style="text-align: right;">' + statusBadge + termBadge + '</div>' +
+              '<div>' + statusBadge + termBadge + '</div>' +
             '</td>' +
-            '<td class="cell-chave" data-label="Chave">' +
-              '<span class="mobile-td-label">🔑 Chave:</span>' +
-              '<div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(99, 102, 241, 0.08); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.2);">' +
-                '<code style="font-family: monospace; font-size: 12px; font-weight: 700; color: #818cf8;">' + (c.chaveLicenca || c.id) + '</code>' +
-                '<button type="button" onclick="MasterApp.copiarChaveLicenca(\'' + (c.chaveLicenca || c.id) + '\')" title="Copiar Chave de Licença" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; border-radius: 6px; padding: 2px 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s;" onmouseover="this.style.background=\'#4f46e5\'; this.style.color=\'#fff\';" onmouseout="this.style.background=\'rgba(255,255,255,0.08)\'; this.style.color=\'#e2e8f0\';">' +
-                  '📋 Copiar' +
-                '</button>' +
-              '</div>' +
-            '</td>' +
-            '<td class="cell-acoes">' +
+            '<td class="cell-acoes" style="text-align: right;">' +
               '<button type="button" class="btn-editar-modern" onclick="MasterApp.abrirModalEditarCliente(\'' + c.id + '\')">' +
                 '✏️ Editar Licença & Dados' +
               '</button>' +
