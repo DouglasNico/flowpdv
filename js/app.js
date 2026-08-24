@@ -595,8 +595,8 @@ window.MasterApp = {
         const termBadge = '<span style="font-size: 11px; color: ' + (ativosTerm >= maxTerm ? '#f87171' : '#38bdf8') + '; font-weight: 700; display: block; margin-top: 3px;">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
         const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
 
-        return '<tr>' +
-            '<td>' +
+        return '<tr class="master-table-row">' +
+            '<td class="cell-store">' +
               '<div style="display: flex; align-items: center; gap: 12px;">' +
                 logoHtml +
                 '<div>' +
@@ -605,19 +605,30 @@ window.MasterApp = {
                 '</div>' +
               '</div>' +
             '</td>' +
-            '<td>' +
-              '<span style="color: var(--text-main); font-size: 13px;">' + (c.whatsapp || '-') + '</span>' +
-              '<span style="display: block; font-size: 11px; color: var(--text-dim);">' + (c.responsavel || '') + '</span>' +
+            '<td class="cell-contato" data-label="WhatsApp / Contato">' +
+              '<span class="mobile-td-label">📱 Contato:</span>' +
+              '<div style="text-align: right;">' +
+                '<a href="https://wa.me/55' + (c.whatsapp || '').replace(/\D/g, '') + '" target="_blank" style="color: #38bdf8; font-size: 13px; font-weight: 700; text-decoration: none;">' + (c.whatsapp || '-') + '</a>' +
+                '<span style="display: block; font-size: 11px; color: var(--text-dim);">' + (c.responsavel || '') + '</span>' +
+              '</div>' +
             '</td>' +
-            '<td>' +
-              '<span style="font-size: 12px; color: var(--accent-cyan); font-weight: 700;">' + c.plano + '</span>' +
-              '<span style="display: block; font-size: 11px; color: var(--text-dim);">R$ ' + parseFloat(c.valorMensal || 0).toFixed(2).replace('.', ',') + '/mês</span>' +
+            '<td class="cell-plano" data-label="Plano">' +
+              '<span class="mobile-td-label">🏷️ Plano:</span>' +
+              '<div style="text-align: right;">' +
+                '<span style="font-size: 12px; color: var(--accent-cyan); font-weight: 700;">' + c.plano + '</span>' +
+                '<span style="display: block; font-size: 11px; color: var(--text-dim);">R$ ' + parseFloat(c.valorMensal || 0).toFixed(2).replace('.', ',') + '/mês</span>' +
+              '</div>' +
             '</td>' +
-            '<td>' +
+            '<td class="cell-venc" data-label="Vencimento">' +
+              '<span class="mobile-td-label">📅 Vencimento:</span>' +
               '<strong style="font-family: monospace; font-size: 13px; color: var(--text-main);">' + dataStr + '</strong>' +
             '</td>' +
-            '<td>' + statusBadge + termBadge + '</td>' +
-            '<td>' +
+            '<td class="cell-status" data-label="Status">' +
+              '<span class="mobile-td-label">⚡ Status / Terminais:</span>' +
+              '<div style="text-align: right;">' + statusBadge + termBadge + '</div>' +
+            '</td>' +
+            '<td class="cell-chave" data-label="Chave">' +
+              '<span class="mobile-td-label">🔑 Chave:</span>' +
               '<div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(99, 102, 241, 0.08); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.2);">' +
                 '<code style="font-family: monospace; font-size: 12px; font-weight: 700; color: #818cf8;">' + (c.chaveLicenca || c.id) + '</code>' +
                 '<button type="button" onclick="MasterApp.copiarChaveLicenca(\'' + (c.chaveLicenca || c.id) + '\')" title="Copiar Chave de Licença" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; border-radius: 6px; padding: 2px 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s;" onmouseover="this.style.background=\'#4f46e5\'; this.style.color=\'#fff\';" onmouseout="this.style.background=\'rgba(255,255,255,0.08)\'; this.style.color=\'#e2e8f0\';">' +
@@ -625,9 +636,9 @@ window.MasterApp = {
                 '</button>' +
               '</div>' +
             '</td>' +
-            '<td style="text-align: right;">' +
+            '<td class="cell-acoes">' +
               '<button type="button" class="btn-editar-modern" onclick="MasterApp.abrirModalEditarCliente(\'' + c.id + '\')">' +
-                '✏️ Editar' +
+                '✏️ Editar Licença & Dados' +
               '</button>' +
             '</td>' +
           '</tr>';
