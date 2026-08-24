@@ -877,32 +877,72 @@ window.MasterApp = {
 
   async excluirClienteModal() {
     const idInput = document.getElementById('cliente-id');
-    const id = idInput ? idInput.value : '';
-    if (!id) return;
+    const chaveInput = document.getElementById('cli-chave');
+    const id = (idInput ? idInput.value : '').trim();
+    const chave = (chaveInput ? chaveInput.value : '').trim();
+    
+    if (!id && !chave) return;
 
-    if (!confirm('Deseja realmente excluir esta licença do sistema e da nuvem?')) return;
+    if (!confirm('Deseja realmente excluir esta licença permanentemente da nuvem e do sistema?')) return;
+
+    const c = this.clientes.find(item => item && (item.id === id || item.chaveLicenca === id || item.chaveLicenca === chave || item.id === chave));
+    const chaveAlvo = (c ? c.chaveLicenca : chave) || '';
+    const idAlvo = (c ? c.id : id) || '';
+    const docClean = c && c.documento ? c.documento.replace(/\D/g, '') : '';
 
     if (window.FirebaseDB && window.FirebaseDB.db) {
       try {
-        const { db, deleteDoc, doc } = window.FirebaseDB;
-        const c = this.clientes.find(item => item.id === id);
-        await deleteDoc(doc(db, 'licencas', id));
-        if (c && c.chaveLicenca) {
-          await deleteDoc(doc(db, 'licencas', c.chaveLicenca));
+        const { db, deleteDoc, doc, collection, getDocs } = window.FirebaseDB;
+        
+        // 1. Tentar exclusão direta por ID e Chave
+        const idsToDelete = new Set([id, chave, idAlvo, chaveAlvo].filter(Boolean));
+        for (const docId of idsToDelete) {
+          try {
+            await deleteDoc(doc(db, 'licencas', docId));
+          } catch(e) {}
         }
+
+        // 2. Varrer a coleção do Firestore e deletar qualquer doc correspondente
+        try {
+          const snapshot = await getDocs(collection(db, 'licencas'));
+          snapshot.forEach(async (d) => {
+            const data = d.data() || {};
+            const docId = d.id;
+            const docCnpjClean = (data.documento || data.cnpj || '').replace(/\D/g, '');
+            if (
+              docId === id ||
+              docId === chave ||
+              docId === idAlvo ||
+              docId === chaveAlvo ||
+              (data.id && (data.id === id || data.id === idAlvo)) ||
+              (data.chaveLicenca && (data.chaveLicenca === chave || data.chaveLicenca === chaveAlvo)) ||
+              (docClean && docCnpjClean && docClean === docCnpjClean)
+            ) {
+              try {
+                await deleteDoc(doc(db, 'licencas', docId));
+              } catch(e) {}
+            }
+          });
+        } catch(e) {}
       } catch (e) {
-        console.log('Erro ao excluir no Firestore:', e);
+        console.error('Erro ao excluir no Firestore:', e);
       }
     }
 
-    this.clientes = this.clientes.filter(item => item.id !== id);
+    // 3. Remover localmente
+    this.clientes = this.clientes.filter(item => {
+      if (!item) return false;
+      if (item.id === id || item.id === idAlvo) return false;
+      if (item.chaveLicenca && (item.chaveLicenca === chave || item.chaveLicenca === chaveAlvo)) return false;
+      if (docClean && item.documento && item.documento.replace(/\D/g, '') === docClean) return false;
+      return true;
+    });
+
+    localStorage.setItem('flowpdv_master_clientes', JSON.stringify(this.clientes));
     this.fecharModalCliente();
     this.renderMetrics();
     this.renderTabela();
-    await this.salvarDados();
-    this.renderMetrics();
-    this.renderTabela();
-    this.showToast('🗑️ Licença excluída com sucesso!');
+    this.showToast('🗑️ Licença excluída com sucesso da nuvem!');
   },
 
   previewLogo() {
