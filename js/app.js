@@ -206,6 +206,7 @@ window.MasterApp = {
             plano: c.plano,
             valorMensal: c.valorMensal,
             vencimento: c.vencimento,
+            dataExpiracao: c.vencimento ? (c.vencimento.includes('T') ? c.vencimento : c.vencimento + 'T23:59:59.000Z') : '2026-12-31T23:59:59.000Z',
             status: c.status,
             chaveLicenca: c.chaveLicenca,
             pinGerente: c.pinGerente || '1234',
