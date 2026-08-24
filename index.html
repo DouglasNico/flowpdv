@@ -281,9 +281,9 @@
             </div>
 
             <div class="form-group span-2">
-              <label>Chave de Licença (Auto-gerada / Editável)</label>
+              <label>Chave de Licença (Gerada Automaticamente pelo Sistema)</label>
               <div style="display: flex; gap: 8px;">
-                <input type="text" id="cli-chave" style="flex: 1; background: #0f172a; font-family: 'JetBrains Mono'; font-weight: 700; color: #4f46e5;">
+                <input type="text" id="cli-chave" readonly style="flex: 1; background: #0b1120; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 15px; color: #818cf8; letter-spacing: 0.5px; border: 1px solid rgba(129, 140, 248, 0.35); cursor: not-allowed; user-select: all;" title="Chave gerada automaticamente pelo sistema">
                 <button type="button" class="btn-sec" style="background: #334155; color: #fff; height: 42px; font-weight: 700; padding: 0 14px;" onclick="MasterApp.copiarChaveLicenca(document.getElementById('cli-chave').value)">
                   📋 Copiar
                 </button>
