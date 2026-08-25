@@ -920,8 +920,8 @@ window.MasterApp = {
     container.innerHTML = lista.map((term, index) => {
       const isObjeto = term && typeof term === 'object';
       const termId = isObjeto ? (term.id || 'N/D') : term;
-      const hostname = isObjeto && term.hostname && term.hostname !== termId ? term.hostname : `Computador ${index + 1} (${termId})`;
-      const usuario = isObjeto && term.usuario ? term.usuario : 'Operador';
+      const hostname = isObjeto && term.hostname && term.hostname !== termId && term.hostname !== 'Computador Local' ? term.hostname : `Computador ${index + 1}`;
+      const usuario = isObjeto && term.usuario && term.usuario !== 'Operador' && term.usuario !== 'User' ? term.usuario : (index === 0 ? 'Douglas Batista' : 'Administrador');
       const dataStr = isObjeto && term.ultimoAcesso ? new Date(term.ultimoAcesso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Ativo';
 
       return `
