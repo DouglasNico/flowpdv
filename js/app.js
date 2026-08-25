@@ -621,6 +621,8 @@ window.MasterApp = {
         const ativosTerm = Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos.length : 0;
         const isLotado = ativosTerm >= maxTerm;
         const termBadge = '<span class="badge-terminal ' + (isLotado ? 'lotado' : 'livre') + '">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
+        const nomesTerminais = (c.terminaisAtivos || []).map(t => (typeof t === 'object' && t.hostname ? t.hostname : (typeof t === 'string' ? t : 'PC'))).join(', ');
+        const hostnamesHtml = nomesTerminais ? '<div style="font-size: 11px; color: #38bdf8; margin-top: 3px; font-family: \'JetBrains Mono\'; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="' + nomesTerminais + '">🖥️ ' + nomesTerminais + '</div>' : '';
         const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
 
         return '<tr class="master-table-row">' +
@@ -666,7 +668,7 @@ window.MasterApp = {
             '</td>' +
             '<td class="cell-term" data-label="Terminais">' +
               '<span class="mobile-td-label">💻 Terminais:</span>' +
-              '<div>' + termBadge + '</div>' +
+              '<div>' + termBadge + hostnamesHtml + '</div>' +
             '</td>' +
             '<td class="cell-acoes" style="text-align: right;">' +
               '<button type="button" class="btn-editar-modern" onclick="MasterApp.abrirModalEditarCliente(\'' + c.id + '\')">' +
@@ -892,7 +894,7 @@ window.MasterApp = {
     container.innerHTML = lista.map((term, index) => {
       const isObjeto = term && typeof term === 'object';
       const termId = isObjeto ? (term.id || 'N/D') : term;
-      const hostname = isObjeto && term.hostname ? term.hostname : `Equipamento ${index + 1}`;
+      const hostname = isObjeto && term.hostname ? term.hostname : (typeof term === 'string' ? term : `Equipamento ${index + 1}`);
       const usuario = isObjeto && term.usuario ? term.usuario : 'Operador';
       const dataStr = isObjeto && term.ultimoAcesso ? new Date(term.ultimoAcesso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Ativo';
 
