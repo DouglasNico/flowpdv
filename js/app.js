@@ -618,11 +618,10 @@ window.MasterApp = {
 
         const dataStr = this.formatarDataExibicao(c.vencimento);
         const maxTerm = parseInt(c.limiteTerminais) || 1;
-        const ativosTerm = Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos.length : 0;
+        const terminaisUnicos = this.obterTerminaisDeduplicados(c.terminaisAtivos);
+        const ativosTerm = terminaisUnicos.length;
         const isLotado = ativosTerm >= maxTerm;
         const termBadge = '<span class="badge-terminal ' + (isLotado ? 'lotado' : 'livre') + '">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
-        const nomesTerminais = (c.terminaisAtivos || []).map(t => (typeof t === 'object' && t.hostname ? t.hostname : (typeof t === 'string' ? t : 'PC'))).join(', ');
-        const hostnamesHtml = nomesTerminais ? '<div style="font-size: 11px; color: #38bdf8; margin-top: 3px; font-family: \'JetBrains Mono\'; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="' + nomesTerminais + '">🖥️ ' + nomesTerminais + '</div>' : '';
         const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
 
         return '<tr class="master-table-row">' +
@@ -668,7 +667,7 @@ window.MasterApp = {
             '</td>' +
             '<td class="cell-term" data-label="Terminais">' +
               '<span class="mobile-td-label">💻 Terminais:</span>' +
-              '<div>' + termBadge + hostnamesHtml + '</div>' +
+              '<div>' + termBadge + '</div>' +
             '</td>' +
             '<td class="cell-acoes" style="text-align: right;">' +
               '<button type="button" class="btn-editar-modern" onclick="MasterApp.abrirModalEditarCliente(\'' + c.id + '\')">' +
@@ -757,8 +756,9 @@ window.MasterApp = {
     if (pinInput) pinInput.value = c.pinGerente || '1234';
     if (limiteInput) limiteInput.value = c.limiteTerminais || 1;
     
-    const ativos = Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos.length : 0;
-    if (contagemTerm) contagemTerm.textContent = ativos + ' / ' + (c.limiteTerminais || 1);
+    const terminaisUnicos = this.obterTerminaisDeduplicados(c.terminaisAtivos);
+    c.terminaisAtivos = terminaisUnicos;
+    if (contagemTerm) contagemTerm.textContent = terminaisUnicos.length + ' / ' + (c.limiteTerminais || 1);
     if (termInfoBox) termInfoBox.style.display = 'block';
 
     if (statusInput) statusInput.value = c.status || 'ativa';
@@ -858,6 +858,30 @@ window.MasterApp = {
     this.showToast('🎉 "' + nome + '" atualizada com sucesso!');
   },
 
+  obterTerminaisDeduplicados(terminaisRaw) {
+    if (!Array.isArray(terminaisRaw)) return [];
+    
+    const mapa = new Map();
+    for (const term of terminaisRaw) {
+      if (!term) continue;
+      const isObjeto = typeof term === 'object';
+      const id = isObjeto ? (term.id || term.deviceId || '').trim() : String(term).trim();
+      if (!id) continue;
+
+      if (!mapa.has(id)) {
+        mapa.set(id, isObjeto ? term : { id: id, hostname: id, usuario: 'Operador', ultimoAcesso: null });
+      } else {
+        const existente = mapa.get(id);
+        const existenteIsObjeto = existente && typeof existente === 'object';
+        // Se o existente for string simples e o novo for objeto rico com hostname, atualiza!
+        if (isObjeto && term.hostname && (!existenteIsObjeto || !existente.hostname || existente.hostname === id)) {
+          mapa.set(id, term);
+        }
+      }
+    }
+    return Array.from(mapa.values());
+  },
+
   async desvincularTerminaisClienteModal() {
     const idInput = document.getElementById('cliente-id');
     const id = idInput ? idInput.value : '';
@@ -885,7 +909,9 @@ window.MasterApp = {
     const container = document.getElementById('cli-terminais-lista-cards');
     if (!container) return;
 
-    const lista = Array.isArray(c?.terminaisAtivos) ? c.terminaisAtivos : [];
+    const lista = this.obterTerminaisDeduplicados(c?.terminaisAtivos);
+    c.terminaisAtivos = lista;
+
     if (lista.length === 0) {
       container.innerHTML = '<div style="font-size: 12px; color: var(--text-dim); padding: 8px 0; font-style: italic;">Nenhum computador conectado no momento.</div>';
       return;
@@ -894,7 +920,7 @@ window.MasterApp = {
     container.innerHTML = lista.map((term, index) => {
       const isObjeto = term && typeof term === 'object';
       const termId = isObjeto ? (term.id || 'N/D') : term;
-      const hostname = isObjeto && term.hostname ? term.hostname : (typeof term === 'string' ? term : `Equipamento ${index + 1}`);
+      const hostname = isObjeto && term.hostname && term.hostname !== termId ? term.hostname : `Computador ${index + 1} (${termId})`;
       const usuario = isObjeto && term.usuario ? term.usuario : 'Operador';
       const dataStr = isObjeto && term.ultimoAcesso ? new Date(term.ultimoAcesso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Ativo';
 
@@ -926,7 +952,7 @@ window.MasterApp = {
       return;
     }
 
-    let lista = Array.isArray(c.terminaisAtivos) ? [...c.terminaisAtivos] : [];
+    let lista = this.obterTerminaisDeduplicados(c.terminaisAtivos);
     c.terminaisAtivos = lista.filter(t => {
       if (typeof t === 'string') return t !== terminalId;
       return t && t.id !== terminalId;
