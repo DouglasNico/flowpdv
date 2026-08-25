@@ -900,12 +900,12 @@ window.MasterApp = {
         <div class="terminal-item-card">
           <div class="terminal-item-info">
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span style="font-size: 15px;">💻</span>
-              <strong style="color: #ffffff; font-size: 13px; font-family: 'JetBrains Mono';">${hostname}</strong>
+              <span style="font-size: 16px;">💻</span>
+              <strong style="color: #38bdf8; font-size: 13px; font-family: 'JetBrains Mono'; font-weight: 800;">${hostname}</strong>
               <span class="badge-terminal-user">👤 ${usuario}</span>
             </div>
-            <div style="font-size: 11px; color: var(--text-dim); margin-top: 3px;">
-              ID: <code style="color: #818cf8; font-family: monospace;">${termId}</code> • Visto: <span style="color: #94a3b8;">${dataStr}</span>
+            <div style="font-size: 11px; color: var(--text-dim); margin-top: 3px; font-family: 'JetBrains Mono';">
+              ID: <code style="color: #a5b4fc; background: rgba(255,255,255,0.06); padding: 1px 4px; border-radius: 3px;">${termId}</code> • <span style="color: #94a3b8;">${dataStr}</span>
             </div>
           </div>
           <button type="button" class="btn-desvincular-individual" onclick="MasterApp.desvincularTerminalIndividual('${c.id}', '${termId}')" title="Desvincular somente este computador">
