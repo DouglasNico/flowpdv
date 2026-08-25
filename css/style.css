@@ -347,6 +347,30 @@ body {
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
+.badge-terminal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+.badge-terminal.livre {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.badge-terminal.lotado {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
 /* Botão Moderno Editar Linha Master */
 .btn-editar-modern {
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
@@ -354,7 +378,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
   font-weight: 800;
   font-size: 13px;
-  padding: 8px 16px;
+  padding: 7px 14px;
   border-radius: 8px;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);

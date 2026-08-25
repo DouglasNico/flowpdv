@@ -529,14 +529,36 @@ window.MasterApp = {
   calcularDiasRestantes(vencimentoStr) {
     if (!vencimentoStr) return 0;
     try {
-      const clean = vencimentoStr.includes('T') ? vencimentoStr.split('T')[0] : vencimentoStr;
+      let clean = String(vencimentoStr).trim();
+      if (clean.includes('T')) clean = clean.split('T')[0];
+
+      let ano, mes, dia;
+      if (clean.includes('-')) {
+        const p = clean.split('-');
+        ano = parseInt(p[0], 10);
+        mes = parseInt(p[1], 10) - 1;
+        dia = parseInt(p[2], 10);
+      } else if (clean.includes('/')) {
+        const p = clean.split('/');
+        ano = parseInt(p[2], 10);
+        mes = parseInt(p[1], 10) - 1;
+        dia = parseInt(p[0], 10);
+      } else {
+        const d = new Date(clean);
+        if (isNaN(d.getTime())) return 0;
+        ano = d.getFullYear();
+        mes = d.getMonth();
+        dia = d.getDate();
+      }
+
       const hoje = new Date();
-      hoje.setHours(0, 0, 0, 0);
-      const venc = new Date(clean + 'T12:00:00');
-      if (isNaN(venc.getTime())) return 30;
-      return Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24));
+      const dHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
+      const dVenc = new Date(ano, mes, dia, 0, 0, 0, 0);
+
+      const diffMs = dVenc.getTime() - dHoje.getTime();
+      return Math.round(diffMs / (1000 * 60 * 60 * 24));
     } catch(e) {
-      return 30;
+      return 0;
     }
   },
 
@@ -567,7 +589,7 @@ window.MasterApp = {
       }
 
       if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 32px; color: var(--text-dim);">Nenhum cliente encontrado.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 32px; color: var(--text-dim);">Nenhum cliente encontrado.</td></tr>';
         return;
       }
 
@@ -578,8 +600,12 @@ window.MasterApp = {
         let statusBadge = '';
         if (!isAtivo) {
           statusBadge = '<span class="badge badge-bloqueada">🛑 Bloqueada</span>';
-        } else if (diasRestantes <= 0) {
+        } else if (diasRestantes < 0) {
           statusBadge = '<span class="badge badge-bloqueada">⚠️ Vencida</span>';
+        } else if (diasRestantes === 0) {
+          statusBadge = '<span class="badge badge-vencendo" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); font-weight: 800;">⏳ Vence Hoje</span>';
+        } else if (diasRestantes === 1) {
+          statusBadge = '<span class="badge badge-vencendo" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); font-weight: 800;">⏳ Vence Amanhã</span>';
         } else if (diasRestantes <= 5) {
           statusBadge = '<span class="badge badge-vencendo">⏳ Vence em ' + diasRestantes + 'd</span>';
         } else {
@@ -593,7 +619,8 @@ window.MasterApp = {
         const dataStr = this.formatarDataExibicao(c.vencimento);
         const maxTerm = parseInt(c.limiteTerminais) || 1;
         const ativosTerm = Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos.length : 0;
-        const termBadge = '<span style="font-size: 11px; color: ' + (ativosTerm >= maxTerm ? '#f87171' : '#38bdf8') + '; font-weight: 700; display: block; margin-top: 3px;">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
+        const isLotado = ativosTerm >= maxTerm;
+        const termBadge = '<span class="badge-terminal ' + (isLotado ? 'lotado' : 'livre') + '">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
         const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
 
         return '<tr class="master-table-row">' +
@@ -634,12 +661,16 @@ window.MasterApp = {
               '<strong style="font-family: monospace; font-size: 13px; color: var(--text-main);">' + dataStr + '</strong>' +
             '</td>' +
             '<td class="cell-status" data-label="Status">' +
-              '<span class="mobile-td-label">⚡ Status / Terminais:</span>' +
-              '<div>' + statusBadge + termBadge + '</div>' +
+              '<span class="mobile-td-label">⚡ Status:</span>' +
+              '<div>' + statusBadge + '</div>' +
+            '</td>' +
+            '<td class="cell-term" data-label="Terminais">' +
+              '<span class="mobile-td-label">💻 Terminais:</span>' +
+              '<div>' + termBadge + '</div>' +
             '</td>' +
             '<td class="cell-acoes" style="text-align: right;">' +
               '<button type="button" class="btn-editar-modern" onclick="MasterApp.abrirModalEditarCliente(\'' + c.id + '\')">' +
-                '✏️ Editar Licença & Dados' +
+                '✏️ Editar' +
               '</button>' +
             '</td>' +
           '</tr>';
@@ -732,6 +763,7 @@ window.MasterApp = {
     if (btnExcluir) btnExcluir.style.display = 'block';
 
     this.previewLogo();
+    this.atualizarFeedbackVencimentoModal();
     if (modal) {
       modal.classList.add('active');
       const modalBody = modal.querySelector('.modal-body');
@@ -1087,6 +1119,7 @@ window.MasterApp = {
     const d = new Date();
     d.setDate(d.getDate() + dias);
     input.value = d.toISOString().split('T')[0];
+    this.atualizarFeedbackVencimentoModal();
   },
 
   adicionarDiasPersonalizadosForm() {
@@ -1098,6 +1131,44 @@ window.MasterApp = {
     const base = new Date(inputVenc.value > new Date().toISOString().split('T')[0] ? inputVenc.value : new Date());
     base.setDate(base.getDate() + dias);
     inputVenc.value = base.toISOString().split('T')[0];
+    this.atualizarFeedbackVencimentoModal();
+  },
+
+  atualizarFeedbackVencimentoModal() {
+    const inputVenc = document.getElementById('cli-vencimento');
+    const feedbackEl = document.getElementById('modal-venc-feedback');
+    if (!inputVenc || !feedbackEl) return;
+
+    const val = inputVenc.value;
+    if (!val) {
+      feedbackEl.style.display = 'none';
+      return;
+    }
+
+    const dias = this.calcularDiasRestantes(val);
+    feedbackEl.style.display = 'inline-block';
+
+    if (dias < 0) {
+      feedbackEl.style.background = 'rgba(239, 68, 68, 0.2)';
+      feedbackEl.style.color = '#f87171';
+      feedbackEl.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+      feedbackEl.textContent = `⚠️ Vencida (há ${Math.abs(dias)}d)`;
+    } else if (dias === 0) {
+      feedbackEl.style.background = 'rgba(239, 68, 68, 0.2)';
+      feedbackEl.style.color = '#f87171';
+      feedbackEl.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+      feedbackEl.textContent = '⏳ Vence Hoje (23:59)';
+    } else if (dias === 1) {
+      feedbackEl.style.background = 'rgba(245, 158, 11, 0.2)';
+      feedbackEl.style.color = '#fbbf24';
+      feedbackEl.style.border = '1px solid rgba(245, 158, 11, 0.4)';
+      feedbackEl.textContent = '⏳ Vence Amanhã';
+    } else {
+      feedbackEl.style.background = 'rgba(16, 185, 129, 0.2)';
+      feedbackEl.style.color = '#34d399';
+      feedbackEl.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+      feedbackEl.textContent = `🟢 Ativa (${dias}d restantes)`;
+    }
   },
 
   atualizarValorPlano() {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FlowPDV Master — Gestão SaaS & Licenças</title>
   <link rel="icon" type="image/png" href="icon.png">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1.4.5">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -143,6 +143,7 @@
               <th>Plano / Valor</th>
               <th>Vencimento</th>
               <th>Status</th>
+              <th>Terminais</th>
               <th style="text-align: right;">Ações</th>
             </tr>
           </thead>
@@ -258,10 +259,13 @@
 
             <!-- SEÇÃO DE VENCIMENTO E ADICIONAR DIAS PERSONALIZADOS -->
             <div class="form-group span-2" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px; margin-top: 4px;">
-              <label style="color: var(--accent-cyan); font-weight: 800;">📅 Vencimento da Licença & Adicionar Dias</label>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="color: var(--accent-cyan); font-weight: 800; margin-bottom: 0;">📅 Vencimento da Licença & Adicionar Dias</label>
+                <span id="modal-venc-feedback" style="font-size: 12px; font-weight: 800; font-family: 'JetBrains Mono'; padding: 2px 8px; border-radius: 6px;"></span>
+              </div>
               
-              <div style="display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap;">
-                <input type="date" id="cli-vencimento" required style="flex: 1; min-width: 140px; cursor: pointer;" onclick="if(typeof this.showPicker === 'function') this.showPicker();">
+              <div style="display: flex; gap: 8px; margin-top: 4px; align-items: center; flex-wrap: wrap;">
+                <input type="date" id="cli-vencimento" required style="flex: 1; min-width: 140px; cursor: pointer;" onclick="if(typeof this.showPicker === 'function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
                 
                 <!-- Input para quantidade personalizada de dias -->
                 <div style="display: flex; gap: 6px; align-items: center; flex: 1; min-width: 140px;">
@@ -373,6 +377,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=1.4.5"></script>
 </body>
 </html>
