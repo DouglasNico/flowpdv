@@ -757,11 +757,12 @@ window.MasterApp = {
     
     const ativos = Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos.length : 0;
     if (contagemTerm) contagemTerm.textContent = ativos + ' / ' + (c.limiteTerminais || 1);
-    if (termInfoBox) termInfoBox.style.display = 'flex';
+    if (termInfoBox) termInfoBox.style.display = 'block';
 
     if (statusInput) statusInput.value = c.status || 'ativa';
     if (btnExcluir) btnExcluir.style.display = 'block';
 
+    this.renderListaTerminaisModal(c);
     this.previewLogo();
     this.atualizarFeedbackVencimentoModal();
     if (modal) {
@@ -873,8 +874,70 @@ window.MasterApp = {
     const contagemTerm = document.getElementById('cli-terminais-contagem');
     if (contagemTerm) contagemTerm.textContent = '0 / ' + (c.limiteTerminais || 1);
 
+    this.renderListaTerminaisModal(c);
     this.renderTabela();
     this.showToast('🔄 Computadores desvinculados com sucesso na nuvem!');
+  },
+
+  renderListaTerminaisModal(c) {
+    const container = document.getElementById('cli-terminais-lista-cards');
+    if (!container) return;
+
+    const lista = Array.isArray(c?.terminaisAtivos) ? c.terminaisAtivos : [];
+    if (lista.length === 0) {
+      container.innerHTML = '<div style="font-size: 12px; color: var(--text-dim); padding: 8px 0; font-style: italic;">Nenhum computador conectado no momento.</div>';
+      return;
+    }
+
+    container.innerHTML = lista.map((term, index) => {
+      const isObjeto = term && typeof term === 'object';
+      const termId = isObjeto ? (term.id || 'N/D') : term;
+      const hostname = isObjeto && term.hostname ? term.hostname : `Equipamento ${index + 1}`;
+      const usuario = isObjeto && term.usuario ? term.usuario : 'Operador';
+      const dataStr = isObjeto && term.ultimoAcesso ? new Date(term.ultimoAcesso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Ativo';
+
+      return `
+        <div class="terminal-item-card">
+          <div class="terminal-item-info">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 15px;">💻</span>
+              <strong style="color: #ffffff; font-size: 13px; font-family: 'JetBrains Mono';">${hostname}</strong>
+              <span class="badge-terminal-user">👤 ${usuario}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim); margin-top: 3px;">
+              ID: <code style="color: #818cf8; font-family: monospace;">${termId}</code> • Visto: <span style="color: #94a3b8;">${dataStr}</span>
+            </div>
+          </div>
+          <button type="button" class="btn-desvincular-individual" onclick="MasterApp.desvincularTerminalIndividual('${c.id}', '${termId}')" title="Desvincular somente este computador">
+            ❌ Desvincular
+          </button>
+        </div>
+      `;
+    }).join('');
+  },
+
+  async desvincularTerminalIndividual(clienteId, terminalId) {
+    const c = this.clientes.find(item => item && (item.id === clienteId || item.chaveLicenca === clienteId));
+    if (!c) return;
+
+    if (!confirm('Deseja realmente desvincular este computador específico desta licença?')) {
+      return;
+    }
+
+    let lista = Array.isArray(c.terminaisAtivos) ? [...c.terminaisAtivos] : [];
+    c.terminaisAtivos = lista.filter(t => {
+      if (typeof t === 'string') return t !== terminalId;
+      return t && t.id !== terminalId;
+    });
+
+    await this.salvarDados();
+    this.renderTabela();
+    this.renderListaTerminaisModal(c);
+
+    const contagemTerm = document.getElementById('cli-terminais-contagem');
+    if (contagemTerm) contagemTerm.textContent = (c.terminaisAtivos.length) + ' / ' + (c.limiteTerminais || 1);
+
+    this.showToast('✅ Computador desvinculado com sucesso!');
   },
 
   async adicionarDias(id, dias) {
