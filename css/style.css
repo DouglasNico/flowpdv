@@ -129,6 +129,42 @@ body {
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
 }
 
+.btn-logout {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  height: 42px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+#master-logged-user {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: rgba(15, 23, 42, 0.5);
+  padding: 6px 14px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* ==========================================================================
    METRICS GRID (MRR, ATIVOS, VENCENDO, BLOQUEADOS)
    ========================================================================== */
@@ -697,28 +733,37 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .header-actions {
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     width: 100%;
     gap: 8px;
   }
 
-  #master-logged-user {
-    width: 100%;
-    justify-content: center;
+  .btn-logout {
     order: 1;
+    flex: 0 0 auto;
+    justify-content: center;
+    height: 40px;
+    padding: 0 14px;
     font-size: 12px;
   }
 
-  .btn-novo-cliente {
-    width: 100%;
+  #master-logged-user {
     order: 2;
-    padding: 12px;
-    font-size: 14px;
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    font-size: 12px;
+    height: 40px;
+    padding: 4px 10px;
   }
 
-  .btn-logout {
-    width: 100%;
+  .btn-novo-cliente {
     order: 3;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
     justify-content: center;
   }
 

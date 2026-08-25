@@ -61,16 +61,16 @@
         </div>
       </div>
 
-      <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
-        <div id="master-logged-user" style="font-size: 13px; color: var(--text-muted); background: rgba(15, 23, 42, 0.5); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px;">
+      <div class="header-actions">
+        <button type="button" class="btn-logout" onclick="MasterApp.executarLogout()">
+          <span>🚪 Sair</span>
+        </button>
+        <div id="master-logged-user">
           <span>👤</span>
           <span id="master-user-email">admin@flowpdv.com</span>
         </div>
         <button type="button" class="btn-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">
           <span>➕ Nova Licença / Cliente</span>
-        </button>
-        <button type="button" class="btn-logout" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); height: 44px; padding: 0 16px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;" onclick="MasterApp.executarLogout()" onmouseover="this.style.background='rgba(239, 68, 68, 0.25)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.15)'">
-          <span>🚪 Sair</span>
         </button>
       </div>
     </header>
