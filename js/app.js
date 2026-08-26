@@ -5,6 +5,15 @@
 window.MasterApp = {
   clientes: [],
   filtroAtual: 'todos',
+  planos: [],
+
+  planosPadrao: [
+    { id: 'PLN-PRO', nome: 'Mensal Pro', valor: 89.90, periodo: 'mês' },
+    { id: 'PLN-BASICO', nome: 'Mensal Básico', valor: 69.90, periodo: 'mês' },
+    { id: 'PLN-TRI', nome: 'Trimestral', valor: 239.70, periodo: 'tri' },
+    { id: 'PLN-SEMESTRAL', nome: 'Semestral', valor: 459.00, periodo: 'semestre' },
+    { id: 'PLN-ANUAL', nome: 'Anual VIP', valor: 899.00, periodo: 'ano' }
+  ],
 
   presetsCategorias: {
     adega: {
@@ -36,6 +45,7 @@ window.MasterApp = {
   usuarioLogado: null,
 
   async init() {
+    this.carregarPlanos();
     this.initAuth();
     this.bindMascaras();
   },
@@ -328,7 +338,9 @@ window.MasterApp = {
   },
 
   async onFirebaseReady() {
+    await this.sincronizarPlanosFirestore();
     await this.sincronizarComNuvemFirestore();
+    this.iniciarOuvintePlanosRealtime();
     this.iniciarOuvinteNuvemRealtime();
   },
 
@@ -705,12 +717,15 @@ window.MasterApp = {
     if (logoInput) logoInput.value = '';
     if (catInput) catInput.value = this.presetsCategorias.adega.lista.join(', ');
     
+    this.renderSelectPlanos('Mensal Pro');
+
     const d = new Date();
     d.setDate(d.getDate() + 30);
     if (vencInput) vencInput.value = d.toISOString().split('T')[0];
 
     this.previewLogo();
     if (modal) {
+      document.body.classList.add('modal-open');
       modal.classList.add('active');
       const modalBody = modal.querySelector('.modal-body');
       if (modalBody) modalBody.scrollTop = 0;
@@ -730,7 +745,6 @@ window.MasterApp = {
     const iconeInput = document.getElementById('cli-icone');
     const logoInput = document.getElementById('cli-logo-url');
     const catInput = document.getElementById('cli-categorias');
-    const planoInput = document.getElementById('cli-plano');
     const valorInput = document.getElementById('cli-valor');
     const vencInput = document.getElementById('cli-vencimento');
     const chaveInput = document.getElementById('cli-chave');
@@ -749,7 +763,8 @@ window.MasterApp = {
     if (iconeInput) iconeInput.value = c.icone || '🍷';
     if (logoInput) logoInput.value = c.logoUrl || '';
     if (catInput) catInput.value = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.join(', ') : this.presetsCategorias.adega.lista.join(', ');
-    if (planoInput) planoInput.value = c.plano || 'Mensal Pro';
+    
+    this.renderSelectPlanos(c.plano || 'Mensal Pro');
     if (valorInput) valorInput.value = c.valorMensal || 89.90;
     if (vencInput) vencInput.value = c.vencimento ? (c.vencimento.includes('T') ? c.vencimento.split('T')[0] : c.vencimento) : '';
     if (chaveInput) chaveInput.value = c.chaveLicenca || c.id;
@@ -768,6 +783,7 @@ window.MasterApp = {
     this.previewLogo();
     this.atualizarFeedbackVencimentoModal();
     if (modal) {
+      document.body.classList.add('modal-open');
       modal.classList.add('active');
       const modalBody = modal.querySelector('.modal-body');
       if (modalBody) modalBody.scrollTop = 0;
@@ -780,6 +796,9 @@ window.MasterApp = {
       modal.classList.remove('active');
       const modalBody = modal.querySelector('.modal-body');
       if (modalBody) modalBody.scrollTop = 0;
+    }
+    if (!document.querySelector('.modal-overlay.active')) {
+      document.body.classList.remove('modal-open');
     }
   },
 
@@ -1262,13 +1281,292 @@ window.MasterApp = {
     }
   },
 
+  // =========================================================================
+  // GESTÃO DE PLANOS & MENSALIDADES (CONFIGURAÇÃO DINÂMICA)
+  // =========================================================================
+  carregarPlanos() {
+    const saved = localStorage.getItem('flowpdv_master_planos');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.planos = parsed;
+          this.renderSelectPlanos();
+          return;
+        }
+      } catch(e) {}
+    }
+    this.planos = [...this.planosPadrao];
+    this.salvarPlanosLocal();
+    this.renderSelectPlanos();
+  },
+
+  salvarPlanosLocal() {
+    localStorage.setItem('flowpdv_master_planos', JSON.stringify(this.planos));
+  },
+
+  async sincronizarPlanosFirestore() {
+    if (window.FirebaseDB && window.FirebaseDB.db) {
+      try {
+        const { db, doc, getDoc, setDoc } = window.FirebaseDB;
+        const snap = await getDoc(doc(db, 'config_master', 'planos'));
+        if (snap && snap.exists()) {
+          const data = snap.data();
+          if (Array.isArray(data.lista) && data.lista.length > 0) {
+            this.planos = data.lista;
+            this.salvarPlanosLocal();
+            this.renderSelectPlanos();
+            return;
+          }
+        }
+        // Se a nuvem não tiver dados de planos, sobe os planos padrão
+        await setDoc(doc(db, 'config_master', 'planos'), {
+          lista: this.planos.length > 0 ? this.planos : this.planosPadrao,
+          atualizadoEm: new Date().toISOString()
+        }, { merge: true });
+      } catch(e) {
+        console.log('[Firebase Master] Erro ao sincronizar planos:', e);
+      }
+    }
+  },
+
+  iniciarOuvintePlanosRealtime() {
+    if (window.FirebaseDB && window.FirebaseDB.db && window.FirebaseDB.onSnapshot) {
+      try {
+        const { db, doc, onSnapshot } = window.FirebaseDB;
+        onSnapshot(doc(db, 'config_master', 'planos'), (snap) => {
+          if (snap && snap.exists()) {
+            const data = snap.data();
+            if (Array.isArray(data.lista) && data.lista.length > 0) {
+              this.planos = data.lista;
+              this.salvarPlanosLocal();
+              this.renderSelectPlanos();
+              if (document.getElementById('modal-planos')?.classList.contains('active')) {
+                this.renderListaPlanosModal();
+              }
+            }
+          }
+        });
+      } catch(e) {}
+    }
+  },
+
+  async salvarPlanosNuvem() {
+    this.salvarPlanosLocal();
+    this.renderSelectPlanos();
+    if (window.FirebaseDB && window.FirebaseDB.db) {
+      try {
+        const { db, doc, setDoc } = window.FirebaseDB;
+        await setDoc(doc(db, 'config_master', 'planos'), {
+          lista: this.planos,
+          atualizadoEm: new Date().toISOString()
+        }, { merge: true });
+      } catch(e) {
+        console.log('[Firebase Master] Erro ao salvar planos na nuvem:', e);
+      }
+    }
+  },
+
+  renderSelectPlanos(selecionado = '') {
+    const select = document.getElementById('cli-plano');
+    if (!select) return;
+
+    if (!Array.isArray(this.planos) || this.planos.length === 0) {
+      this.planos = [...this.planosPadrao];
+    }
+
+    const valorAtual = selecionado || select.value;
+    select.innerHTML = '';
+
+    this.planos.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.nome;
+      opt.dataset.valor = p.valor;
+      opt.dataset.periodo = p.periodo || 'mês';
+      
+      const valorFmt = (parseFloat(p.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const periodoTexto = p.periodo ? (p.periodo.startsWith('/') ? p.periodo : `/ ${p.periodo}`) : '/ mês';
+      opt.textContent = `${p.nome} (R$ ${valorFmt} ${periodoTexto})`;
+
+      if (valorAtual && (valorAtual === p.nome || valorAtual === p.id || valorAtual.startsWith(p.nome))) {
+        opt.selected = true;
+      }
+      select.appendChild(opt);
+    });
+
+    this.atualizarValorPlano();
+  },
+
   atualizarValorPlano() {
-    const plano = document.getElementById('cli-plano').value;
+    const select = document.getElementById('cli-plano');
     const inputValor = document.getElementById('cli-valor');
-    if (plano.includes('89,90') || plano === 'Mensal Pro') inputValor.value = '89.90';
-    else if (plano.includes('69,90') || plano === 'Mensal Básico') inputValor.value = '69.90';
-    else if (plano.includes('239,70') || plano === 'Trimestral') inputValor.value = '239.70';
-    else if (plano.includes('899,00') || plano === 'Anual VIP') inputValor.value = '899.00';
+    if (!select || !inputValor) return;
+
+    const opt = select.options[select.selectedIndex];
+    if (opt && opt.dataset.valor) {
+      inputValor.value = parseFloat(opt.dataset.valor) || 89.90;
+    } else {
+      const planoNome = select.value;
+      const p = (this.planos || []).find(item => item.nome === planoNome || item.id === planoNome);
+      inputValor.value = p ? p.valor : 89.90;
+    }
+  },
+
+  abrirModalPlanos() {
+    const modal = document.getElementById('modal-planos');
+    if (!modal) return;
+    this.cancelarEdicaoPlano();
+    this.renderListaPlanosModal();
+    document.body.classList.add('modal-open');
+    modal.classList.add('active');
+  },
+
+  fecharModalPlanos() {
+    const modal = document.getElementById('modal-planos');
+    if (modal) modal.classList.remove('active');
+    if (!document.querySelector('.modal-overlay.active')) {
+      document.body.classList.remove('modal-open');
+    }
+    this.renderSelectPlanos();
+  },
+
+  renderListaPlanosModal() {
+    const container = document.getElementById('lista-planos-container');
+    if (!container) return;
+
+    if (!this.planos || this.planos.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 24px; color: var(--text-dim); font-size: 13px;">
+          Nenhum plano cadastrado. Crie um novo plano acima!
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = this.planos.map(p => {
+      const valorFmt = (parseFloat(p.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const periodoTexto = p.periodo ? (p.periodo.startsWith('/') ? p.periodo : `/ ${p.periodo}`) : '/ mês';
+      
+      return `
+        <div class="plano-card-item">
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
+            <span style="font-size: 18px; flex-shrink: 0;">🏷️</span>
+            <div style="min-width: 0; overflow: hidden;">
+              <div style="font-weight: 800; font-size: 14px; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.nome}</div>
+              <div style="font-size: 11px; color: var(--text-dim);">${p.periodo === 'mês' ? 'Mensalidade Padrão' : 'Plano Recorrente'}</div>
+            </div>
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+            <div style="text-align: right; min-width: 125px;">
+              <div style="font-size: 15px; font-weight: 900; color: var(--accent-green); font-family: 'JetBrains Mono', monospace; line-height: 1.2;">
+                R$ ${valorFmt}
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; line-height: 1.2;">
+                ${periodoTexto}
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-shrink: 0;">
+              <button type="button" class="btn-action-icon edit" onclick="MasterApp.editarPlano('${p.id}')" title="Editar Plano">
+                ✏️
+              </button>
+              <button type="button" class="btn-action-icon delete" onclick="MasterApp.excluirPlano('${p.id}')" title="Excluir Plano">
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  },
+
+  salvarPlano(e) {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+    const idInput = document.getElementById('plano-id');
+    const nomeInput = document.getElementById('plano-nome');
+    const valorInput = document.getElementById('plano-valor');
+    const periodoSelect = document.getElementById('plano-periodo');
+
+    const id = idInput ? idInput.value.trim() : '';
+    const nome = nomeInput ? nomeInput.value.trim() : '';
+    const valor = parseFloat(valorInput ? valorInput.value : 0) || 0;
+    const periodo = periodoSelect ? periodoSelect.value : 'mês';
+
+    if (!nome) {
+      this.showToast('⚠️ Informe o nome do plano!', 'error');
+      return;
+    }
+    if (valor <= 0) {
+      this.showToast('⚠️ Informe um valor válido para o plano!', 'error');
+      return;
+    }
+
+    if (id) {
+      // Editar existente
+      const idx = this.planos.findIndex(p => p.id === id);
+      if (idx >= 0) {
+        this.planos[idx] = { ...this.planos[idx], nome, valor, periodo };
+        this.showToast(`✨ Plano "${nome}" atualizado com sucesso!`, 'success');
+      }
+    } else {
+      // Criar novo
+      const novoId = 'PLN-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+      this.planos.push({
+        id: novoId,
+        nome,
+        valor,
+        periodo
+      });
+      this.showToast(`🎉 Novo plano "${nome}" criado com sucesso!`, 'success');
+    }
+
+    this.salvarPlanosNuvem();
+    this.cancelarEdicaoPlano();
+    this.renderListaPlanosModal();
+  },
+
+  editarPlano(id) {
+    const p = this.planos.find(item => item.id === id);
+    if (!p) return;
+
+    document.getElementById('plano-id').value = p.id;
+    document.getElementById('plano-nome').value = p.nome;
+    document.getElementById('plano-valor').value = p.valor;
+    document.getElementById('plano-periodo').value = p.periodo || 'mês';
+
+    document.getElementById('plano-form-title').innerHTML = '<span>✏️</span> Editar Plano: ' + p.nome;
+    document.getElementById('btn-salvar-plano').textContent = '💾 Atualizar Plano';
+    document.getElementById('btn-cancelar-edicao-plano').style.display = 'inline-block';
+    
+    document.getElementById('plano-nome').focus();
+  },
+
+  cancelarEdicaoPlano() {
+    const form = document.getElementById('form-cadastrar-plano');
+    if (form) form.reset();
+    document.getElementById('plano-id').value = '';
+    document.getElementById('plano-form-title').innerHTML = '<span>➕</span> Novo Plano';
+    document.getElementById('btn-salvar-plano').textContent = '💾 Salvar Plano';
+    document.getElementById('btn-cancelar-edicao-plano').style.display = 'none';
+  },
+
+  async excluirPlano(id) {
+    const p = this.planos.find(item => item.id === id);
+    if (!p) return;
+
+    if (this.planos.length <= 1) {
+      this.showToast('⚠️ Você precisa manter pelo menos 1 plano cadastrado no sistema.', 'warning');
+      return;
+    }
+
+    if (confirm(`Tem certeza que deseja excluir o plano "${p.nome}" (R$ ${p.valor})?`)) {
+      this.planos = this.planos.filter(item => item.id !== id);
+      await this.salvarPlanosNuvem();
+      this.cancelarEdicaoPlano();
+      this.renderListaPlanosModal();
+      this.showToast(`🗑️ Plano "${p.nome}" excluído.`, 'info');
+    }
   },
 
   showToast(mensagem, tipo = 'success') {
