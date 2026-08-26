@@ -376,22 +376,43 @@ window.MasterApp = {
 
           if (cloudClientes.length > 0) {
             const dedupMap = new Map();
+            
+            // Helper para desduplicar terminais por ID único
+            const desduplicarTerminais = (lista) => {
+              if (!Array.isArray(lista)) return [];
+              const m = new Map();
+              lista.forEach(t => {
+                if (!t) return;
+                const id = typeof t === 'string' ? t.trim() : (t.id ? String(t.id).trim() : '');
+                if (id) {
+                  const obj = typeof t === 'string' ? { id, hostname: 'Computador', ultimoAcesso: new Date().toISOString() } : t;
+                  m.set(id, obj);
+                }
+              });
+              return Array.from(m.values());
+            };
+
             for (const c of cloudClientes) {
               const docClean = (c.documento || '').replace(/\D/g, '');
               const key = docClean || c.chaveLicenca || c.id;
               const existing = dedupMap.get(key);
+              const termUnicosC = desduplicarTerminais(c.terminaisAtivos);
+
               if (!existing) {
                 dedupMap.set(key, {
                   ...c,
-                  terminaisAtivos: Array.isArray(c.terminaisAtivos) ? [...c.terminaisAtivos] : []
+                  terminaisAtivos: termUnicosC
                 });
               } else {
-                const combinedTerms = new Set([
-                  ...(Array.isArray(existing.terminaisAtivos) ? existing.terminaisAtivos : []),
-                  ...(Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos : [])
-                ]);
-                existing.terminaisAtivos = Array.from(combinedTerms);
+                // Se um dos documentos for o principal (CLI-xxx) ou tiver sido limpo/desvinculado, preferir a versão atualizada
+                if (c.id && c.id.startsWith('CLI-')) {
+                  existing.terminaisAtivos = termUnicosC;
+                } else if (termUnicosC.length === 0 && (!existing.terminaisAtivos || existing.terminaisAtivos.length === 0)) {
+                  existing.terminaisAtivos = [];
+                }
                 if (c.limiteTerminais) existing.limiteTerminais = c.limiteTerminais;
+                if (c.status) existing.status = c.status;
+                if (c.vencimento) existing.vencimento = c.vencimento;
               }
             }
             this.clientes = Array.from(dedupMap.values());
