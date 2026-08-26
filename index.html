@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>FlowPDV Master — Gestão SaaS & Licenças</title>
   <link rel="icon" type="image/png" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=1.5.1">
+  <link rel="stylesheet" href="css/style.css?v=1.5.3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -414,10 +414,10 @@
 
         <!-- Lista de Planos Ativos -->
         <div>
-          <h4 style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
-            Planos Cadastrados no Sistema
+          <h4 class="titulo-planos-cadastrados">
+            <span>📋</span> Planos Cadastrados no Sistema
           </h4>
-          <div id="lista-planos-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; overflow-x: hidden; padding-right: 4px;">
+          <div id="lista-planos-container" style="display: flex; flex-direction: column; gap: 8px;">
             <!-- Renderizado dinamicamente via JS -->
           </div>
         </div>
@@ -456,6 +456,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=1.5.1"></script>
+  <script src="js/app.js?v=1.5.3"></script>
 </body>
 </html>

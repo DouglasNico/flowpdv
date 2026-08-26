@@ -156,13 +156,24 @@ body {
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-novo-cliente:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.55);
+  background: linear-gradient(135deg, #34d399, #059669);
+  filter: brightness(1.1);
+}
+
+.btn-novo-cliente:active {
+  transform: scale(0.97);
 }
 
 .btn-planos {
@@ -195,6 +206,21 @@ body {
 
 .btn-link-planos:hover {
   color: #818cf8 !important;
+}
+
+.titulo-planos-cadastrados {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px;
+  width: 100%;
 }
 
 .plano-card-item {
