@@ -979,29 +979,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
-    gap: 8px;
-  }
-
-  .btn-logout {
-    order: 1;
-    flex: 0 0 auto;
-    justify-content: center;
-    height: 40px;
-    padding: 0 14px;
-    font-size: 12px;
+    gap: 10px;
   }
 
   #master-logged-user {
-    order: 2;
+    order: 1;
     flex: 1;
     min-width: 0;
-    justify-content: center;
-    font-size: 12px;
-    height: 40px;
-    padding: 4px 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    justify-content: flex-start;
+    font-size: 13px;
+    font-weight: 700;
+    height: 42px;
+    padding: 6px 14px;
+    border-radius: var(--radius-md);
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-color);
   }
 
   #master-user-email {
@@ -1010,11 +1002,30 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     white-space: nowrap;
   }
 
-  .btn-novo-cliente {
+  .btn-logout {
+    order: 2;
+    flex: 0 0 auto;
+    justify-content: center;
+    height: 42px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  .btn-planos {
     order: 3;
     width: 100%;
-    padding: 12px;
+    padding: 12px 18px;
     font-size: 14px;
+    font-weight: 800;
+    justify-content: center;
+  }
+
+  .btn-novo-cliente {
+    order: 4;
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 800;
     justify-content: center;
   }
 
