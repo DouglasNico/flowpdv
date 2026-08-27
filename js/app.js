@@ -1020,6 +1020,28 @@ window.MasterApp = {
     this.renderMetrics();
     this.renderTabela();
     await this.salvarDados();
+
+    // 🛡️ Registrar Log de Cortesia / Renovação de Licença no Firebase
+    if (window.FirebaseDB && window.FirebaseDB.db) {
+      try {
+        const { db, collection, addDoc } = window.FirebaseDB;
+        const tipoEvento = dias <= 15 ? 'cortesia_licenca' : 'renovacao_licenca';
+        const dataFmt = this.formatarDataExibicao(c.vencimento);
+        await addDoc(collection(db, "auditoria_lojas"), {
+          chaveLicenca: c.chaveLicenca || c.id,
+          razaoSocial: c.nome,
+          tipo: tipoEvento,
+          descricao: `Administrador concedeu +${dias} dias de ${dias <= 15 ? 'cortesia' : 'renovação'} (Novo Vencimento: ${dataFmt})`,
+          operador: 'Painel Master Admin',
+          terminalId: 'MASTER-ADMIN',
+          criadoEm: new Date().toISOString(),
+          dataHoraFormatada: new Date().toLocaleString('pt-BR')
+        });
+      } catch (errLog) {
+        console.warn('Erro ao registrar log de auditoria:', errLog);
+      }
+    }
+
     this.renderMetrics();
     this.renderTabela();
     this.showToast('🎉 +' + dias + ' dias adicionados para "' + c.nome + '"!');
@@ -1034,6 +1056,24 @@ window.MasterApp = {
     this.renderMetrics();
     this.renderTabela();
     await this.salvarDados();
+
+    // 🛡️ Registrar Log de Bloqueio/Desbloqueio no Firebase
+    if (window.FirebaseDB && window.FirebaseDB.db) {
+      try {
+        const { db, collection, addDoc } = window.FirebaseDB;
+        await addDoc(collection(db, "auditoria_lojas"), {
+          chaveLicenca: c.chaveLicenca || c.id,
+          razaoSocial: c.nome,
+          tipo: 'alteracao_status',
+          descricao: `Status da licença alterado para ${c.status.toUpperCase()} pelo Administrador`,
+          operador: 'Painel Master Admin',
+          terminalId: 'MASTER-ADMIN',
+          criadoEm: new Date().toISOString(),
+          dataHoraFormatada: new Date().toLocaleString('pt-BR')
+        });
+      } catch (errLog) {}
+    }
+
     this.renderMetrics();
     this.renderTabela();
     this.showToast('Status alterado para ' + c.status.toUpperCase());
@@ -1776,18 +1816,22 @@ window.MasterApp = {
 
   getBadgeTipoAuditoria(tipo) {
     const mapa = {
-      'exclusao_produto': { label: '🗑️ Exclusão', bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171' },
-      'cadastro_produto': { label: '➕ Cadastro', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399' },
-      'edicao_produto': { label: '✏️ Edição', bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa' },
-      'ajuste_estoque': { label: '📦 Ajuste Estoque', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24' },
-      'importacao_planilha': { label: '📊 Importação', bg: 'rgba(14, 165, 233, 0.15)', color: '#38bdf8' },
-      'fechamento_caixa': { label: '💰 Fech. Caixa', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399' },
-      'abertura_caixa': { label: '🔓 Abert. Caixa', bg: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' },
-      'sangria_caixa': { label: '💸 Sangria', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24' },
-      'cancelamento_venda': { label: '⚡ Cancelamento', bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6' }
+      'cortesia': { label: '🎁 Cortesia PDV', bg: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: 'rgba(168, 85, 247, 0.35)' },
+      'cortesia_licenca': { label: '🎁 Cortesia Licença', bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', border: 'rgba(236, 72, 153, 0.35)' },
+      'renovacao_licenca': { label: '🔄 Renovação', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
+      'alteracao_status': { label: '🔒 Status', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
+      'exclusao_produto': { label: '🗑️ Exclusão', bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: 'rgba(239, 68, 68, 0.35)' },
+      'cadastro_produto': { label: '➕ Cadastro', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
+      'edicao_produto': { label: '✏️ Edição', bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.35)' },
+      'ajuste_estoque': { label: '📦 Ajuste Estoque', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
+      'importacao_planilha': { label: '📊 Importação', bg: 'rgba(14, 165, 233, 0.15)', color: '#38bdf8', border: 'rgba(14, 165, 233, 0.35)' },
+      'fechamento_caixa': { label: '💰 Fech. Caixa', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
+      'abertura_caixa': { label: '🔓 Abert. Caixa', bg: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: 'rgba(99, 102, 241, 0.35)' },
+      'sangria_caixa': { label: '💸 Sangria', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
+      'cancelamento_venda': { label: '⚡ Cancelamento', bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', border: 'rgba(236, 72, 153, 0.35)' }
     };
-    const b = mapa[tipo] || { label: 'ℹ️ ' + (tipo || 'Evento'), bg: 'rgba(148, 163, 184, 0.15)', color: '#cbd5e1' };
-    return `<span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: ${b.bg}; color: ${b.color}; display: inline-block;">${b.label}</span>`;
+    const b = mapa[tipo] || { label: 'ℹ️ ' + (tipo || 'Evento'), bg: 'rgba(148, 163, 184, 0.15)', color: '#cbd5e1', border: 'rgba(148, 163, 184, 0.3)' };
+    return `<span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: ${b.bg}; color: ${b.color}; border: 1px solid ${b.border}; display: inline-block; white-space: nowrap;">${b.label}</span>`;
   },
 
   renderTabelaAuditoria(logs) {
@@ -1798,26 +1842,190 @@ window.MasterApp = {
     if (!tbody) return;
 
     if (!logs || logs.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #94a3b8;">Nenhum registro de auditoria encontrado para os filtros selecionados.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: #94a3b8;">Nenhum registro de auditoria encontrado para os filtros selecionados.</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = logs.map(l => {
+    const MAX_DESC = 70;
+
+    tbody.innerHTML = logs.map((l, idx) => {
       const dataHora = l.dataHoraFormatada || (l.criadoEm ? new Date(l.criadoEm).toLocaleString('pt-BR') : 'Data N/D');
       const badge = this.getBadgeTipoAuditoria(l.tipo);
+      const descFull = l.descricao || 'Sem detalhes';
+      const isTruncado = descFull.length > MAX_DESC;
+      const descExibida = isTruncado ? descFull.substring(0, MAX_DESC) + '...' : descFull;
+
+      const verMaisBtn = isTruncado
+        ? ` <button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: none; border: none; color: #38bdf8; font-size: 11px; font-weight: 800; cursor: pointer; padding: 0; text-decoration: underline; white-space: nowrap;">Ver mais</button>`
+        : '';
+
       return `
-        <tr style="border-bottom: 1px solid #334155;">
-          <td style="padding: 10px 12px; font-family: 'JetBrains Mono'; color: #cbd5e1; white-space: nowrap;">${dataHora}</td>
+        <tr style="border-bottom: 1px solid #334155; transition: background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+          <td style="padding: 10px 12px; font-family: 'JetBrains Mono'; font-size: 11.5px; color: #cbd5e1; white-space: nowrap;">${dataHora}</td>
           <td style="padding: 10px 12px;">
-            <strong style="color: #fff; display: block;">${l.razaoSocial || 'Loja'}</strong>
-            <span style="font-size: 10.5px; color: #94a3b8; font-family: 'JetBrains Mono';">${l.chaveLicenca || ''}</span>
+            <strong style="color: #fff; display: block; font-size: 12.5px;">${l.razaoSocial || 'Loja'}</strong>
+            <span style="font-size: 10px; color: #94a3b8; font-family: 'JetBrains Mono';">${l.chaveLicenca || ''}</span>
           </td>
-          <td style="padding: 10px 12px; font-weight: 700; color: #e2e8f0;">👤 ${l.operador || 'Operador'}</td>
+          <td style="padding: 10px 12px; font-weight: 700; color: #e2e8f0; font-size: 12.5px;">👤 ${l.operador || 'Operador'}</td>
           <td style="padding: 10px 12px;">${badge}</td>
-          <td style="padding: 10px 12px; color: #e2e8f0; line-height: 1.4;">${l.descricao || 'Sem detalhes'}</td>
+          <td style="padding: 10px 12px; color: #e2e8f0; line-height: 1.4; font-size: 12px; max-width: 320px;">
+            <span>${descExibida}</span>${verMaisBtn}
+          </td>
+          <td style="padding: 10px 8px; text-align: center; width: 40px;">
+            <button type="button" onclick="MasterApp.excluirLogIndividual('${l.id}')" title="Excluir este registro" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.3)'; this.style.borderColor='#f87171';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.borderColor='rgba(239,68,68,0.25)';">
+              🗑️
+            </button>
+          </td>
         </tr>
       `;
     }).join('');
+  },
+
+  // ---------------------------------------------------------------
+  // MODAL DE DETALHES DO LOG DE AUDITORIA
+  // ---------------------------------------------------------------
+  abrirModalDetalheLog(idx) {
+    const filtroLoja = document.getElementById('filtro-auditoria-loja')?.value || 'todas';
+    const filtroTipo = document.getElementById('filtro-auditoria-tipo')?.value || 'todos';
+
+    let lista = Array.isArray(this.logsAuditoria) ? [...this.logsAuditoria] : [];
+    if (filtroLoja !== 'todas') {
+      lista = lista.filter(l => (l.chaveLicenca || '').toUpperCase() === filtroLoja.toUpperCase());
+    }
+    if (filtroTipo !== 'todos') {
+      lista = lista.filter(l => l.tipo === filtroTipo);
+    }
+
+    const log = lista[idx];
+    if (!log) return;
+
+    const modal = document.getElementById('modal-detalhe-log');
+    if (!modal) return;
+
+    const dataHora = log.dataHoraFormatada || (log.criadoEm ? new Date(log.criadoEm).toLocaleString('pt-BR') : 'Data N/D');
+    const badge = this.getBadgeTipoAuditoria(log.tipo);
+
+    // Formatar detalhes extras (itens de cortesia, etc.)
+    let detalhesExtra = '';
+    if (log.detalhes && typeof log.detalhes === 'object') {
+      const det = log.detalhes;
+
+      // Se tiver lista de itens (cortesia)
+      if (Array.isArray(det.itens) && det.itens.length > 0) {
+        detalhesExtra += `
+          <div style="margin-top: 14px; background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 10px; padding: 12px;">
+            <strong style="color: #c084fc; font-size: 12px; display: block; margin-bottom: 8px;">🛒 Itens da Cortesia:</strong>
+            <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
+              <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                  <th style="text-align: left; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Produto</th>
+                  <th style="text-align: center; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Qtd</th>
+                  <th style="text-align: right; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Preço</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${det.itens.map(item => `
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 5px 8px; color: #e2e8f0; font-weight: 600;">${item.nome || 'Produto'}</td>
+                    <td style="padding: 5px 8px; text-align: center; color: #94a3b8; font-family: 'JetBrains Mono';">${item.quantidade || 1}x</td>
+                    <td style="padding: 5px 8px; text-align: right; color: #34d399; font-family: 'JetBrains Mono'; font-weight: 700;">R$ ${parseFloat(item.precoVenda || item.preco || 0).toFixed(2).replace('.', ',')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>`;
+      }
+
+      // Motivo
+      if (det.motivo) {
+        detalhesExtra += `
+          <div style="margin-top: 10px; background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 10px 12px;">
+            <strong style="color: #fbbf24; font-size: 11px;">📝 Motivo:</strong>
+            <span style="color: #e2e8f0; font-size: 12px; margin-left: 6px;">${det.motivo}</span>
+          </div>`;
+      }
+
+      // Valor original
+      if (det.valorOriginal !== undefined) {
+        detalhesExtra += `
+          <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">
+            <span style="font-size: 11px; color: #94a3b8;">💰 Valor original:</span>
+            <strong style="font-family: 'JetBrains Mono'; color: #f87171; font-size: 13px;">R$ ${parseFloat(det.valorOriginal).toFixed(2).replace('.', ',')}</strong>
+          </div>`;
+      }
+    }
+
+    document.getElementById('detalhe-log-conteudo').innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Header com badge e data -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          ${badge}
+          <span style="font-family: 'JetBrains Mono'; font-size: 12px; color: #94a3b8;">🕐 ${dataHora}</span>
+        </div>
+
+        <!-- Informações principais -->
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
+            <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Estabelecimento</span>
+            <strong style="color: #fff; font-size: 13px;">${log.razaoSocial || 'Loja'}</strong>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
+            <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Operador</span>
+            <strong style="color: #e2e8f0; font-size: 13px;">👤 ${log.operador || 'Operador'}</strong>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
+            <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Licença</span>
+            <code style="color: #818cf8; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${log.chaveLicenca || 'N/D'}</code>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
+            <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Terminal</span>
+            <code style="color: #38bdf8; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${log.terminalId || 'N/D'}</code>
+          </div>
+        </div>
+
+        <!-- Descrição completa -->
+        <div style="background: rgba(14, 165, 233, 0.04); border: 1px solid rgba(14, 165, 233, 0.15); border-radius: 10px; padding: 12px 14px;">
+          <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 6px;">📋 Descrição Completa</span>
+          <p style="color: #e2e8f0; font-size: 13px; line-height: 1.6; margin: 0; word-break: break-word;">${log.descricao || 'Sem detalhes'}</p>
+        </div>
+
+        ${detalhesExtra}
+      </div>
+    `;
+
+    modal.classList.add('active');
+  },
+
+  fecharModalDetalheLog() {
+    const modal = document.getElementById('modal-detalhe-log');
+    if (modal) modal.classList.remove('active');
+  },
+
+  // ---------------------------------------------------------------
+  // EXCLUIR LOG INDIVIDUAL
+  // ---------------------------------------------------------------
+  async excluirLogIndividual(logId) {
+    if (!logId) return;
+    if (!confirm('Deseja excluir este registro de auditoria?')) return;
+
+    try {
+      if (!window.FirebaseDB || !window.FirebaseDB.db) {
+        throw new Error('Firebase não disponível.');
+      }
+      const { db, deleteDoc, doc } = window.FirebaseDB;
+      await deleteDoc(doc(db, "auditoria_lojas", logId));
+
+      // Remover da lista local
+      if (Array.isArray(this.logsAuditoria)) {
+        this.logsAuditoria = this.logsAuditoria.filter(l => l.id !== logId);
+      }
+
+      this.filtrarLogsAuditoria();
+      this.showToast('🗑️ Registro excluído com sucesso!');
+    } catch (err) {
+      console.error('Erro ao excluir log:', err);
+      this.showToast('Erro ao excluir: ' + err.message, 'error');
+    }
   },
 
   async limparLogsAntigos() {
@@ -1874,6 +2082,9 @@ if (document.readyState === 'loading') {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' || e.key === 'Esc') {
     if (window.MasterApp) {
+      if (typeof window.MasterApp.fecharModalDetalheLog === 'function') {
+        window.MasterApp.fecharModalDetalheLog();
+      }
       if (typeof window.MasterApp.fecharModalAuditoria === 'function') {
         window.MasterApp.fecharModalAuditoria();
       }

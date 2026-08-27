@@ -279,6 +279,8 @@
               </div>
 
               <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;">
+                <button type="button" class="filter-btn" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(7)">🎁 +7 Dias Cortesia</button>
+                <button type="button" class="filter-btn" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(15)">🎁 +15 Dias Cortesia</button>
                 <button type="button" class="filter-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(30)">+30 Dias</button>
                 <button type="button" class="filter-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(60)">+60 Dias</button>
                 <button type="button" class="filter-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(90)">+90 Dias</button>
@@ -463,6 +465,8 @@
             <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Tipo de Operação:</label>
             <select id="filtro-auditoria-tipo" style="width: 100%; height: 38px; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 0 12px; color: #fff; font-size: 12px; font-weight: 600; outline: none;" onchange="MasterApp.filtrarLogsAuditoria()">
               <option value="todos">Todos os Eventos</option>
+              <option value="cortesia">🎁 Cortesias / Degustações (PDV)</option>
+              <option value="cortesia_licenca">🎁 Cortesias de Licença (Master)</option>
               <option value="exclusao_produto">🗑️ Exclusão de Produtos</option>
               <option value="cadastro_produto">➕ Cadastro de Produtos</option>
               <option value="edicao_produto">✏️ Edição de Produtos</option>
@@ -495,6 +499,7 @@
                 <th style="padding: 10px 12px; width: 140px;">Operador</th>
                 <th style="padding: 10px 12px; width: 130px;">Tipo de Ação</th>
                 <th style="padding: 10px 12px;">Descrição do Evento</th>
+                <th style="padding: 10px 8px; width: 50px; text-align: center;">🗑️</th>
               </tr>
             </thead>
             <tbody id="tabela-auditoria-tbody">
@@ -509,6 +514,24 @@
           📊 Registros exibidos: <strong id="auditoria-total-count" style="color: #38bdf8; font-family: 'JetBrains Mono';">0</strong>
         </div>
         <button type="button" class="btn-sec" onclick="MasterApp.fecharModalAuditoria()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALHES DO LOG DE AUDITORIA -->
+  <div class="modal-overlay" id="modal-detalhe-log">
+    <div class="modal-card" style="max-width: 580px; width: 95%;">
+      <div class="modal-header">
+        <h3>📋 Detalhes do Registro de Auditoria</h3>
+        <button type="button" class="btn-close" onclick="MasterApp.fecharModalDetalheLog()">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; max-height: 520px;">
+        <div id="detalhe-log-conteudo">
+          <!-- Preenchido dinamicamente via JS -->
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 12px 20px; display: flex; justify-content: flex-end;">
+        <button type="button" class="btn-sec" onclick="MasterApp.fecharModalDetalheLog()">Fechar</button>
       </div>
     </div>
   </div>
