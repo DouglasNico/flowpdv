@@ -1670,10 +1670,14 @@ window.MasterApp = {
   logsAuditoria: [],
 
   abrirModalAuditoria() {
-    const modal = document.getElementById('modal-auditoria');
-    if (modal) modal.classList.add('active');
-    this.preencherSelectLojasAuditoria();
-    this.carregarLogsAuditoria();
+    try {
+      const modal = document.getElementById('modal-auditoria');
+      if (modal) modal.classList.add('active');
+      this.preencherSelectLojasAuditoria();
+      this.carregarLogsAuditoria();
+    } catch (err) {
+      console.error('Erro ao abrir modal de auditoria:', err);
+    }
   },
 
   fecharModalAuditoria() {
@@ -1682,20 +1686,25 @@ window.MasterApp = {
   },
 
   preencherSelectLojasAuditoria() {
-    const select = document.getElementById('filtro-auditoria-loja');
-    if (!select) return;
-    const valorAtual = select.value || 'todas';
+    try {
+      const select = document.getElementById('filtro-auditoria-loja');
+      if (!select) return;
+      const valorAtual = select.value || 'todas';
 
-    let html = '<option value="todas">Todas as Lojas</option>';
-    const clientesOrdenados = [...this.clientes].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
-    clientesOrdenados.forEach(c => {
-      const nome = c.nome || c.razaoSocial || c.id;
-      const chave = c.chaveLicenca || c.id;
-      html += `<option value="${chave}">${c.icone || '🏪'} ${nome} (${chave})</option>`;
-    });
+      let html = '<option value="todas">Todas as Lojas</option>';
+      const listaClientes = Array.isArray(this.clientes) ? this.clientes : [];
+      const clientesOrdenados = [...listaClientes].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+      clientesOrdenados.forEach(c => {
+        const nome = c.nome || c.razaoSocial || c.id;
+        const chave = c.chaveLicenca || c.id;
+        html += `<option value="${chave}">${c.icone || '🏪'} ${nome} (${chave})</option>`;
+      });
 
-    select.innerHTML = html;
-    select.value = valorAtual;
+      select.innerHTML = html;
+      select.value = valorAtual;
+    } catch (err) {
+      console.error('Erro ao preencher select de lojas:', err);
+    }
   },
 
   async carregarLogsAuditoria() {
@@ -1705,23 +1714,31 @@ window.MasterApp = {
     }
 
     try {
+      if (!window.FirebaseDB || !window.FirebaseDB.db) {
+        throw new Error('Banco de dados Firebase não disponível.');
+      }
       const { db, collection, getDocs, query, orderBy, limit } = window.FirebaseDB;
       const colRef = collection(db, "auditoria_lojas");
       let snap;
 
       try {
-        const q = query(colRef, orderBy("criadoEm", "desc"), limit(150));
-        snap = await getDocs(q);
+        if (typeof query === 'function' && typeof orderBy === 'function' && typeof limit === 'function') {
+          const q = query(colRef, orderBy("criadoEm", "desc"), limit(200));
+          snap = await getDocs(q);
+        } else {
+          snap = await getDocs(colRef);
+        }
       } catch (errQ) {
-        // Fallback simples
         snap = await getDocs(colRef);
       }
 
       const lista = [];
-      snap.forEach(d => {
-        const data = d.data();
-        if (data) lista.push({ id: d.id, ...data });
-      });
+      if (snap && typeof snap.forEach === 'function') {
+        snap.forEach(d => {
+          const data = d.data();
+          if (data) lista.push({ id: d.id, ...data });
+        });
+      }
 
       // Ordenar por data decrescente
       lista.sort((a, b) => new Date(b.criadoEm || 0) - new Date(a.criadoEm || 0));
@@ -1737,20 +1754,24 @@ window.MasterApp = {
   },
 
   filtrarLogsAuditoria() {
-    const filtroLoja = document.getElementById('filtro-auditoria-loja')?.value || 'todas';
-    const filtroTipo = document.getElementById('filtro-auditoria-tipo')?.value || 'todos';
+    try {
+      const filtroLoja = document.getElementById('filtro-auditoria-loja')?.value || 'todas';
+      const filtroTipo = document.getElementById('filtro-auditoria-tipo')?.value || 'todos';
 
-    let filtrados = [...this.logsAuditoria];
+      let filtrados = Array.isArray(this.logsAuditoria) ? [...this.logsAuditoria] : [];
 
-    if (filtroLoja !== 'todas') {
-      filtrados = filtrados.filter(l => (l.chaveLicenca || '').toUpperCase() === filtroLoja.toUpperCase());
+      if (filtroLoja !== 'todas') {
+        filtrados = filtrados.filter(l => (l.chaveLicenca || '').toUpperCase() === filtroLoja.toUpperCase());
+      }
+
+      if (filtroTipo !== 'todos') {
+        filtrados = filtrados.filter(l => l.tipo === filtroTipo);
+      }
+
+      this.renderTabelaAuditoria(filtrados);
+    } catch (err) {
+      console.error('Erro ao filtrar logs:', err);
     }
-
-    if (filtroTipo !== 'todos') {
-      filtrados = filtrados.filter(l => l.tipo === filtroTipo);
-    }
-
-    this.renderTabelaAuditoria(filtrados);
   },
 
   getBadgeTipoAuditoria(tipo) {
@@ -1807,8 +1828,16 @@ if (document.readyState === 'loading') {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' || e.key === 'Esc') {
-    if (window.MasterApp && typeof window.MasterApp.fecharModalCliente === 'function') {
-      window.MasterApp.fecharModalCliente();
+    if (window.MasterApp) {
+      if (typeof window.MasterApp.fecharModalAuditoria === 'function') {
+        window.MasterApp.fecharModalAuditoria();
+      }
+      if (typeof window.MasterApp.fecharModalCliente === 'function') {
+        window.MasterApp.fecharModalCliente();
+      }
+      if (typeof window.MasterApp.fecharModalPlanos === 'function') {
+        window.MasterApp.fecharModalPlanos();
+      }
     }
   }
 });

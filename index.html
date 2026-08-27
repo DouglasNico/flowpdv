@@ -430,9 +430,11 @@
         <button type="button" class="btn-sec" onclick="MasterApp.fecharModalPlanos()">Fechar</button>
       </div>
     </div>
+  </div>
+
   <!-- MODAL: AUDITORIA & LOGS EM TEMPO REAL -->
-  <div class="modal-overlay" id="modal-auditoria">
-    <div class="modal-card" style="max-width: 960px; width: 95%;">
+  <div class="modal-overlay" id="modal-auditoria" onclick="if(event.target === this) MasterApp.fecharModalAuditoria()">
+    <div class="modal-card" style="max-width: 980px; width: 95%; max-height: 90vh;">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 22px;">📋</span>
@@ -444,7 +446,7 @@
         <button type="button" class="btn-close" onclick="MasterApp.fecharModalAuditoria()">✕</button>
       </div>
 
-      <div class="modal-body" style="padding: 16px 20px;">
+      <div class="modal-body" style="padding: 16px 20px; overflow-y: auto;">
         <!-- Filtros Rápidos -->
         <div style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;">
           <div style="flex: 1; min-width: 200px;">
@@ -478,14 +480,14 @@
         </div>
 
         <!-- Tabela de Logs -->
-        <div style="max-height: 440px; overflow-y: auto; border: 1px solid #334155; border-radius: 10px;">
-          <table class="master-table" style="font-size: 12px; margin: 0;">
+        <div style="max-height: 480px; overflow-y: auto; border: 1px solid #334155; border-radius: 10px;">
+          <table class="master-table" style="font-size: 12px; margin: 0; width: 100%;">
             <thead>
               <tr style="position: sticky; top: 0; background: #0f172a; z-index: 2;">
-                <th style="padding: 10px 12px;">Data / Hora</th>
-                <th style="padding: 10px 12px;">Loja / Licença</th>
-                <th style="padding: 10px 12px;">Operador</th>
-                <th style="padding: 10px 12px;">Tipo de Ação</th>
+                <th style="padding: 10px 12px; width: 150px;">Data / Hora</th>
+                <th style="padding: 10px 12px; width: 190px;">Loja / Licença</th>
+                <th style="padding: 10px 12px; width: 140px;">Operador</th>
+                <th style="padding: 10px 12px; width: 130px;">Tipo de Ação</th>
                 <th style="padding: 10px 12px;">Descrição do Evento</th>
               </tr>
             </thead>
@@ -494,6 +496,10 @@
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div class="modal-footer" style="padding: 12px 24px;">
+        <button type="button" class="btn-sec" onclick="MasterApp.fecharModalAuditoria()">Fechar</button>
       </div>
     </div>
   </div>
@@ -525,6 +531,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=1.5.6"></script>
+  <script src="js/app.js?v=1.5.8"></script>
 </body>
 </html>
