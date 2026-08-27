@@ -1756,6 +1756,9 @@ window.MasterApp = {
   getBadgeTipoAuditoria(tipo) {
     const mapa = {
       'exclusao_produto': { label: '🗑️ Exclusão', bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171' },
+      'cadastro_produto': { label: '➕ Cadastro', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399' },
+      'edicao_produto': { label: '✏️ Edição', bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa' },
+      'ajuste_estoque': { label: '📦 Ajuste Estoque', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24' },
       'importacao_planilha': { label: '📊 Importação', bg: 'rgba(14, 165, 233, 0.15)', color: '#38bdf8' },
       'fechamento_caixa': { label: '💰 Fech. Caixa', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399' },
       'abertura_caixa': { label: '🔓 Abert. Caixa', bg: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' },
