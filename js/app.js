@@ -1858,12 +1858,7 @@ window.MasterApp = {
       if (l.tipo === 'cortesia') {
         conteudoDescricao = `<button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 11px; font-weight: 700; cursor: pointer; padding: 4px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(56,189,248,0.12)'; this.style.transform='none'">🔍 Ver detalhes</button>`;
       } else {
-        const isTruncado = descFull.length > MAX_DESC;
-        const descExibida = isTruncado ? descFull.substring(0, MAX_DESC) + '...' : descFull;
-        const verBtn = (isTruncado || (l.detalhes && Object.keys(l.detalhes).length > 0))
-          ? ` <button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 10.5px; font-weight: 700; cursor: pointer; padding: 2px 8px; border-radius: 5px; white-space: nowrap; margin-left: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'" onmouseout="this.style.background='rgba(56,189,248,0.12)'">Ver detalhes</button>`
-          : '';
-        conteudoDescricao = `<span>${descExibida}</span>${verBtn}`;
+        conteudoDescricao = `<span>${descFull}</span>`;
       }
 
       return `
@@ -2128,19 +2123,39 @@ if (document.readyState === 'loading') {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' || e.key === 'Esc') {
-    if (window.MasterApp) {
-      if (typeof window.MasterApp.fecharModalDetalheLog === 'function') {
+    // 1. Se o modal de detalhes estiver aberto, fecha APENAS ele
+    const modalDetalhe = document.getElementById('modal-detalhe-log');
+    if (modalDetalhe && modalDetalhe.classList.contains('active')) {
+      if (window.MasterApp && typeof window.MasterApp.fecharModalDetalheLog === 'function') {
         window.MasterApp.fecharModalDetalheLog();
       }
-      if (typeof window.MasterApp.fecharModalAuditoria === 'function') {
+      return;
+    }
+
+    // 2. Se o modal de auditoria estiver aberto, fecha ele
+    const modalAuditoria = document.getElementById('modal-auditoria');
+    if (modalAuditoria && modalAuditoria.classList.contains('active')) {
+      if (window.MasterApp && typeof window.MasterApp.fecharModalAuditoria === 'function') {
         window.MasterApp.fecharModalAuditoria();
       }
-      if (typeof window.MasterApp.fecharModalCliente === 'function') {
+      return;
+    }
+
+    // 3. Demais modais
+    const modalCliente = document.getElementById('modal-cliente');
+    if (modalCliente && modalCliente.classList.contains('active')) {
+      if (window.MasterApp && typeof window.MasterApp.fecharModalCliente === 'function') {
         window.MasterApp.fecharModalCliente();
       }
-      if (typeof window.MasterApp.fecharModalPlanos === 'function') {
+      return;
+    }
+
+    const modalPlanos = document.getElementById('modal-planos');
+    if (modalPlanos && modalPlanos.classList.contains('active')) {
+      if (window.MasterApp && typeof window.MasterApp.fecharModalPlanos === 'function') {
         window.MasterApp.fecharModalPlanos();
       }
+      return;
     }
   }
 });
