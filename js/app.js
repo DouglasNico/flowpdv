@@ -1852,19 +1852,19 @@ window.MasterApp = {
       const dataHora = l.dataHoraFormatada || (l.criadoEm ? new Date(l.criadoEm).toLocaleString('pt-BR') : 'Data N/D');
       const badge = this.getBadgeTipoAuditoria(l.tipo);
       const descFull = l.descricao || 'Sem detalhes';
-      // Para cortesias, mostrar o motivo ao invés da descrição bruta
-      let descExibida = '';
-      if (l.tipo === 'cortesia' && l.detalhes && l.detalhes.motivo) {
-        descExibida = `<span style="color: #fbbf24; font-weight: 700;">📝</span> ${l.detalhes.motivo}`;
+      
+      // Conteúdo da descrição / botão
+      let conteudoDescricao = '';
+      if (l.tipo === 'cortesia') {
+        conteudoDescricao = `<button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 11px; font-weight: 700; cursor: pointer; padding: 4px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(56,189,248,0.12)'; this.style.transform='none'">🔍 Ver detalhes</button>`;
       } else {
         const isTruncado = descFull.length > MAX_DESC;
-        descExibida = isTruncado ? descFull.substring(0, MAX_DESC) + '...' : descFull;
+        const descExibida = isTruncado ? descFull.substring(0, MAX_DESC) + '...' : descFull;
+        const verBtn = (isTruncado || (l.detalhes && Object.keys(l.detalhes).length > 0))
+          ? ` <button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 10.5px; font-weight: 700; cursor: pointer; padding: 2px 8px; border-radius: 5px; white-space: nowrap; margin-left: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'" onmouseout="this.style.background='rgba(56,189,248,0.12)'">Ver detalhes</button>`
+          : '';
+        conteudoDescricao = `<span>${descExibida}</span>${verBtn}`;
       }
-
-      const temDetalhes = (l.tipo === 'cortesia' && l.detalhes) || descFull.length > MAX_DESC;
-      const verMaisBtn = temDetalhes
-        ? ` <button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; font-size: 10px; font-weight: 800; cursor: pointer; padding: 2px 8px; border-radius: 4px; white-space: nowrap; transition: all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'" onmouseout="this.style.background='rgba(56,189,248,0.1)'">Ver mais</button>`
-        : '';
 
       return `
         <tr style="border-bottom: 1px solid #334155; transition: background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
@@ -1876,7 +1876,7 @@ window.MasterApp = {
           <td style="padding: 10px 12px; font-weight: 700; color: #e2e8f0; font-size: 12.5px;">👤 ${l.operador || 'Operador'}</td>
           <td style="padding: 10px 12px;">${badge}</td>
           <td style="padding: 10px 12px; color: #e2e8f0; line-height: 1.4; font-size: 12px; max-width: 320px;">
-            <span>${descExibida}</span> ${verMaisBtn}
+            ${conteudoDescricao}
           </td>
           <td style="padding: 10px 8px; text-align: center; width: 40px;">
             <button type="button" onclick="MasterApp.excluirLogIndividual('${l.id}')" title="Excluir este registro" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.3)'; this.style.borderColor='#f87171';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.borderColor='rgba(239,68,68,0.25)';">
@@ -1886,6 +1886,33 @@ window.MasterApp = {
         </tr>
       `;
     }).join('');
+  },
+
+  // ---------------------------------------------------------------
+  // RESOLVER HOSTNAME DO COMPUTADOR
+  // ---------------------------------------------------------------
+  resolverHostnameLog(log) {
+    if (!log) return 'Computador';
+    if (log.hostname && log.hostname !== 'Computador' && !log.hostname.startsWith('TERM-')) {
+      return log.hostname;
+    }
+    // Tenta encontrar o hostname a partir dos terminais cadastrados na licença
+    if (log.chaveLicenca && Array.isArray(this.clientes)) {
+      const cli = this.clientes.find(c => c && (
+        (c.chaveLicenca && c.chaveLicenca.toUpperCase() === log.chaveLicenca.toUpperCase()) ||
+        (c.documento && c.documento.replace(/\D/g, '') === (log.chaveLicenca || '').replace(/\D/g, ''))
+      ));
+      if (cli && Array.isArray(cli.terminaisAtivos)) {
+        const t = cli.terminaisAtivos.find(term => {
+          const id = typeof term === 'string' ? term : (term.id || term.deviceId);
+          return id === log.terminalId;
+        });
+        if (t && typeof t === 'object' && t.hostname) {
+          return t.hostname;
+        }
+      }
+    }
+    return log.hostname || log.terminalId || 'Computador';
   },
 
   // ---------------------------------------------------------------
@@ -1911,6 +1938,7 @@ window.MasterApp = {
 
     const dataHora = log.dataHoraFormatada || (log.criadoEm ? new Date(log.criadoEm).toLocaleString('pt-BR') : 'Data N/D');
     const badge = this.getBadgeTipoAuditoria(log.tipo);
+    const hostnameResolvido = this.resolverHostnameLog(log);
 
     // Formatar detalhes extras (itens de cortesia, etc.)
     let detalhesExtra = '';
@@ -1997,7 +2025,7 @@ window.MasterApp = {
           </div>
           <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
             <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Computador</span>
-            <code style="color: #38bdf8; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${log.hostname || log.terminalId || 'N/D'}</code>
+            <code style="color: #38bdf8; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${hostnameResolvido}</code>
           </div>
         </div>
 
@@ -2007,11 +2035,17 @@ window.MasterApp = {
     `;
 
     modal.classList.add('active');
+    const modalBody = modal.querySelector('.modal-body');
+    if (modalBody) modalBody.scrollTop = 0;
   },
 
   fecharModalDetalheLog() {
     const modal = document.getElementById('modal-detalhe-log');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      const modalBody = modal.querySelector('.modal-body');
+      if (modalBody) modalBody.scrollTop = 0;
+    }
   },
 
   // ---------------------------------------------------------------

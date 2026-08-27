@@ -520,12 +520,12 @@
 
   <!-- MODAL: DETALHES DO LOG DE AUDITORIA -->
   <div class="modal-overlay" id="modal-detalhe-log">
-    <div class="modal-card" style="max-width: 580px; width: 95%;">
+    <div class="modal-card" style="max-width: 580px; width: 95%; height: auto; max-height: 85vh; margin: auto;">
       <div class="modal-header">
         <h3>📋 Detalhes do Registro de Auditoria</h3>
         <button type="button" class="btn-close" onclick="MasterApp.fecharModalDetalheLog()">✕</button>
       </div>
-      <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; max-height: 520px;">
+      <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; flex: 1 1 auto; max-height: calc(85vh - 70px);">
         <div id="detalhe-log-conteudo">
           <!-- Preenchido dinamicamente via JS -->
         </div>
