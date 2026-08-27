@@ -1662,6 +1662,135 @@ window.MasterApp = {
       this.showToast('📋 Chave copiada: ' + texto, 'success');
     } catch (err) {}
     document.body.removeChild(tempInput);
+  },
+
+  // ==========================================
+  // GESTÃO DE AUDITORIA & LOGS EM TEMPO REAL
+  // ==========================================
+  logsAuditoria: [],
+
+  abrirModalAuditoria() {
+    const modal = document.getElementById('modal-auditoria');
+    if (modal) modal.classList.add('active');
+    this.preencherSelectLojasAuditoria();
+    this.carregarLogsAuditoria();
+  },
+
+  fecharModalAuditoria() {
+    const modal = document.getElementById('modal-auditoria');
+    if (modal) modal.classList.remove('active');
+  },
+
+  preencherSelectLojasAuditoria() {
+    const select = document.getElementById('filtro-auditoria-loja');
+    if (!select) return;
+    const valorAtual = select.value || 'todas';
+
+    let html = '<option value="todas">Todas as Lojas</option>';
+    const clientesOrdenados = [...this.clientes].sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+    clientesOrdenados.forEach(c => {
+      const nome = c.nome || c.razaoSocial || c.id;
+      const chave = c.chaveLicenca || c.id;
+      html += `<option value="${chave}">${c.icone || '🏪'} ${nome} (${chave})</option>`;
+    });
+
+    select.innerHTML = html;
+    select.value = valorAtual;
+  },
+
+  async carregarLogsAuditoria() {
+    const tbody = document.getElementById('tabela-auditoria-tbody');
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #94a3b8;">⏳ Carregando histórico de auditoria...</td></tr>`;
+    }
+
+    try {
+      const { db, collection, getDocs, query, orderBy, limit } = window.FirebaseDB;
+      const colRef = collection(db, "auditoria_lojas");
+      let snap;
+
+      try {
+        const q = query(colRef, orderBy("criadoEm", "desc"), limit(150));
+        snap = await getDocs(q);
+      } catch (errQ) {
+        // Fallback simples
+        snap = await getDocs(colRef);
+      }
+
+      const lista = [];
+      snap.forEach(d => {
+        const data = d.data();
+        if (data) lista.push({ id: d.id, ...data });
+      });
+
+      // Ordenar por data decrescente
+      lista.sort((a, b) => new Date(b.criadoEm || 0) - new Date(a.criadoEm || 0));
+      this.logsAuditoria = lista;
+
+      this.filtrarLogsAuditoria();
+    } catch (err) {
+      console.error('Erro ao carregar auditoria:', err);
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #ef4444;">Erro ao carregar logs de auditoria: ${err.message}</td></tr>`;
+      }
+    }
+  },
+
+  filtrarLogsAuditoria() {
+    const filtroLoja = document.getElementById('filtro-auditoria-loja')?.value || 'todas';
+    const filtroTipo = document.getElementById('filtro-auditoria-tipo')?.value || 'todos';
+
+    let filtrados = [...this.logsAuditoria];
+
+    if (filtroLoja !== 'todas') {
+      filtrados = filtrados.filter(l => (l.chaveLicenca || '').toUpperCase() === filtroLoja.toUpperCase());
+    }
+
+    if (filtroTipo !== 'todos') {
+      filtrados = filtrados.filter(l => l.tipo === filtroTipo);
+    }
+
+    this.renderTabelaAuditoria(filtrados);
+  },
+
+  getBadgeTipoAuditoria(tipo) {
+    const mapa = {
+      'exclusao_produto': { label: '🗑️ Exclusão', bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171' },
+      'importacao_planilha': { label: '📊 Importação', bg: 'rgba(14, 165, 233, 0.15)', color: '#38bdf8' },
+      'fechamento_caixa': { label: '💰 Fech. Caixa', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399' },
+      'abertura_caixa': { label: '🔓 Abert. Caixa', bg: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' },
+      'sangria_caixa': { label: '💸 Sangria', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24' },
+      'cancelamento_venda': { label: '⚡ Cancelamento', bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6' }
+    };
+    const b = mapa[tipo] || { label: 'ℹ️ ' + (tipo || 'Evento'), bg: 'rgba(148, 163, 184, 0.15)', color: '#cbd5e1' };
+    return `<span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: ${b.bg}; color: ${b.color}; display: inline-block;">${b.label}</span>`;
+  },
+
+  renderTabelaAuditoria(logs) {
+    const tbody = document.getElementById('tabela-auditoria-tbody');
+    if (!tbody) return;
+
+    if (!logs || logs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #94a3b8;">Nenhum registro de auditoria encontrado para os filtros selecionados.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = logs.map(l => {
+      const dataHora = l.dataHoraFormatada || (l.criadoEm ? new Date(l.criadoEm).toLocaleString('pt-BR') : 'Data N/D');
+      const badge = this.getBadgeTipoAuditoria(l.tipo);
+      return `
+        <tr style="border-bottom: 1px solid #334155;">
+          <td style="padding: 10px 12px; font-family: 'JetBrains Mono'; color: #cbd5e1; white-space: nowrap;">${dataHora}</td>
+          <td style="padding: 10px 12px;">
+            <strong style="color: #fff; display: block;">${l.razaoSocial || 'Loja'}</strong>
+            <span style="font-size: 10.5px; color: #94a3b8; font-family: 'JetBrains Mono';">${l.chaveLicenca || ''}</span>
+          </td>
+          <td style="padding: 10px 12px; font-weight: 700; color: #e2e8f0;">👤 ${l.operador || 'Operador'}</td>
+          <td style="padding: 10px 12px;">${badge}</td>
+          <td style="padding: 10px 12px; color: #e2e8f0; line-height: 1.4;">${l.descricao || 'Sem detalhes'}</td>
+        </tr>
+      `;
+    }).join('');
   }
 };
 

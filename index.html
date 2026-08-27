@@ -69,6 +69,9 @@
           <span>👤</span>
           <span id="master-user-email">admin@flowpdv.com</span>
         </div>
+        <button type="button" class="btn-planos" style="background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.3); color: #38bdf8;" onclick="MasterApp.abrirModalAuditoria()">
+          <span>📋 Logs de Auditoria</span>
+        </button>
         <button type="button" class="btn-planos" onclick="MasterApp.abrirModalPlanos()">
           <span>📦 Planos & Mensalidades</span>
         </button>
@@ -427,12 +430,75 @@
         <button type="button" class="btn-sec" onclick="MasterApp.fecharModalPlanos()">Fechar</button>
       </div>
     </div>
+  <!-- MODAL: AUDITORIA & LOGS EM TEMPO REAL -->
+  <div class="modal-overlay" id="modal-auditoria">
+    <div class="modal-card" style="max-width: 960px; width: 95%;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 22px;">📋</span>
+          <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #fff;">Logs de Auditoria & Atividades das Lojas</h3>
+            <span style="font-size: 11px; color: #94a3b8;">Acompanhe exclusões, cancelamentos, fechamentos de caixa e importações em tempo real</span>
+          </div>
+        </div>
+        <button type="button" class="btn-close" onclick="MasterApp.fecharModalAuditoria()">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding: 16px 20px;">
+        <!-- Filtros Rápidos -->
+        <div style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;">
+          <div style="flex: 1; min-width: 200px;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase;">Filtrar por Estabelecimento:</label>
+            <select id="filtro-auditoria-loja" style="width: 100%; height: 38px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 0 12px; color: #fff; font-size: 12px; font-weight: 600; outline: none;" onchange="MasterApp.filtrarLogsAuditoria()">
+              <option value="todas">Todas as Lojas</option>
+            </select>
+          </div>
+
+          <div style="flex: 1; min-width: 180px;">
+            <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase;">Tipo de Operação:</label>
+            <select id="filtro-auditoria-tipo" style="width: 100%; height: 38px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 0 12px; color: #fff; font-size: 12px; font-weight: 600; outline: none;" onchange="MasterApp.filtrarLogsAuditoria()">
+              <option value="todos">Todos os Eventos</option>
+              <option value="exclusao_produto">🗑️ Exclusão de Produtos</option>
+              <option value="importacao_planilha">📊 Importação de Planilha</option>
+              <option value="fechamento_caixa">💰 Fechamento de Caixa</option>
+              <option value="abertura_caixa">🔓 Abertura de Caixa</option>
+              <option value="sangria_caixa">💸 Sangria de Caixa</option>
+              <option value="cancelamento_venda">⚡ Cancelamento de Venda</option>
+            </select>
+          </div>
+
+          <div style="display: flex; align-items: flex-end;">
+            <button type="button" class="filter-btn" style="height: 38px; background: #1e293b; color: #38bdf8; border: 1px solid #334155; border-radius: 8px; font-weight: 700; padding: 0 14px;" onclick="MasterApp.carregarLogsAuditoria()">
+              🔄 Atualizar
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabela de Logs -->
+        <div style="max-height: 440px; overflow-y: auto; border: 1px solid #334155; border-radius: 10px;">
+          <table class="master-table" style="font-size: 12px; margin: 0;">
+            <thead>
+              <tr style="position: sticky; top: 0; background: #0f172a; z-index: 2;">
+                <th style="padding: 10px 12px;">Data / Hora</th>
+                <th style="padding: 10px 12px;">Loja / Licença</th>
+                <th style="padding: 10px 12px;">Operador</th>
+                <th style="padding: 10px 12px;">Tipo de Ação</th>
+                <th style="padding: 10px 12px;">Descrição do Evento</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-auditoria-tbody">
+              <!-- Renderizado dinamicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Firebase JS SDK v11 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, collection, doc, getDoc, setDoc, getDocs, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, getDoc, setDoc, getDocs, onSnapshot, deleteDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -449,13 +515,13 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    window.FirebaseDB = { db, collection, doc, getDoc, setDoc, getDocs, onSnapshot, deleteDoc };
+    window.FirebaseDB = { db, collection, doc, getDoc, setDoc, getDocs, onSnapshot, deleteDoc, query, orderBy, limit };
     window.FirebaseAuth = { auth, signInWithEmailAndPassword, signOut, onAuthStateChanged };
 
     if (window.MasterApp && typeof window.MasterApp.onFirebaseReady === 'function') {
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=1.5.5"></script>
+  <script src="js/app.js?v=1.5.6"></script>
 </body>
 </html>
