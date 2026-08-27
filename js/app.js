@@ -1852,11 +1852,18 @@ window.MasterApp = {
       const dataHora = l.dataHoraFormatada || (l.criadoEm ? new Date(l.criadoEm).toLocaleString('pt-BR') : 'Data N/D');
       const badge = this.getBadgeTipoAuditoria(l.tipo);
       const descFull = l.descricao || 'Sem detalhes';
-      const isTruncado = descFull.length > MAX_DESC;
-      const descExibida = isTruncado ? descFull.substring(0, MAX_DESC) + '...' : descFull;
+      // Para cortesias, mostrar o motivo ao invés da descrição bruta
+      let descExibida = '';
+      if (l.tipo === 'cortesia' && l.detalhes && l.detalhes.motivo) {
+        descExibida = `<span style="color: #fbbf24; font-weight: 700;">📝</span> ${l.detalhes.motivo}`;
+      } else {
+        const isTruncado = descFull.length > MAX_DESC;
+        descExibida = isTruncado ? descFull.substring(0, MAX_DESC) + '...' : descFull;
+      }
 
-      const verMaisBtn = isTruncado
-        ? ` <button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: none; border: none; color: #38bdf8; font-size: 11px; font-weight: 800; cursor: pointer; padding: 0; text-decoration: underline; white-space: nowrap;">Ver mais</button>`
+      const temDetalhes = (l.tipo === 'cortesia' && l.detalhes) || descFull.length > MAX_DESC;
+      const verMaisBtn = temDetalhes
+        ? ` <button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; font-size: 10px; font-weight: 800; cursor: pointer; padding: 2px 8px; border-radius: 4px; white-space: nowrap; transition: all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'" onmouseout="this.style.background='rgba(56,189,248,0.1)'">Ver mais</button>`
         : '';
 
       return `
@@ -1869,7 +1876,7 @@ window.MasterApp = {
           <td style="padding: 10px 12px; font-weight: 700; color: #e2e8f0; font-size: 12.5px;">👤 ${l.operador || 'Operador'}</td>
           <td style="padding: 10px 12px;">${badge}</td>
           <td style="padding: 10px 12px; color: #e2e8f0; line-height: 1.4; font-size: 12px; max-width: 320px;">
-            <span>${descExibida}</span>${verMaisBtn}
+            <span>${descExibida}</span> ${verMaisBtn}
           </td>
           <td style="padding: 10px 8px; text-align: center; width: 40px;">
             <button type="button" onclick="MasterApp.excluirLogIndividual('${l.id}')" title="Excluir este registro" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.3)'; this.style.borderColor='#f87171';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.borderColor='rgba(239,68,68,0.25)';">
@@ -1989,8 +1996,8 @@ window.MasterApp = {
             <code style="color: #818cf8; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${log.chaveLicenca || 'N/D'}</code>
           </div>
           <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
-            <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Terminal</span>
-            <code style="color: #38bdf8; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${log.terminalId || 'N/D'}</code>
+            <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Computador</span>
+            <code style="color: #38bdf8; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${log.hostname || log.terminalId || 'N/D'}</code>
           </div>
         </div>
 
