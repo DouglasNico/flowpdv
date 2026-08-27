@@ -1213,36 +1213,37 @@ input[type="date"]::-webkit-calendar-picker-indicator {
    ========================================================================== */
 .btn-atualizar-auditoria {
   height: 38px;
-  background: linear-gradient(135deg, #0284c7, #0369a1);
-  color: #ffffff;
-  border: 1px solid #38bdf8;
+  box-sizing: border-box;
+  background: rgba(14, 165, 233, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.3);
   border-radius: 8px;
   font-size: 12px;
-  font-weight: 800;
-  padding: 0 16px;
+  font-weight: 700;
+  padding: 0 14px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-atualizar-auditoria:hover {
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  border-color: #7dd3fc;
-  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.5);
-  transform: translateY(-2px);
-  color: #0f172a;
+  background: rgba(14, 165, 233, 0.25);
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .btn-atualizar-auditoria:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
 }
 
 .btn-limpar-auditoria {
   height: 38px;
+  box-sizing: border-box;
   background: rgba(239, 68, 68, 0.12);
   color: #f87171;
   border: 1px solid rgba(239, 68, 68, 0.3);
@@ -1253,8 +1254,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-limpar-auditoria:hover {
@@ -1262,4 +1265,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-color: #ef4444;
   color: #ffffff;
   transform: translateY(-1px);
+}
+
+.btn-limpar-auditoria:active {
+  transform: translateY(0);
 }
