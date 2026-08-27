@@ -1910,53 +1910,64 @@ window.MasterApp = {
     if (log.detalhes && typeof log.detalhes === 'object') {
       const det = log.detalhes;
 
+      // Motivo da cortesia
+      const motivoTexto = det.motivo || '';
+      if (motivoTexto) {
+        detalhesExtra += `
+          <div style="background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 10px 12px;">
+            <strong style="color: #fbbf24; font-size: 11px;">📝 Motivo da Cortesia:</strong>
+            <span style="color: #e2e8f0; font-size: 13px; margin-left: 6px; font-weight: 600;">${motivoTexto}</span>
+          </div>`;
+      }
+
       // Se tiver lista de itens (cortesia)
       if (Array.isArray(det.itens) && det.itens.length > 0) {
         detalhesExtra += `
-          <div style="margin-top: 14px; background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 10px; padding: 12px;">
-            <strong style="color: #c084fc; font-size: 12px; display: block; margin-bottom: 8px;">🛒 Itens da Cortesia:</strong>
+          <div style="background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 10px; padding: 12px;">
+            <strong style="color: #c084fc; font-size: 12px; display: block; margin-bottom: 8px;">🛒 Itens da Cortesia (${det.itens.length}):</strong>
             <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
               <thead>
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                   <th style="text-align: left; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Produto</th>
                   <th style="text-align: center; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Qtd</th>
-                  <th style="text-align: right; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Preço</th>
+                  <th style="text-align: right; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Preço Un.</th>
                 </tr>
               </thead>
               <tbody>
-                ${det.itens.map(item => `
+                ${det.itens.map(item => {
+                  const preco = parseFloat(item.precoVenda || item.preco || item.valor || item.precoUnitario || 0);
+                  return `
                   <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                     <td style="padding: 5px 8px; color: #e2e8f0; font-weight: 600;">${item.nome || 'Produto'}</td>
                     <td style="padding: 5px 8px; text-align: center; color: #94a3b8; font-family: 'JetBrains Mono';">${item.quantidade || 1}x</td>
-                    <td style="padding: 5px 8px; text-align: right; color: #34d399; font-family: 'JetBrains Mono'; font-weight: 700;">R$ ${parseFloat(item.precoVenda || item.preco || 0).toFixed(2).replace('.', ',')}</td>
-                  </tr>
-                `).join('')}
+                    <td style="padding: 5px 8px; text-align: right; color: #34d399; font-family: 'JetBrains Mono'; font-weight: 700;">R$ ${preco.toFixed(2).replace('.', ',')}</td>
+                  </tr>`;
+                }).join('')}
               </tbody>
             </table>
           </div>`;
       }
 
-      // Motivo
-      if (det.motivo) {
-        detalhesExtra += `
-          <div style="margin-top: 10px; background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 10px 12px;">
-            <strong style="color: #fbbf24; font-size: 11px;">📝 Motivo:</strong>
-            <span style="color: #e2e8f0; font-size: 12px; margin-left: 6px;">${det.motivo}</span>
-          </div>`;
-      }
-
-      // Valor original
+      // Valor total original
       if (det.valorOriginal !== undefined) {
         detalhesExtra += `
-          <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">
-            <span style="font-size: 11px; color: #94a3b8;">💰 Valor original:</span>
-            <strong style="font-family: 'JetBrains Mono'; color: #f87171; font-size: 13px;">R$ ${parseFloat(det.valorOriginal).toFixed(2).replace('.', ',')}</strong>
+          <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px;">
+            <span style="font-size: 12px; color: #94a3b8;">💰 Total da cortesia:</span>
+            <strong style="font-family: 'JetBrains Mono'; color: #f87171; font-size: 15px;">R$ ${parseFloat(det.valorOriginal).toFixed(2).replace('.', ',')}</strong>
           </div>`;
       }
     }
 
+    // Para logs que NÃO são cortesia, mostrar a descrição normal
+    const isCortesia = log.tipo === 'cortesia' && log.detalhes && (log.detalhes.motivo || (Array.isArray(log.detalhes.itens) && log.detalhes.itens.length > 0));
+    const descricaoBloco = isCortesia ? '' : `
+        <div style="background: rgba(14, 165, 233, 0.04); border: 1px solid rgba(14, 165, 233, 0.15); border-radius: 10px; padding: 12px 14px;">
+          <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 6px;">📋 Descrição</span>
+          <p style="color: #e2e8f0; font-size: 13px; line-height: 1.6; margin: 0; word-break: break-word;">${log.descricao || 'Sem detalhes'}</p>
+        </div>`;
+
     document.getElementById('detalhe-log-conteudo').innerHTML = `
-      <div style="display: flex; flex-direction: column; gap: 14px;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
         <!-- Header com badge e data -->
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           ${badge}
@@ -1983,12 +1994,7 @@ window.MasterApp = {
           </div>
         </div>
 
-        <!-- Descrição completa -->
-        <div style="background: rgba(14, 165, 233, 0.04); border: 1px solid rgba(14, 165, 233, 0.15); border-radius: 10px; padding: 12px 14px;">
-          <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 6px;">📋 Descrição Completa</span>
-          <p style="color: #e2e8f0; font-size: 13px; line-height: 1.6; margin: 0; word-break: break-word;">${log.descricao || 'Sem detalhes'}</p>
-        </div>
-
+        ${descricaoBloco}
         ${detalhesExtra}
       </div>
     `;
