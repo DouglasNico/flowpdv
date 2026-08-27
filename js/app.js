@@ -1792,6 +1792,9 @@ window.MasterApp = {
 
   renderTabelaAuditoria(logs) {
     const tbody = document.getElementById('tabela-auditoria-tbody');
+    const countEl = document.getElementById('auditoria-total-count');
+    if (countEl) countEl.textContent = logs ? logs.length : 0;
+
     if (!tbody) return;
 
     if (!logs || logs.length === 0) {
@@ -1815,6 +1818,48 @@ window.MasterApp = {
         </tr>
       `;
     }).join('');
+  },
+
+  async limparLogsAntigos() {
+    if (!confirm('Deseja excluir do Firebase todos os logs de auditoria com mais de 30 dias?\n\nIsso libera espaço no banco e mantém apenas o histórico do último mês.')) {
+      return;
+    }
+
+    try {
+      if (!window.FirebaseDB || !window.FirebaseDB.db) {
+        throw new Error('Banco de dados Firebase não disponível.');
+      }
+      const { db, collection, getDocs, deleteDoc, doc } = window.FirebaseDB;
+      const limiteData = new Date();
+      limiteData.setDate(limiteData.getDate() - 30);
+      const limiteIso = limiteData.toISOString();
+
+      const colRef = collection(db, "auditoria_lojas");
+      const snap = await getDocs(colRef);
+
+      let apagados = 0;
+      const promessas = [];
+
+      snap.forEach(d => {
+        const data = d.data();
+        if (data && data.criadoEm && data.criadoEm < limiteIso) {
+          promessas.push(deleteDoc(doc(db, "auditoria_lojas", d.id)));
+          apagados++;
+        }
+      });
+
+      if (promessas.length > 0) {
+        await Promise.all(promessas);
+        this.showToast(`🧹 ${apagados} logs com mais de 30 dias foram excluídos!`, 'success');
+      } else {
+        this.showToast('ℹ️ Nenhum log antigo (>30 dias) encontrado para exclusão.', 'info');
+      }
+
+      this.carregarLogsAuditoria();
+    } catch (err) {
+      console.error('Erro ao limpar logs antigos:', err);
+      this.showToast('Erro ao limpar logs: ' + err.message, 'error');
+    }
   }
 };
 
