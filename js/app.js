@@ -441,7 +441,9 @@ window.MasterApp = {
                 documento: data.documento || data.cnpj || '00.000.000/0001-00',
                 responsavel: data.responsavel || 'Responsável',
                 whatsapp: data.whatsapp || '(19) 99999-7777',
+                ramoAtividade: data.ramoAtividade || 'adega',
                 icone: data.icone || '🍷',
+                modulos: data.modulos || null,
                 logoUrl: data.logoUrl || '',
                 categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
                 plano: data.plano || 'Mensal Pro',
@@ -495,6 +497,8 @@ window.MasterApp = {
                 if (c.limiteTerminais) existing.limiteTerminais = c.limiteTerminais;
                 if (c.status) existing.status = c.status;
                 if (c.vencimento) existing.vencimento = c.vencimento;
+                if (c.modulos) existing.modulos = c.modulos;
+                if (c.ramoAtividade) existing.ramoAtividade = c.ramoAtividade;
               }
             }
             this.clientes = Array.from(dedupMap.values());
@@ -523,7 +527,9 @@ window.MasterApp = {
               documento: data.documento || data.cnpj || '00.000.000/0001-00',
               responsavel: data.responsavel || 'Responsável',
               whatsapp: data.whatsapp || '(19) 99999-7777',
+              ramoAtividade: data.ramoAtividade || 'adega',
               icone: data.icone || '🍷',
+              modulos: data.modulos || null,
               logoUrl: data.logoUrl || '',
               categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
               plano: data.plano || 'Mensal Pro',
@@ -541,6 +547,7 @@ window.MasterApp = {
         if (cloudClientes.length > 0) {
           const localLogosMap = new Map();
           const localCatsMap = new Map();
+          const localModulosMap = new Map();
           (this.clientes || []).forEach(c => {
             if (c) {
               const k1 = (c.documento || '').replace(/\D/g, '');
@@ -553,6 +560,11 @@ window.MasterApp = {
                 if (k1) localCatsMap.set(k1, c.categorias);
                 if (c.id) localCatsMap.set(c.id, c.categorias);
                 if (c.chaveLicenca) localCatsMap.set(c.chaveLicenca, c.categorias);
+              }
+              if (c.modulos) {
+                if (k1) localModulosMap.set(k1, c.modulos);
+                if (c.id) localModulosMap.set(c.id, c.modulos);
+                if (c.chaveLicenca) localModulosMap.set(c.chaveLicenca, c.modulos);
               }
             }
           });
@@ -568,10 +580,14 @@ window.MasterApp = {
             const localCats = localCatsMap.get(cCloud.chaveLicenca) || localCatsMap.get(cCloud.id) || localCatsMap.get(cnpjClean) || null;
             const catsFinal = (cCloud.categorias && cCloud.categorias.length > 0) ? cCloud.categorias : (localCats || ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos']);
 
+            const localMods = localModulosMap.get(cCloud.chaveLicenca) || localModulosMap.get(cCloud.id) || localModulosMap.get(cnpjClean) || null;
+            const modulosFinal = cCloud.modulos || localMods || this.modulosPadraoPorRamo[cCloud.ramoAtividade || 'adega'] || this.modulosPadraoPorRamo.adega;
+
             const itemFormatado = {
               ...cCloud,
               logoUrl: logoUrlFinal,
-              categorias: catsFinal
+              categorias: catsFinal,
+              modulos: modulosFinal
             };
 
             const existing = dedupMap.get(key);
@@ -586,6 +602,12 @@ window.MasterApp = {
               }
               if ((!existing.categorias || existing.categorias.length === 0) && itemFormatado.categorias) {
                 existing.categorias = itemFormatado.categorias;
+              }
+              if (itemFormatado.modulos) {
+                existing.modulos = itemFormatado.modulos;
+              }
+              if (itemFormatado.ramoAtividade) {
+                existing.ramoAtividade = itemFormatado.ramoAtividade;
               }
               const combinedTerms = new Set([
                 ...(Array.isArray(existing.terminaisAtivos) ? existing.terminaisAtivos : []),
