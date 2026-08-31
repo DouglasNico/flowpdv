@@ -18,28 +18,67 @@ window.MasterApp = {
   presetsCategorias: {
     adega: {
       icone: '🍷',
+      nome: 'Adega & Depósito de Bebidas',
       lista: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Combos']
     },
     mercado: {
       icone: '🛒',
+      nome: 'Supermercado & Mercearia',
       lista: ['Alimentos', 'Carnes & Açougue', 'Bebidas', 'Laticínios & Frios', 'Hortifrúti', 'Padaria', 'Higiene & Limpeza', 'Matinais']
+    },
+    acougue: {
+      icone: '🥩',
+      nome: 'Açougue & Casa de Carnes',
+      lista: ['Bovinos', 'Suínos', 'Aves', 'Linguiças & Embutidos', 'Temperados & Espetos', 'Bebidas', 'Carvão & Acessórios']
+    },
+    hortifruti: {
+      icone: '🥬',
+      nome: 'Hortifrúti & Sacolão',
+      lista: ['Frutas', 'Verduras & Folhas', 'Legumes & Raízes', 'Temperos & Ervas', 'Ovos & Grãos', 'Bebidas']
+    },
+    padaria: {
+      icone: '🥖',
+      nome: 'Padaria & Confeitaria',
+      lista: ['Pães', 'Bolos & Doces', 'Salgados', 'Frios & Laticínios', 'Café & Bebidas', 'Mercearia']
     },
     conveniencia: {
       icone: '🏪',
+      nome: 'Loja de Conveniência',
       lista: ['Bebidas Geladas', 'Salgados & Lanches', 'Snacks', 'Tabacaria', 'Doces & Chocolates', 'Energéticos', 'Gelo & Carvão']
     },
     tabacaria: {
       icone: '🚬',
+      nome: 'Tabacaria & Hookah',
       lista: ['Essências', 'Carvão & Alumínio', 'Sedas & Filtros', 'Isqueiros & Maçaricos', 'Narguiles & Peças', 'Vapes & Pods', 'Bebidas']
     },
-    padaria: {
-      icone: '🥖',
-      lista: ['Pães', 'Bolos & Doces', 'Salgados', 'Frios & Laticínios', 'Café & Bebidas', 'Mercearia']
+    vestuario: {
+      icone: '👗',
+      nome: 'Loja de Roupas & Calçados',
+      lista: ['Feminino', 'Masculino', 'Infantil', 'Calçados', 'Acessórios', 'Íntimo']
+    },
+    lanchonete: {
+      icone: '🍔',
+      nome: 'Lanchonete & Restaurante',
+      lista: ['Lanches & Burgers', 'Porções & Petiscos', 'Pizzas', 'Bebidas & Sucos', 'Sobremesas']
     },
     geral: {
       icone: '⚡',
+      nome: 'Comércio Geral / Varejo',
       lista: ['Bebidas', 'Alimentos', 'Carnes', 'Limpeza', 'Higiene', 'Tabacaria', 'Acessórios']
     }
+  },
+
+  modulosPadraoPorRamo: {
+    adega: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
+    mercado: { fardosPacks: true, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
+    acougue: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
+    hortifruti: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
+    padaria: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
+    conveniencia: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
+    tabacaria: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
+    vestuario: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true },
+    lanchonete: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
+    geral: { fardosPacks: true, balancaPeso: true, validadeLotes: true, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true }
   },
 
   usuarioLogado: null,
@@ -138,15 +177,52 @@ window.MasterApp = {
     }
   },
 
+  aoMudarRamoSelect(ramo) {
+    this.aplicarPresetCategorias(ramo);
+  },
+
   aplicarPresetCategorias(tipo) {
     const preset = this.presetsCategorias[tipo];
     if (!preset) return;
 
+    const ramoEl = document.getElementById('cli-ramo');
     const iconeEl = document.getElementById('cli-icone');
     const catEl = document.getElementById('cli-categorias');
 
+    if (ramoEl) ramoEl.value = tipo;
     if (iconeEl) iconeEl.value = preset.icone;
     if (catEl) catEl.value = preset.lista.join(', ');
+
+    // Aplica os módulos recomendados para o segmento
+    const modulosPadrao = this.modulosPadraoPorRamo[tipo] || this.modulosPadraoPorRamo.geral;
+    this.setModulosCheckboxes(modulosPadrao);
+  },
+
+  setModulosCheckboxes(modulos = {}) {
+    const modFardos = document.getElementById('mod-fardos');
+    const modBalanca = document.getElementById('mod-balanca');
+    const modValidade = document.getElementById('mod-validade');
+    const modGrade = document.getElementById('mod-grade');
+    const modFiado = document.getElementById('mod-fiado');
+    const modXml = document.getElementById('mod-xml');
+
+    if (modFardos) modFardos.checked = modulos.fardosPacks !== false;
+    if (modBalanca) modBalanca.checked = Boolean(modulos.balancaPeso);
+    if (modValidade) modValidade.checked = modulos.validadeLotes !== false;
+    if (modGrade) modGrade.checked = Boolean(modulos.gradeRoupas);
+    if (modFiado) modFiado.checked = modulos.fiadoWhatsApp !== false;
+    if (modXml) modXml.checked = modulos.importadorXml !== false;
+  },
+
+  getModulosCheckboxes() {
+    return {
+      fardosPacks: document.getElementById('mod-fardos')?.checked ?? true,
+      balancaPeso: document.getElementById('mod-balanca')?.checked ?? false,
+      validadeLotes: document.getElementById('mod-validade')?.checked ?? true,
+      gradeRoupas: document.getElementById('mod-grade')?.checked ?? false,
+      fiadoWhatsApp: document.getElementById('mod-fiado')?.checked ?? true,
+      importadorXml: document.getElementById('mod-xml')?.checked ?? true
+    };
   },
 
   async salvarDados() {
@@ -164,6 +240,8 @@ window.MasterApp = {
         clientesMap.set(key, {
           ...existing,
           ...c,
+          ramoAtividade: c.ramoAtividade || existing.ramoAtividade || 'adega',
+          modulos: c.modulos || existing.modulos || this.modulosPadraoPorRamo.adega,
           logoUrl: c.logoUrl || existing.logoUrl || '',
           categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : (existing.categorias || [])
         });
@@ -179,8 +257,10 @@ window.MasterApp = {
         const adegaLic = {
           cnpj: licAtiva.documento,
           razaoSocial: licAtiva.nome,
+          ramoAtividade: licAtiva.ramoAtividade || 'adega',
           icone: licAtiva.icone || '🍷',
           logoUrl: licAtiva.logoUrl || '',
+          modulos: licAtiva.modulos || this.modulosPadraoPorRamo[licAtiva.ramoAtividade || 'adega'] || this.modulosPadraoPorRamo.adega,
           categorias: (licAtiva.categorias && licAtiva.categorias.length > 0) ? licAtiva.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
           status: licAtiva.status,
           dataExpiracao: (licAtiva.vencimento && licAtiva.vencimento.includes('T')) ? licAtiva.vencimento : (licAtiva.vencimento + 'T23:59:59.000Z'),
@@ -210,8 +290,10 @@ window.MasterApp = {
             cnpj: c.documento,
             responsavel: c.responsavel,
             whatsapp: c.whatsapp,
+            ramoAtividade: c.ramoAtividade || 'adega',
             icone: c.icone || '🍷',
             logoUrl: c.logoUrl || '',
+            modulos: c.modulos || this.modulosPadraoPorRamo[c.ramoAtividade || 'adega'] || this.modulosPadraoPorRamo.adega,
             categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
             plano: c.plano,
             valorMensal: c.valorMensal,
@@ -736,6 +818,11 @@ window.MasterApp = {
     if (limiteInput) limiteInput.value = '1';
     if (termInfoBox) termInfoBox.style.display = 'none';
     if (logoInput) logoInput.value = '';
+    
+    const ramoSelect = document.getElementById('cli-ramo');
+    if (ramoSelect) ramoSelect.value = 'adega';
+    this.setModulosCheckboxes(this.modulosPadraoPorRamo.adega);
+
     if (catInput) catInput.value = this.presetsCategorias.adega.lista.join(', ');
     
     this.renderSelectPlanos('Mensal Pro');
@@ -763,6 +850,7 @@ window.MasterApp = {
     const docInput = document.getElementById('cli-documento');
     const respInput = document.getElementById('cli-responsavel');
     const zapInput = document.getElementById('cli-whatsapp');
+    const ramoInput = document.getElementById('cli-ramo');
     const iconeInput = document.getElementById('cli-icone');
     const logoInput = document.getElementById('cli-logo-url');
     const catInput = document.getElementById('cli-categorias');
@@ -781,9 +869,16 @@ window.MasterApp = {
     if (docInput) docInput.value = c.documento || '';
     if (respInput) respInput.value = c.responsavel || '';
     if (zapInput) zapInput.value = c.whatsapp || '';
-    if (iconeInput) iconeInput.value = c.icone || '🍷';
+
+    const ramo = c.ramoAtividade || 'adega';
+    if (ramoInput) ramoInput.value = ramo;
+    if (iconeInput) iconeInput.value = c.icone || this.presetsCategorias[ramo]?.icone || '🍷';
+    
+    const modulos = c.modulos || this.modulosPadraoPorRamo[ramo] || this.modulosPadraoPorRamo.adega;
+    this.setModulosCheckboxes(modulos);
+
     if (logoInput) logoInput.value = c.logoUrl || '';
-    if (catInput) catInput.value = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.join(', ') : this.presetsCategorias.adega.lista.join(', ');
+    if (catInput) catInput.value = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.join(', ') : (this.presetsCategorias[ramo]?.lista.join(', ') || this.presetsCategorias.adega.lista.join(', '));
     
     this.renderSelectPlanos(c.plano || 'Mensal Pro');
     if (valorInput) valorInput.value = c.valorMensal || 89.90;
@@ -837,10 +932,12 @@ window.MasterApp = {
     const documento = document.getElementById('cli-documento')?.value.trim() || '';
     const responsavel = document.getElementById('cli-responsavel')?.value.trim() || '';
     const whatsapp = document.getElementById('cli-whatsapp')?.value.trim() || '';
-    const icone = document.getElementById('cli-icone')?.value || '🍷';
+    const ramoAtividade = document.getElementById('cli-ramo')?.value || 'adega';
+    const icone = document.getElementById('cli-icone')?.value || this.presetsCategorias[ramoAtividade]?.icone || '🍷';
+    const modulos = this.getModulosCheckboxes();
     const logoUrl = document.getElementById('cli-logo-url')?.value.trim() || '';
     const categoriasRaw = document.getElementById('cli-categorias')?.value.trim() || '';
-    const categorias = categoriasRaw ? categoriasRaw.split(',').map(s => s.trim()).filter(Boolean) : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'];
+    const categorias = categoriasRaw ? categoriasRaw.split(',').map(s => s.trim()).filter(Boolean) : (this.presetsCategorias[ramoAtividade]?.lista || ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos']);
     const plano = document.getElementById('cli-plano')?.value || 'Mensal Pro';
     const valorMensal = parseFloat(document.getElementById('cli-valor')?.value) || 89.90;
     const vencimento = document.getElementById('cli-vencimento')?.value || '2026-12-31';
@@ -858,7 +955,9 @@ window.MasterApp = {
       cnpj: documento,
       responsavel,
       whatsapp,
+      ramoAtividade,
       icone,
+      modulos,
       logoUrl,
       categorias,
       plano,

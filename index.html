@@ -202,27 +202,75 @@
             </div>
 
             <div class="form-group">
-              <label>Ícone / Segmento da Loja *</label>
-              <select id="cli-icone" required>
-                <option value="🍷">🍷 Adega & Depósito de Bebidas</option>
-                <option value="🏪">🏪 Loja de Conveniência</option>
-                <option value="🛒">🛒 Mercadinho / Mercearia</option>
-                <option value="🚬">🚬 Tabacaria / Hookah</option>
-                <option value="🥖">🥖 Padaria / Panificadora</option>
-                <option value="⚡">⚡ Comércio Geral / PDV</option>
+              <label>Ramo / Segmento do Comércio *</label>
+              <select id="cli-ramo" required onchange="MasterApp.aoMudarRamoSelect(this.value)">
+                <option value="adega">🍷 Adega & Depósito de Bebidas</option>
+                <option value="mercado">🛒 Supermercado & Mercearia</option>
+                <option value="acougue">🥩 Açougue & Casa de Carnes</option>
+                <option value="hortifruti">🥬 Hortifrúti & Sacolão</option>
+                <option value="padaria">🥖 Padaria & Confeitaria</option>
+                <option value="conveniencia">🏪 Loja de Conveniência</option>
+                <option value="tabacaria">🚬 Tabacaria & Hookah</option>
+                <option value="vestuario">👗 Loja de Roupas & Calçados</option>
+                <option value="lanchonete">🍔 Lanchonete / Restaurante</option>
+                <option value="geral">⚡ Comércio Geral / Varejo</option>
               </select>
+              <input type="hidden" id="cli-icone" value="🍷">
+            </div>
+
+            <!-- SEÇÃO DE MÓDULOS HABILITADOS POR LICENÇA (CONTROLE TOTAL MASTER) -->
+            <div class="form-group span-2" style="background: rgba(14, 165, 233, 0.05); border: 1px solid rgba(14, 165, 233, 0.25); padding: 14px; border-radius: 12px; margin-top: 4px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <label style="color: #38bdf8; font-weight: 800; margin: 0; font-size: 13px;">🛠️ Módulos Habilitados no PDV do Cliente</label>
+                <span style="font-size: 10.5px; color: var(--text-dim);">Personalize o que este lojista tem acesso</span>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                  <input type="checkbox" id="mod-fardos" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
+                  <span>📦 Fardos & Packs (Bebidas)</span>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                  <input type="checkbox" id="mod-balanca" style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
+                  <span>⚖️ Balança / Venda por Kg</span>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                  <input type="checkbox" id="mod-validade" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
+                  <span>📅 Controle de Validade</span>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                  <input type="checkbox" id="mod-grade" style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
+                  <span>👗 Grade de Tamanhos & Cores</span>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                  <input type="checkbox" id="mod-fiado" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
+                  <span>📖 Fiado & WhatsApp</span>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                  <input type="checkbox" id="mod-xml" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
+                  <span>📥 Importador XML de NF-e</span>
+                </label>
+              </div>
             </div>
 
             <div class="form-group span-2" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px; margin-top: 4px;">
-              <label style="color: var(--accent-cyan); font-weight: 800; display: block; margin-bottom: 4px;">🏷️ Segmento & Categorias de Produtos</label>
-              <span style="font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 10px;">Clique em um preset abaixo para preencher ou digite categorias personalizadas separadas por vírgula:</span>
+              <label style="color: var(--accent-cyan); font-weight: 800; display: block; margin-bottom: 4px;">🏷️ Categorias Padrão de Produtos</label>
+              <span style="font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 10px;">Clique em um preset abaixo para preencher categorias recomendadas:</span>
 
               <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
                 <button type="button" class="filter-btn" style="background: rgba(124, 58, 237, 0.15); color: #a78bfa; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('adega')">🍷 Adega</button>
                 <button type="button" class="filter-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('mercado')">🛒 Mercado</button>
+                <button type="button" class="filter-btn" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('acougue')">🥩 Açougue</button>
+                <button type="button" class="filter-btn" style="background: rgba(34, 197, 94, 0.15); color: #4ade80; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('hortifruti')">🥬 Hortifrúti</button>
+                <button type="button" class="filter-btn" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('padaria')">🥖 Padaria</button>
                 <button type="button" class="filter-btn" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('conveniencia')">🏪 Conveniência</button>
                 <button type="button" class="filter-btn" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('tabacaria')">🚬 Tabacaria</button>
-                <button type="button" class="filter-btn" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('padaria')">🥖 Padaria</button>
+                <button type="button" class="filter-btn" style="background: rgba(217, 70, 239, 0.15); color: #e879f9; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('vestuario')">👗 Vestuário</button>
                 <button type="button" class="filter-btn" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('geral')">⚡ Geral</button>
               </div>
 
