@@ -765,6 +765,7 @@ window.MasterApp = {
         const ativosTerm = terminaisUnicos.length;
         const isLotado = ativosTerm >= maxTerm;
         const termBadge = '<span class="badge-terminal ' + (isLotado ? 'lotado' : 'livre') + '">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
+        const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
         let moduloLabel = '🍽️ Mesas & Comandas';
         if (c.moduloComandas === 'apenas_mesas') moduloLabel = '🪑 Mesas';
         else if (c.moduloComandas === 'apenas_comandas') moduloLabel = '🏷️ Comandas';
