@@ -766,10 +766,6 @@ window.MasterApp = {
         const isLotado = ativosTerm >= maxTerm;
         const termBadge = '<span class="badge-terminal ' + (isLotado ? 'lotado' : 'livre') + '">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
         const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
-        let moduloLabel = '🍽️ Mesas & Comandas';
-        if (c.moduloComandas === 'apenas_mesas') moduloLabel = '🪑 Mesas';
-        else if (c.moduloComandas === 'apenas_comandas') moduloLabel = '🏷️ Comandas';
-        else if (c.moduloComandas === 'desativado') moduloLabel = '🚫 Sem Mesas/Cmd';
 
         return '<tr class="master-table-row">' +
             '<td class="cell-store">' +
@@ -777,7 +773,7 @@ window.MasterApp = {
                 logoHtml +
                 '<div>' +
                   '<strong style="color: var(--text-main); font-size: 14px; display: block;">' + c.nome + '</strong>' +
-                  '<span style="font-size: 11.5px; color: var(--text-dim);">' + (c.documento || 'Sem Documento') + ' • <strong style="color: #a78bfa;">' + numCats + ' categorias</strong> • <span style="color: #38bdf8; font-weight: 700;">' + moduloLabel + '</span></span>' +
+                  '<span style="font-size: 12px; color: var(--text-dim);">' + (c.documento || 'Sem Documento') + ' • <strong style="color: #a78bfa;">' + numCats + ' categorias</strong></span>' +
                 '</div>' +
               '</div>' +
             '</td>' +
