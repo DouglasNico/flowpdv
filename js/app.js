@@ -248,6 +248,7 @@ window.MasterApp = {
           ...c,
           ramoAtividade: c.ramoAtividade || existing.ramoAtividade || 'adega',
           modulos: c.modulos || existing.modulos || this.modulosPadraoPorRamo.adega,
+          moduloComandas: c.moduloComandas !== undefined ? c.moduloComandas : (existing.moduloComandas || 'mesas_e_comandas'),
           logoUrl: c.logoUrl || existing.logoUrl || '',
           categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : (existing.categorias || [])
         });
@@ -267,6 +268,7 @@ window.MasterApp = {
           icone: licAtiva.icone || '🍷',
           logoUrl: licAtiva.logoUrl || '',
           modulos: licAtiva.modulos || this.modulosPadraoPorRamo[licAtiva.ramoAtividade || 'adega'] || this.modulosPadraoPorRamo.adega,
+          moduloComandas: licAtiva.moduloComandas || 'mesas_e_comandas',
           categorias: (licAtiva.categorias && licAtiva.categorias.length > 0) ? licAtiva.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
           status: licAtiva.status,
           dataExpiracao: (licAtiva.vencimento && licAtiva.vencimento.includes('T')) ? licAtiva.vencimento : (licAtiva.vencimento + 'T23:59:59.000Z'),
@@ -300,6 +302,7 @@ window.MasterApp = {
             icone: c.icone || '🍷',
             logoUrl: c.logoUrl || '',
             modulos: c.modulos || this.modulosPadraoPorRamo[c.ramoAtividade || 'adega'] || this.modulosPadraoPorRamo.adega,
+            moduloComandas: c.moduloComandas || 'mesas_e_comandas',
             categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
             plano: c.plano,
             valorMensal: c.valorMensal,
@@ -450,6 +453,7 @@ window.MasterApp = {
                 ramoAtividade: data.ramoAtividade || 'adega',
                 icone: data.icone || '🍷',
                 modulos: data.modulos || null,
+                moduloComandas: data.moduloComandas || 'mesas_e_comandas',
                 logoUrl: data.logoUrl || '',
                 categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
                 plano: data.plano || 'Mensal Pro',
@@ -504,6 +508,7 @@ window.MasterApp = {
                 if (c.status) existing.status = c.status;
                 if (c.vencimento) existing.vencimento = c.vencimento;
                 if (c.modulos) existing.modulos = c.modulos;
+                if (c.moduloComandas !== undefined) existing.moduloComandas = c.moduloComandas;
                 if (c.ramoAtividade) existing.ramoAtividade = c.ramoAtividade;
               }
             }
@@ -536,6 +541,7 @@ window.MasterApp = {
               ramoAtividade: data.ramoAtividade || 'adega',
               icone: data.icone || '🍷',
               modulos: data.modulos || null,
+              moduloComandas: data.moduloComandas || 'mesas_e_comandas',
               logoUrl: data.logoUrl || '',
               categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
               plano: data.plano || 'Mensal Pro',
@@ -611,6 +617,9 @@ window.MasterApp = {
               }
               if (itemFormatado.modulos) {
                 existing.modulos = itemFormatado.modulos;
+              }
+              if (itemFormatado.moduloComandas !== undefined) {
+                existing.moduloComandas = itemFormatado.moduloComandas;
               }
               if (itemFormatado.ramoAtividade) {
                 existing.ramoAtividade = itemFormatado.ramoAtividade;
