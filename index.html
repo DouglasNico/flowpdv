@@ -412,6 +412,20 @@
               </div>
             </div>
 
+            <!-- MÓDULO DE COMANDAS & MESAS -->
+            <div class="form-group span-2" style="background: rgba(124, 58, 237, 0.06); border: 1px solid rgba(124, 58, 237, 0.25); padding: 12px 14px; border-radius: 10px;">
+              <label style="color: #a78bfa; font-weight: 800; margin-bottom: 4px; display: block;">🍽️ Módulo de Atendimento (Mesas / Comandas)</label>
+              <select id="cli-modulo-comandas" style="width: 100%; font-weight: 700; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 8px; height: 42px; padding: 0 12px;">
+                <option value="mesas_e_comandas">🍽️ Mesas & Comandas (Padrão)</option>
+                <option value="apenas_mesas">🪑 Apenas Mesas</option>
+                <option value="apenas_comandas">🏷️ Apenas Comandas</option>
+                <option value="desativado">🚫 Desativado (Ocultar do Sistema)</option>
+              </select>
+              <span style="font-size: 11px; color: var(--text-dim); margin-top: 4px; display: block;">
+                Define quais recursos de atendimento o cliente terá acesso no PDV. Se desativado, oculta o botão da barra superior.
+              </span>
+            </div>
+
             <!-- STATUS DO CLIENTE (ATIVO / BLOQUEADO) -->
             <div class="form-group span-2">
               <label>Status do Sistema *</label>

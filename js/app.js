@@ -765,7 +765,10 @@ window.MasterApp = {
         const ativosTerm = terminaisUnicos.length;
         const isLotado = ativosTerm >= maxTerm;
         const termBadge = '<span class="badge-terminal ' + (isLotado ? 'lotado' : 'livre') + '">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
-        const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
+        let moduloLabel = '🍽️ Mesas & Comandas';
+        if (c.moduloComandas === 'apenas_mesas') moduloLabel = '🪑 Mesas';
+        else if (c.moduloComandas === 'apenas_comandas') moduloLabel = '🏷️ Comandas';
+        else if (c.moduloComandas === 'desativado') moduloLabel = '🚫 Sem Mesas/Cmd';
 
         return '<tr class="master-table-row">' +
             '<td class="cell-store">' +
@@ -773,7 +776,7 @@ window.MasterApp = {
                 logoHtml +
                 '<div>' +
                   '<strong style="color: var(--text-main); font-size: 14px; display: block;">' + c.nome + '</strong>' +
-                  '<span style="font-size: 12px; color: var(--text-dim);">' + (c.documento || 'Sem Documento') + ' • <strong style="color: #a78bfa;">' + numCats + ' categorias</strong></span>' +
+                  '<span style="font-size: 11.5px; color: var(--text-dim);">' + (c.documento || 'Sem Documento') + ' • <strong style="color: #a78bfa;">' + numCats + ' categorias</strong> • <span style="color: #38bdf8; font-weight: 700;">' + moduloLabel + '</span></span>' +
                 '</div>' +
               '</div>' +
             '</td>' +
@@ -859,6 +862,9 @@ window.MasterApp = {
     d.setDate(d.getDate() + 30);
     if (vencInput) vencInput.value = d.toISOString().split('T')[0];
 
+    const moduloComandasSelect = document.getElementById('cli-modulo-comandas');
+    if (moduloComandasSelect) moduloComandasSelect.value = 'mesas_e_comandas';
+
     this.previewLogo();
     if (modal) {
       document.body.classList.add('modal-open');
@@ -890,6 +896,7 @@ window.MasterApp = {
     const contagemTerm = document.getElementById('cli-terminais-contagem');
     const termInfoBox = document.getElementById('cli-terminais-info-box');
     const statusInput = document.getElementById('cli-status');
+    const moduloComandasSelect = document.getElementById('cli-modulo-comandas');
     const btnExcluir = document.getElementById('btn-excluir-cliente');
 
     if (idInput) idInput.value = c.id;
@@ -914,6 +921,7 @@ window.MasterApp = {
     if (chaveInput) chaveInput.value = c.chaveLicenca || c.id;
     if (pinInput) pinInput.value = c.pinGerente || '1234';
     if (limiteInput) limiteInput.value = c.limiteTerminais || 1;
+    if (moduloComandasSelect) moduloComandasSelect.value = c.moduloComandas || 'mesas_e_comandas';
     
     const terminaisUnicos = this.obterTerminaisDeduplicados(c.terminaisAtivos);
     c.terminaisAtivos = terminaisUnicos;
@@ -972,6 +980,7 @@ window.MasterApp = {
     const status = document.getElementById('cli-status')?.value || 'ativa';
     const pinGerente = document.getElementById('cli-pin-gerente')?.value.trim() || '1234';
     const limiteTerminais = Math.max(1, parseInt(document.getElementById('cli-limite-terminais')?.value) || 1);
+    const moduloComandas = document.getElementById('cli-modulo-comandas')?.value || 'mesas_e_comandas';
 
     const cExistente = this.clientes.find(item => item && (item.id === idFinal || item.chaveLicenca === chaveLicenca));
 
@@ -986,6 +995,7 @@ window.MasterApp = {
       ramoAtividade,
       icone,
       modulos,
+      moduloComandas,
       logoUrl,
       categorias,
       plano,
