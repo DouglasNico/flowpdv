@@ -69,16 +69,16 @@ window.MasterApp = {
   },
 
   modulosPadraoPorRamo: {
-    adega: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
-    mercado: { fardosPacks: true, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
-    acougue: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
-    hortifruti: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
-    padaria: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
-    conveniencia: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
-    tabacaria: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
-    vestuario: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true },
-    lanchonete: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true },
-    geral: { fardosPacks: true, balancaPeso: true, validadeLotes: true, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true }
+    adega: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    mercado: { fardosPacks: true, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    acougue: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    hortifruti: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    padaria: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    conveniencia: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    tabacaria: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    vestuario: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    lanchonete: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    geral: { fardosPacks: true, balancaPeso: true, validadeLotes: true, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true }
   },
 
   usuarioLogado: null,
@@ -205,6 +205,8 @@ window.MasterApp = {
     const modGrade = document.getElementById('mod-grade');
     const modFiado = document.getElementById('mod-fiado');
     const modXml = document.getElementById('mod-xml');
+    const modFiscal = document.getElementById('mod-fiscal');
+    const modTef = document.getElementById('mod-tef');
 
     if (modFardos) modFardos.checked = modulos.fardosPacks !== false;
     if (modBalanca) modBalanca.checked = Boolean(modulos.balancaPeso);
@@ -212,6 +214,8 @@ window.MasterApp = {
     if (modGrade) modGrade.checked = Boolean(modulos.gradeRoupas);
     if (modFiado) modFiado.checked = modulos.fiadoWhatsApp !== false;
     if (modXml) modXml.checked = modulos.importadorXml !== false;
+    if (modFiscal) modFiscal.checked = modulos.fiscalNfce !== false;
+    if (modTef) modTef.checked = modulos.tefCartao !== false;
   },
 
   getModulosCheckboxes() {
@@ -221,7 +225,9 @@ window.MasterApp = {
       validadeLotes: document.getElementById('mod-validade')?.checked ?? true,
       gradeRoupas: document.getElementById('mod-grade')?.checked ?? false,
       fiadoWhatsApp: document.getElementById('mod-fiado')?.checked ?? true,
-      importadorXml: document.getElementById('mod-xml')?.checked ?? true
+      importadorXml: document.getElementById('mod-xml')?.checked ?? true,
+      fiscalNfce: document.getElementById('mod-fiscal')?.checked ?? true,
+      tefCartao: document.getElementById('mod-tef')?.checked ?? true
     };
   },
 
