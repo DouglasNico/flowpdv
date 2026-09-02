@@ -4,20 +4,23 @@
   gap: 6px;
   margin-top: 9px;
   min-height: 24px;
+  width: 100%;
+  align-items: center;
 }
 
 .categoria-chip-preview {
   display: inline-flex;
   align-items: center;
   min-height: 24px;
-  padding: 3px 9px;
-  border: 1px solid #38bdf8;
+  padding: 4px 10px;
+  border: 1px solid #64748b;
   border-radius: 999px;
-  background: rgba(14, 165, 233, 0.14);
-  color: #bae6fd;
+  background: #334155;
+  color: #e2e8f0;
   font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
+  line-height: 1.2;
 }
 :root {
   --bg-body: #0f172a;
@@ -949,6 +952,13 @@ select:-webkit-autofill:focus {
   margin-top: 4px;
 }
 
+#cli-categorias {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
 .vencimento-header-row {
   display: flex;
   justify-content: space-between;
@@ -1208,6 +1218,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .metrics-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .presets-category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* ==========================================================================
@@ -1216,6 +1230,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 @media (max-width: 860px) {
   body {
     padding: 12px 10px;
+  }
+
+  .form-box-highlight {
+    padding: 12px;
+  }
+
+  .categoria-chip-preview {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* Header Mobile */
@@ -1548,6 +1572,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .filter-btn {
     font-size: 10px;
     padding: 6px 2px;
+  }
+
+  .presets-category-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
