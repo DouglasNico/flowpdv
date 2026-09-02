@@ -808,34 +808,278 @@ body {
   color: var(--text-muted);
 }
 
+/* Prevenção de autofill mudando cor de fundo para amarelo/branco */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #ffffff;
+}
+
 .form-group input, 
-.form-group select {
-  background: #0f172a;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  color: #ffffff;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-  min-height: 44px;
-  width: 100%;
+.form-group select,
+.form-group textarea {
+  background: #0f172a !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 10px 14px !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  outline: none !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+  min-height: 44px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .form-group input:focus, 
-.form-group select:focus {
-  border-color: var(--accent-cyan);
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15) !important;
+  background: #0f172a !important;
 }
 
-.modal-footer {
+/* ==========================================================================
+   PRESETS DE CATEGORIAS EM GRID
+   ========================================================================== */
+.presets-category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 480px) {
+  .presets-category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+}
+
+.preset-cat-btn {
+  height: 36px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 4px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.preset-cat-btn.cat-adega { background: rgba(124, 58, 237, 0.15); color: #a78bfa; border-color: rgba(124, 58, 237, 0.3); }
+.preset-cat-btn.cat-mercado { background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+.preset-cat-btn.cat-acougue { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
+.preset-cat-btn.cat-hortifruti { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.3); }
+.preset-cat-btn.cat-padaria { background: rgba(236, 72, 153, 0.15); color: #f472b6; border-color: rgba(236, 72, 153, 0.3); }
+.preset-cat-btn.cat-conveniencia { background: rgba(6, 182, 212, 0.15); color: #38bdf8; border-color: rgba(6, 182, 212, 0.3); }
+.preset-cat-btn.cat-tabacaria { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+.preset-cat-btn.cat-vestuario { background: rgba(217, 70, 239, 0.15); color: #e879f9; border-color: rgba(217, 70, 239, 0.3); }
+.preset-cat-btn.cat-geral { background: rgba(99, 102, 241, 0.15); color: #818cf8; border-color: rgba(99, 102, 241, 0.3); }
+
+.preset-cat-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.2);
+}
+
+.preset-cat-btn:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   BOX DE VENCIMENTO & DIAS PERSONALIZADOS
+   ========================================================================== */
+.form-box-highlight {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  padding: 14px;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.vencimento-header-row {
+  display: flex;
   justify-content: space-between;
-  padding: 16px 24px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.box-label {
+  color: var(--accent-cyan) !important;
+  font-weight: 800 !important;
+  margin-bottom: 0 !important;
+  font-size: 13px !important;
+}
+
+.venc-feedback-badge {
+  font-size: 11.5px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.vencimento-inputs-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.6fr;
+  gap: 8px;
+  align-items: center;
+}
+
+@media (max-width: 540px) {
+  .vencimento-inputs-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.venc-date-input {
+  cursor: pointer;
+  height: 44px;
+}
+
+.venc-add-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.venc-dias-number {
+  width: 70px !important;
+  height: 44px !important;
+  text-align: center !important;
+  font-weight: 800 !important;
+  color: var(--accent-green) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 15px !important;
+  flex-shrink: 0 !important;
+}
+
+.btn-add-dias {
+  flex: 1;
+  height: 44px;
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 13px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--accent-green), #059669);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.quick-days-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.quick-day-btn {
+  height: 32px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.quick-day-btn.cortesia {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.quick-day-btn.normal {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.quick-day-btn:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   RODAPÉ DO MODAL
+   ========================================================================== */
+.modal-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 20px;
   border-top: 1px solid var(--border-color);
   background: var(--bg-card);
-  flex-shrink: 0;
+}
+
+.modal-footer-main-row {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
   gap: 10px;
+  width: 100%;
+}
+
+.btn-modal-footer {
+  height: 44px !important;
+  min-height: 44px !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  white-space: nowrap !important;
+}
+
+.btn-excluir-modal {
+  width: 100% !important;
+  height: 42px !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-excluir-modal:hover {
+  background: rgba(239, 68, 68, 0.25) !important;
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
 }
 
 .btn-sec {
@@ -891,28 +1135,6 @@ body {
 
 .btn-pri:active {
   transform: scale(0.96);
-}
-
-.btn-add-dias {
-  background: linear-gradient(135deg, var(--accent-green), #059669);
-  color: #ffffff;
-  border: none;
-  height: 44px;
-  border-radius: var(--radius-md);
-  font-weight: 800;
-  font-size: 13px;
-  padding: 0 16px;
-  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-add-dias:hover {
-  transform: translateY(-1px);
 }
 
 /* Date picker indicator */
@@ -983,12 +1205,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
   #master-logged-user {
     grid-column: 1 / 2;
+    order: 1;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 700;
-    height: 40px;
+    height: 42px;
     padding: 4px 10px;
     border-radius: var(--radius-md);
     background: rgba(15, 23, 42, 0.6);
@@ -1002,29 +1225,46 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     max-width: 130px;
   }
 
-  .btn-logout {
+  #btn-header-logout {
     grid-column: 2 / 3;
+    order: 2;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 40px;
+    height: 42px;
     padding: 0 12px;
     font-size: 12.5px;
     border-radius: var(--radius-md);
   }
 
-  .btn-planos {
-    grid-column: span 1;
+  #btn-header-auditoria {
+    grid-column: 1 / 2;
+    order: 3;
     width: 100%;
-    padding: 10px 12px;
-    font-size: 12.5px;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 800;
+    justify-content: center;
+    height: 42px;
+    background: rgba(14, 165, 233, 0.15);
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    color: #38bdf8;
+  }
+
+  #btn-header-planos {
+    grid-column: 2 / 3;
+    order: 4;
+    width: 100%;
+    padding: 0 8px;
+    font-size: 12px;
     font-weight: 800;
     justify-content: center;
     height: 42px;
   }
 
-  .btn-novo-cliente {
+  #btn-header-novo-cliente {
     grid-column: 1 / -1;
+    order: 5;
     width: 100%;
     padding: 12px 18px;
     font-size: 14px;
@@ -1191,19 +1431,35 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
   .modal-footer {
     padding: 12px 14px;
-    flex-wrap: wrap;
+    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
 
-  .modal-footer button {
-    flex: 1;
-    min-width: 110px;
+  .modal-footer-main-row {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .btn-modal-footer {
+    height: 44px !important;
+    min-height: 44px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 8px !important;
+    white-space: nowrap !important;
   }
 
   #btn-excluir-cliente {
-    width: 100%;
-    order: 3;
-    margin-top: 4px;
+    width: 100% !important;
+    height: 42px !important;
+    order: 2 !important;
+    margin-top: 2px !important;
   }
 
   /* Form de Planos no Mobile */

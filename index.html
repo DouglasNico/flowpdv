@@ -10,11 +10,11 @@
   <link rel="icon" type="image/png" href="icon.png">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=2.0.9">
+  <link rel="stylesheet" href="css/style.css?v=2.1.2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -77,23 +77,21 @@
           <div class="brand-title">Flow<span>PDV</span> <span class="badge-master">MASTER SAAS</span></div>
           <div class="brand-subtitle">Painel de Gestão de Clientes & Licenças</div>
         </div>
-      </div>
-
-      <div class="header-actions">
-        <button type="button" class="btn-logout" onclick="MasterApp.executarLogout()">
-          <span>🚪 Sair</span>
-        </button>
+        <div class="header-actions">
         <div id="master-logged-user">
           <span>👤</span>
           <span id="master-user-email">admin@flowpdv.com</span>
         </div>
-        <button type="button" class="btn-planos" style="background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.3); color: #38bdf8;" onclick="MasterApp.abrirModalAuditoria()">
+        <button type="button" class="btn-logout" id="btn-header-logout" onclick="MasterApp.executarLogout()">
+          <span>🚪 Sair</span>
+        </button>
+        <button type="button" class="btn-planos" id="btn-header-auditoria" onclick="MasterApp.abrirModalAuditoria()">
           <span>📋 Logs de Auditoria</span>
         </button>
-        <button type="button" class="btn-planos" onclick="MasterApp.abrirModalPlanos()">
+        <button type="button" class="btn-planos" id="btn-header-planos" onclick="MasterApp.abrirModalPlanos()">
           <span>📦 Planos & Mensalidades</span>
         </button>
-        <button type="button" class="btn-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">
+        <button type="button" class="btn-novo-cliente" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">
           <span>➕ Nova Licença / Cliente</span>
         </button>
       </div>
@@ -141,30 +139,30 @@
         </div>
       </section>
 
-      <!-- Barra de Pesquisa e Filtros -->
-      <section class="controls-bar">
+      <!-- Barra de Ações & Filtros -->
+      <section class="table-controls">
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="master-search-input" placeholder="Buscar por estabelecimento, CNPJ, responsável ou licença..." oninput="MasterApp.filtrarTabela()">
+          <input type="text" id="busca-loja" placeholder="Buscar por estabelecimento, CNPJ, responsável ou chave..." oninput="MasterApp.filtrarTabela()">
         </div>
 
         <div class="filter-group">
-          <button type="button" class="filter-btn active" data-filter="todos" onclick="MasterApp.setFiltro('todos', this)">Todos</button>
-          <button type="button" class="filter-btn" data-filter="ativas" onclick="MasterApp.setFiltro('ativas', this)">Ativos</button>
-          <button type="button" class="filter-btn" data-filter="vencendo" onclick="MasterApp.setFiltro('vencendo', this)">Vencendo</button>
-          <button type="button" class="filter-btn" data-filter="bloqueadas" onclick="MasterApp.setFiltro('bloqueadas', this)">Bloqueados</button>
+          <button type="button" class="filter-btn active" data-filter="todos" onclick="MasterApp.setFiltro('todos')">Todos</button>
+          <button type="button" class="filter-btn" data-filter="ativas" onclick="MasterApp.setFiltro('ativas')">Ativos</button>
+          <button type="button" class="filter-btn" data-filter="vencendo" onclick="MasterApp.setFiltro('vencendo')">Vencendo</button>
+          <button type="button" class="filter-btn" data-filter="bloqueadas" onclick="MasterApp.setFiltro('bloqueadas')">Bloqueados</button>
         </div>
       </section>
 
-      <!-- Tabela Principal de Licenças dos Clientes -->
-      <section class="table-section">
+      <!-- Tabela Principal de Clientes -->
+      <section class="table-container">
         <table class="master-table">
           <thead>
             <tr>
-              <th>Estabelecimento / Responsável</th>
+              <th>Estabelecimento / Razão Social</th>
               <th>Chave de Licença</th>
-              <th>WhatsApp</th>
-              <th>Plano / Valor</th>
+              <th>WhatsApp / Contato</th>
+              <th>Plano</th>
               <th>Vencimento</th>
               <th>Status</th>
               <th>Terminais</th>
@@ -180,44 +178,47 @@
     </main>
   </div>
 
-  <!-- MODAL: CADASTRAR / EDITAR CLIENTE -->
+  <!-- MODAL: CADASTRAR / EDITAR CLIENTE & LICENÇA -->
   <div class="modal-overlay" id="modal-cliente">
     <div class="modal-card">
       
-      <!-- 1. HEADER FIXO NO TOPO -->
+      <!-- 1. CABEÇALHO FIXO -->
       <div class="modal-header">
-        <h3 id="modal-cliente-titulo">✏️ Editar Cliente & Licença</h3>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalCliente()">✕</button>
+        <div class="modal-title-group">
+          <h3 id="modal-cliente-title">✏️ Editar Cliente & Licença</h3>
+          <p>Configure dados do estabelecimento, módulos liberados, limite de PCs e validade</p>
+        </div>
+        <button type="button" class="btn-close" onclick="MasterApp.fecharModalCliente()" title="Fechar Modal">✕</button>
       </div>
 
-      <!-- 2. CORPO DO MODAL COM ROLAGEM ISOLADA -->
+      <!-- 2. CORPO COM ROLAGEM DEDICADA -->
       <div class="modal-body">
-        <form id="form-cliente" onsubmit="MasterApp.salvarCliente(event)" style="margin: 0; width: 100%;">
+        <form id="form-cliente" onsubmit="MasterApp.salvarCliente(event)">
           <input type="hidden" id="cliente-id">
 
           <div class="form-grid">
             <div class="form-group span-2">
-              <label>Nome do Estabelecimento / Razão Social *</label>
-              <input type="text" id="cli-nome" placeholder="Ex: Adega do Marquinhos / Conveniência Central" required>
+              <label>Razão Social / Nome Fantasia *</label>
+              <input type="text" id="cli-nome" required placeholder="Ex: Adega do Douglas">
             </div>
 
             <div class="form-group">
-              <label>CNPJ / CPF *</label>
-              <input type="text" id="cli-documento" placeholder="00.000.000/0001-00" required oninput="this.value = MasterApp.formatarDocumento(this.value)">
+              <label>CNPJ ou CPF *</label>
+              <input type="text" id="cli-documento" required placeholder="00.000.000/0001-00">
             </div>
 
             <div class="form-group">
-              <label>Nome do Responsável *</label>
-              <input type="text" id="cli-responsavel" placeholder="Ex: Marcos Silva" required>
+              <label>Nome do Responsável</label>
+              <input type="text" id="cli-responsavel" placeholder="Ex: Douglas Nico">
             </div>
 
             <div class="form-group">
-              <label>WhatsApp (com DDD) *</label>
-              <input type="text" id="cli-whatsapp" placeholder="(19) 99876-5432" required oninput="this.value = MasterApp.formatarTelefone(this.value)">
+              <label>WhatsApp / Celular (com DDD) *</label>
+              <input type="text" id="cli-whatsapp" required placeholder="(19) 99999-7777">
             </div>
 
             <div class="form-group">
-              <label>Ramo / Segmento do Comércio *</label>
+              <label>Ramo de Atividade (Segmento) *</label>
               <select id="cli-ramo" required onchange="MasterApp.aoMudarRamoSelect(this.value)">
                 <option value="adega">🍷 Adega & Depósito de Bebidas</option>
                 <option value="mercado">🛒 Supermercado & Mercearia</option>
@@ -227,16 +228,18 @@
                 <option value="conveniencia">🏪 Loja de Conveniência</option>
                 <option value="tabacaria">🚬 Tabacaria & Hookah</option>
                 <option value="vestuario">👗 Loja de Roupas & Calçados</option>
-                <option value="lanchonete">🍔 Lanchonete / Restaurante</option>
+                <option value="lanchonete">🍔 Lanchonete & Restaurante</option>
                 <option value="geral">⚡ Comércio Geral / Varejo</option>
               </select>
-              <input type="hidden" id="cli-icone" value="🍷">
             </div>
 
-            <!-- SEÇÃO DE MÓDULOS HABILITADOS POR LICENÇA (CONTROLE TOTAL MASTER) -->
-            <div class="form-group span-2" style="background: rgba(14, 165, 233, 0.05); border: 1px solid rgba(14, 165, 233, 0.25); padding: 14px; border-radius: 12px; margin-top: 4px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <label style="color: #38bdf8; font-weight: 800; margin: 0; font-size: 13px;">🛠️ Módulos Habilitados no PDV do Cliente</label>
+            <!-- Ícone Personalizado -->
+            <input type="hidden" id="cli-icone" value="🍷">
+
+            <!-- SEÇÃO DE MÓDULOS LIBERADOS PARA ESTE CLIENTE -->
+            <div class="form-group span-2" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="color: var(--accent-cyan); font-weight: 800; margin-bottom: 0;">🧩 Módulos & Recursos Liberados</label>
                 <span style="font-size: 10.5px; color: var(--text-dim);">Personalize o que este lojista tem acesso</span>
               </div>
 
@@ -280,8 +283,6 @@
                   <input type="checkbox" id="mod-tef" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
                   <span>💳 TEF / Cartão Integrado</span>
                 </label>
-
-                <!-- Módulo de Atendimento (Mesas / Comandas) -->
                 <div style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(15,23,42,0.8); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.25); margin-top: 4px; flex-wrap: wrap;">
                   <div style="flex: 1; min-width: 180px;">
                     <label style="color: #38bdf8; font-weight: 800; font-size: 12px; margin: 0; display: block;">🍽️ Módulo de Atendimento (Mesas / Comandas)</label>
@@ -299,23 +300,24 @@
               </div>
             </div>
 
-            <div class="form-group span-2" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px; margin-top: 4px;">
-              <label style="color: var(--accent-cyan); font-weight: 800; display: block; margin-bottom: 4px;">🏷️ Categorias Padrão de Produtos</label>
-              <span style="font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 10px;">Clique em um preset abaixo para preencher categorias recomendadas:</span>
+            <!-- CATEGORIAS PADRÃO DE PRODUTOS -->
+            <div class="form-group span-2 form-box-highlight">
+              <label class="box-label">🏷️ Categorias Padrão de Produtos</label>
+              <span style="font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 8px;">Clique em um segmento abaixo para preencher categorias recomendadas:</span>
 
-              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
-                <button type="button" class="filter-btn" style="background: rgba(124, 58, 237, 0.15); color: #a78bfa; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('adega')">🍷 Adega</button>
-                <button type="button" class="filter-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('mercado')">🛒 Mercado</button>
-                <button type="button" class="filter-btn" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('acougue')">🥩 Açougue</button>
-                <button type="button" class="filter-btn" style="background: rgba(34, 197, 94, 0.15); color: #4ade80; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('hortifruti')">🥬 Hortifrúti</button>
-                <button type="button" class="filter-btn" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('padaria')">🥖 Padaria</button>
-                <button type="button" class="filter-btn" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('conveniencia')">🏪 Conveniência</button>
-                <button type="button" class="filter-btn" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('tabacaria')">🚬 Tabacaria</button>
-                <button type="button" class="filter-btn" style="background: rgba(217, 70, 239, 0.15); color: #e879f9; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('vestuario')">👗 Vestuário</button>
-                <button type="button" class="filter-btn" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 11px; padding: 6px 10px;" onclick="MasterApp.aplicarPresetCategorias('geral')">⚡ Geral</button>
+              <div class="presets-category-grid">
+                <button type="button" class="preset-cat-btn cat-adega" onclick="MasterApp.aplicarPresetCategorias('adega')">🍷 Adega</button>
+                <button type="button" class="preset-cat-btn cat-mercado" onclick="MasterApp.aplicarPresetCategorias('mercado')">🛒 Mercado</button>
+                <button type="button" class="preset-cat-btn cat-acougue" onclick="MasterApp.aplicarPresetCategorias('acougue')">🥩 Açougue</button>
+                <button type="button" class="preset-cat-btn cat-hortifruti" onclick="MasterApp.aplicarPresetCategorias('hortifruti')">🥬 Hortifrúti</button>
+                <button type="button" class="preset-cat-btn cat-padaria" onclick="MasterApp.aplicarPresetCategorias('padaria')">🥖 Padaria</button>
+                <button type="button" class="preset-cat-btn cat-conveniencia" onclick="MasterApp.aplicarPresetCategorias('conveniencia')">🏪 Conveniência</button>
+                <button type="button" class="preset-cat-btn cat-tabacaria" onclick="MasterApp.aplicarPresetCategorias('tabacaria')">🚬 Tabacaria</button>
+                <button type="button" class="preset-cat-btn cat-vestuario" onclick="MasterApp.aplicarPresetCategorias('vestuario')">👗 Vestuário</button>
+                <button type="button" class="preset-cat-btn cat-geral" onclick="MasterApp.aplicarPresetCategorias('geral')">⚡ Geral</button>
               </div>
 
-              <input type="text" id="cli-categorias" placeholder="Ex: Cervejas, Destilados, Vinhos, Tabacaria, Petiscos" style="background: #0f172a; font-family: 'JetBrains Mono'; font-size: 13px; font-weight: 700; color: #38bdf8; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 10px; width: 100%;">
+              <input type="text" id="cli-categorias" placeholder="Ex: Cervejas, Destilados, Vinhos, Tabacaria, Petiscos" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #38bdf8;">
             </div>
 
             <div class="form-group span-2">
@@ -349,39 +351,38 @@
             </div>
 
             <!-- SEÇÃO DE VENCIMENTO E ADICIONAR DIAS PERSONALIZADOS -->
-            <div class="form-group span-2" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px; margin-top: 4px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label style="color: var(--accent-cyan); font-weight: 800; margin-bottom: 0;">📅 Vencimento da Licença & Adicionar Dias</label>
-                <span id="modal-venc-feedback" style="font-size: 12px; font-weight: 800; font-family: 'JetBrains Mono'; padding: 2px 8px; border-radius: 6px;"></span>
+            <div class="form-group span-2 form-box-highlight">
+              <div class="vencimento-header-row">
+                <label class="box-label">📅 Vencimento da Licença & Adicionar Dias</label>
+                <span id="modal-venc-feedback" class="venc-feedback-badge"></span>
               </div>
               
-              <div style="display: flex; gap: 8px; margin-top: 4px; align-items: center; flex-wrap: wrap;">
-                <input type="date" id="cli-vencimento" required style="flex: 1; min-width: 140px; cursor: pointer;" onclick="if(typeof this.showPicker === 'function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
+              <div class="vencimento-inputs-row">
+                <input type="date" id="cli-vencimento" required class="venc-date-input" onclick="if(typeof this.showPicker === 'function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
                 
-                <!-- Input para quantidade personalizada de dias -->
-                <div style="display: flex; gap: 6px; align-items: center; flex: 1; min-width: 140px;">
-                  <input type="number" id="cli-dias-add" placeholder="Dias" style="width: 70px; text-align: center; font-weight: 800; color: var(--accent-green);" value="30">
-                  <button type="button" class="btn-add-dias" style="flex: 1;" onclick="MasterApp.adicionarDiasPersonalizadosForm()">
+                <div class="venc-add-group">
+                  <input type="number" id="cli-dias-add" placeholder="Dias" value="30" class="venc-dias-number">
+                  <button type="button" class="btn-add-dias" onclick="MasterApp.adicionarDiasPersonalizadosForm()">
                     ➕ Adicionar
                   </button>
                 </div>
               </div>
 
-              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;">
-                <button type="button" class="filter-btn" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(7)">🎁 +7 Dias Cortesia</button>
-                <button type="button" class="filter-btn" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(15)">🎁 +15 Dias Cortesia</button>
-                <button type="button" class="filter-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(30)">+30 Dias</button>
-                <button type="button" class="filter-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(60)">+60 Dias</button>
-                <button type="button" class="filter-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(90)">+90 Dias</button>
-                <button type="button" class="filter-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 5px 10px;" onclick="MasterApp.setDiasRapidosForm(365)">+1 Ano</button>
+              <div class="quick-days-grid">
+                <button type="button" class="quick-day-btn cortesia" onclick="MasterApp.setDiasRapidosForm(7)">🎁 +7 Dias</button>
+                <button type="button" class="quick-day-btn cortesia" onclick="MasterApp.setDiasRapidosForm(15)">🎁 +15 Dias</button>
+                <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(30)">+30 Dias</button>
+                <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(60)">+60 Dias</button>
+                <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(90)">+90 Dias</button>
+                <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(365)">+1 Ano</button>
               </div>
             </div>
 
             <div class="form-group span-2">
               <label>Chave de Licença (Gerada Automaticamente pelo Sistema)</label>
               <div style="display: flex; gap: 8px;">
-                <input type="text" id="cli-chave" readonly style="flex: 1; background: #0b1120; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 15px; color: #818cf8; letter-spacing: 0.5px; border: 1px solid rgba(129, 140, 248, 0.35); cursor: not-allowed; user-select: all;" title="Chave gerada automaticamente pelo sistema">
-                <button type="button" class="btn-sec" style="background: #334155; color: #fff; height: 42px; font-weight: 700; padding: 0 14px;" onclick="MasterApp.copiarChaveLicenca(document.getElementById('cli-chave').value)">
+                <input type="text" id="cli-chave" readonly style="flex: 1; font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 15px; color: #818cf8; letter-spacing: 0.5px; border-color: rgba(129, 140, 248, 0.35); cursor: not-allowed; user-select: all;" title="Chave gerada automaticamente pelo sistema">
+                <button type="button" class="btn-sec" style="height: 44px; font-weight: 700; padding: 0 14px;" onclick="MasterApp.copiarChaveLicenca(document.getElementById('cli-chave').value)">
                   📋 Copiar
                 </button>
               </div>
@@ -390,7 +391,7 @@
             <!-- SENHA / PIN DO GERENTE NO PDV -->
             <div class="form-group span-2" style="background: rgba(124, 58, 237, 0.05); border: 1px solid rgba(124, 58, 237, 0.2); padding: 12px 14px; border-radius: 10px;">
               <label style="color: #a78bfa; font-weight: 800;">🔑 Senha / PIN do Gerente no PDV</label>
-              <input type="text" id="cli-pin-gerente" maxlength="8" placeholder="Ex: 1234" value="1234" style="background: #0f172a; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 16px; color: #a78bfa; letter-spacing: 2px; margin-top: 6px;">
+              <input type="text" id="cli-pin-gerente" maxlength="8" placeholder="Ex: 1234" value="1234" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 16px; color: #a78bfa; letter-spacing: 2px; margin-top: 6px;">
               <span style="font-size: 11px; color: var(--text-dim); margin-top: 4px; display: block;">Senha usada pelo cliente no aplicativo PDV para desbloquear o sistema e configurações.</span>
             </div>
 
@@ -405,7 +406,7 @@
                   </span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <input type="number" id="cli-limite-terminais" min="1" max="99" value="1" style="width: 70px; height: 38px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 16px; color: #38bdf8; background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px;">
+                  <input type="number" id="cli-limite-terminais" min="1" max="99" value="1" style="width: 70px; height: 38px; text-align: center; font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 16px; color: #38bdf8; background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px;">
                   <span style="font-size: 13px; font-weight: 700; color: #94a3b8;">PC(s)</span>
                 </div>
               </div>
@@ -414,7 +415,7 @@
               <div id="cli-terminais-info-box" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
                   <span style="font-size: 12px; font-weight: 800; color: var(--text-muted);">
-                    🖥️ Computadores Vinculados: <strong id="cli-terminais-contagem" style="color: #38bdf8; font-family: 'JetBrains Mono';">0 / 1</strong>
+                    🖥️ Computadores Vinculados: <strong id="cli-terminais-contagem" style="color: #38bdf8; font-family: 'JetBrains Mono', monospace;">0 / 1</strong>
                   </span>
                   <button type="button" class="btn-desvincular-terminais" id="btn-resetar-terminais" style="font-size: 11px; padding: 4px 10px;" onclick="MasterApp.desvincularTerminaisClienteModal()">
                     🔄 Desvincular Todos
@@ -442,14 +443,13 @@
 
       <!-- 3. RODAPÉ FIXO COMPLETAMENTE FORA DA ÁREA DE SCROLL DA MODAL-BODY -->
       <div class="modal-footer">
-        <button type="button" id="btn-excluir-cliente" class="btn-sec" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); display: none;" onclick="MasterApp.excluirClienteModal()">
+        <div class="modal-footer-main-row">
+          <button type="button" class="btn-sec btn-modal-footer" onclick="MasterApp.fecharModalCliente()">Cancelar</button>
+          <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event)">💾 Salvar Alterações</button>
+        </div>
+        <button type="button" id="btn-excluir-cliente" class="btn-excluir-modal" style="display: none;" onclick="MasterApp.excluirClienteModal()">
           🗑️ Excluir Licença
         </button>
-        
-        <div style="display: flex; gap: 10px; margin-left: auto; width: auto;" class="footer-btn-actions">
-          <button type="button" class="btn-sec" onclick="MasterApp.fecharModalCliente()">Cancelar</button>
-          <button type="button" class="btn-pri" onclick="MasterApp.salvarCliente(event)">💾 Salvar Alterações</button>
-        </div>
       </div>
 
     </div>
@@ -649,6 +649,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=2.0.9"></script>
+  <script src="js/app.js?v=2.1.2"></script>
 </body>
 </html>
