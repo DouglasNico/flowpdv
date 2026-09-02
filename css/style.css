@@ -962,8 +962,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .master-header {
     flex-direction: column;
     align-items: stretch;
-    padding: 16px;
-    gap: 14px;
+    padding: 14px 16px;
+    gap: 12px;
   }
 
   .brand-group {
@@ -975,22 +975,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .header-actions {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
-    gap: 10px;
+    gap: 8px;
   }
 
   #master-logged-user {
-    order: 1;
-    flex: 1;
-    min-width: 0;
+    grid-column: 1 / 2;
+    display: flex;
+    align-items: center;
     justify-content: flex-start;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 700;
-    height: 42px;
-    padding: 6px 14px;
+    height: 40px;
+    padding: 4px 10px;
     border-radius: var(--radius-md);
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid var(--border-color);
@@ -1000,33 +999,38 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: 130px;
   }
 
   .btn-logout {
-    order: 2;
-    flex: 0 0 auto;
+    grid-column: 2 / 3;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    height: 42px;
-    padding: 0 16px;
-    font-size: 13px;
+    height: 40px;
+    padding: 0 12px;
+    font-size: 12.5px;
+    border-radius: var(--radius-md);
   }
 
   .btn-planos {
-    order: 3;
+    grid-column: span 1;
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    font-weight: 800;
+    justify-content: center;
+    height: 42px;
+  }
+
+  .btn-novo-cliente {
+    grid-column: 1 / -1;
     width: 100%;
     padding: 12px 18px;
     font-size: 14px;
     font-weight: 800;
     justify-content: center;
-  }
-
-  .btn-novo-cliente {
-    order: 4;
-    width: 100%;
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: 800;
-    justify-content: center;
+    height: 46px;
   }
 
   /* Métricas Mobile */
@@ -1107,10 +1111,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    padding: 16px;
-    margin-bottom: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
     box-shadow: var(--shadow-card);
-    gap: 8px;
+    gap: 6px;
   }
 
   .master-table tr.master-table-row td {
@@ -1120,11 +1124,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     padding: 6px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     font-size: 13px;
+    gap: 8px;
   }
 
   .master-table tr.master-table-row td.cell-store {
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    justify-content: flex-start;
   }
 
   .master-table tr.master-table-row td.cell-acoes {
@@ -1137,17 +1143,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: 100%;
     padding: 12px;
     font-size: 14px;
+    font-weight: 800;
   }
 
   .mobile-td-label {
     display: inline-block; /* Exibe label descritiva no celular */
+    color: var(--text-dim);
+    font-weight: 700;
+    font-size: 12px;
   }
 
   /* ========================================================================
      MODAL RESPONSIVO MOBILE
      ======================================================================== */
   .modal-overlay {
-    padding: 10px;
+    padding: 8px;
   }
 
   .modal-card {
@@ -1167,7 +1177,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .modal-body {
-    padding: 16px 14px;
+    padding: 14px;
   }
 
   .form-grid {
@@ -1180,20 +1190,37 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .modal-footer {
-    padding: 12px 16px;
+    padding: 12px 14px;
     flex-wrap: wrap;
     gap: 8px;
   }
 
   .modal-footer button {
     flex: 1;
-    min-width: 120px;
+    min-width: 110px;
   }
 
   #btn-excluir-cliente {
     width: 100%;
     order: 3;
     margin-top: 4px;
+  }
+
+  /* Form de Planos no Mobile */
+  #form-cadastrar-plano > div:first-of-type {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  /* Filtros de Auditoria no Mobile */
+  #modal-auditoria .modal-body > div:first-of-type {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  #modal-auditoria .modal-body > div:first-of-type > div {
+    min-width: 100% !important;
   }
 }
 

@@ -1,5 +1,5 @@
-// FlowPDV Master Admin Service Worker v2.0.0 - Fast PWA
-const CACHE_NAME = 'flowpdv-master-v2.0.0';
+// FlowPDV Master Admin Service Worker v2.0.9 - Fast PWA
+const CACHE_NAME = 'flowpdv-master-v2.0.9';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
