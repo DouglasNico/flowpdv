@@ -848,6 +848,8 @@ window.MasterApp = {
     const catInput = document.getElementById('cli-categorias');
     const btnExcluir = document.getElementById('btn-excluir-cliente');
 
+    const titleEl = document.getElementById('modal-cliente-title');
+    if (titleEl) titleEl.innerText = '➕ Nova Licença / Cliente';
     if (idInput) idInput.value = '';
     if (btnExcluir) btnExcluir.style.display = 'none';
     if (chaveInput) chaveInput.value = 'LIC-FLOW-' + Math.floor(100000 + Math.random() * 900000);
@@ -905,6 +907,8 @@ window.MasterApp = {
     const moduloComandasSelect = document.getElementById('cli-modulo-comandas');
     const btnExcluir = document.getElementById('btn-excluir-cliente');
 
+    const titleEl = document.getElementById('modal-cliente-title');
+    if (titleEl) titleEl.innerText = '✏️ Editar Cliente & Licença';
     if (idInput) idInput.value = c.id;
     if (nomeInput) nomeInput.value = c.nome || '';
     if (docInput) docInput.value = c.documento || '';

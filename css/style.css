@@ -510,8 +510,10 @@ body {
   border-bottom: none;
 }
 
-.master-table tr:hover td {
-  background: rgba(51, 65, 85, 0.5);
+@media (hover: hover) {
+  .master-table tbody tr:hover td {
+    background: rgba(51, 65, 85, 0.35);
+  }
 }
 
 .mobile-td-label {
@@ -770,6 +772,7 @@ body {
 .modal-body {
   padding: 24px;
   overflow-y: auto;
+  overflow-x: hidden !important;
   flex: 1 1 auto;
   min-height: 0;
   background: var(--bg-card);
@@ -951,56 +954,57 @@ select:-webkit-autofill:focus {
 }
 
 .vencimento-inputs-row {
-  display: grid;
-  grid-template-columns: 1.4fr 1.6fr;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  align-items: center;
-}
-
-@media (max-width: 540px) {
-  .vencimento-inputs-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .venc-date-input {
+  width: 100% !important;
+  height: 44px !important;
+  box-sizing: border-box !important;
   cursor: pointer;
-  height: 44px;
 }
 
 .venc-add-group {
-  display: flex;
-  gap: 6px;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 85px 1fr;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .venc-dias-number {
-  width: 70px !important;
+  width: 100% !important;
+  min-width: 0 !important;
   height: 44px !important;
   text-align: center !important;
   font-weight: 800 !important;
   color: var(--accent-green) !important;
   font-family: 'JetBrains Mono', monospace !important;
   font-size: 15px !important;
-  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .btn-add-dias {
-  flex: 1;
-  height: 44px;
-  white-space: nowrap;
-  font-weight: 800;
-  font-size: 13px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--accent-green), #059669);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  width: 100% !important;
+  height: 44px !important;
+  white-space: nowrap !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  border-radius: var(--radius-md) !important;
+  background: linear-gradient(135deg, var(--accent-green), #059669) !important;
+  color: #fff !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3) !important;
 }
 
 .quick-days-grid {
@@ -1370,16 +1374,27 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .master-table tr.master-table-row {
     display: flex;
     flex-direction: column;
-    background: var(--bg-card);
+    background: var(--bg-card) !important;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: 14px;
     margin-bottom: 12px;
     box-shadow: var(--shadow-card);
     gap: 6px;
+    -webkit-tap-highlight-color: transparent !important;
+    user-select: none;
   }
 
-  .master-table tr.master-table-row td {
+  .master-table tr.master-table-row:hover,
+  .master-table tr.master-table-row:active,
+  .master-table tr.master-table-row:focus {
+    background: var(--bg-card) !important;
+  }
+
+  .master-table tr.master-table-row td,
+  .master-table tr.master-table-row:hover td,
+  .master-table tr.master-table-row:active td,
+  .master-table tr.master-table-row:focus td {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1387,6 +1402,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     font-size: 13px;
     gap: 8px;
+    background: transparent !important;
+    -webkit-tap-highlight-color: transparent !important;
   }
 
   .master-table tr.master-table-row td.cell-store {
