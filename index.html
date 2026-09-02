@@ -316,7 +316,8 @@
                 <button type="button" class="preset-cat-btn cat-geral" onclick="MasterApp.aplicarPresetCategorias('geral')">⚡ Geral</button>
               </div>
 
-              <input type="text" id="cli-categorias" placeholder="Ex: Cervejas, Destilados, Vinhos, Tabacaria, Petiscos" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #38bdf8;">
+              <input type="text" id="cli-categorias" placeholder="Ex: Cervejas, Destilados, Vinhos, Tabacaria, Petiscos" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #38bdf8;" oninput="MasterApp.atualizarPreviewCategorias()">
+              <div id="cli-categorias-preview" class="categorias-preview" aria-live="polite"></div>
             </div>
 
             <div class="form-group span-2">

@@ -181,6 +181,14 @@ window.MasterApp = {
     this.aplicarPresetCategorias(ramo);
   },
 
+  atualizarPreviewCategorias() {
+    const input = document.getElementById('cli-categorias');
+    const preview = document.getElementById('cli-categorias-preview');
+    if (!input || !preview) return;
+    const categorias = input.value.split(',').map(item => item.trim()).filter(Boolean);
+    preview.innerHTML = categorias.map(categoria => `<span class="categoria-chip-preview">${categoria}</span>`).join('');
+  },
+
   aplicarPresetCategorias(tipo) {
     const preset = this.presetsCategorias[tipo];
     if (!preset) return;
@@ -192,6 +200,7 @@ window.MasterApp = {
     if (ramoEl) ramoEl.value = tipo;
     if (iconeEl) iconeEl.value = preset.icone;
     if (catEl) catEl.value = preset.lista.join(', ');
+    this.atualizarPreviewCategorias();
 
     // Aplica os módulos recomendados para o segmento
     const modulosPadrao = this.modulosPadraoPorRamo[tipo] || this.modulosPadraoPorRamo.geral;
@@ -433,6 +442,38 @@ window.MasterApp = {
     await this.sincronizarComNuvemFirestore();
     this.iniciarOuvintePlanosRealtime();
     this.iniciarOuvinteNuvemRealtime();
+    this.iniciarOuvinteBackupsLojasRealtime();
+  },
+
+  ouvintesBackupsLojas: new Map(),
+
+  iniciarOuvinteBackupsLojasRealtime() {
+    if (!window.FirebaseDB || !window.FirebaseDB.db || !window.FirebaseDB.onSnapshot) return;
+    const { db, doc, onSnapshot } = window.FirebaseDB;
+    (this.clientes || []).forEach(cliente => {
+      const chave = String(cliente?.chaveLicenca || '').trim().toUpperCase();
+      if (!chave || this.ouvintesBackupsLojas.has(chave)) return;
+
+      const unsubscribe = onSnapshot(doc(db, 'backups_lojas', chave), snap => {
+        if (!snap || !snap.exists()) return;
+        const backup = snap.data() || {};
+        const chaveBackup = String(backup.chaveLicenca || '').trim().toUpperCase();
+        if (chaveBackup && chaveBackup !== chave) return;
+
+        const alvo = (this.clientes || []).find(item =>
+          String(item?.chaveLicenca || '').trim().toUpperCase() === chave
+        );
+        if (!alvo || !Array.isArray(backup.categorias)) return;
+
+        const categorias = [...(alvo.categorias || []), ...backup.categorias]
+          .map(item => String(item || '').trim())
+          .filter((item, index, lista) => item && lista.findIndex(valor => valor.toLowerCase() === item.toLowerCase()) === index);
+        alvo.categorias = categorias;
+        this.salvarDados();
+        this.renderTabela();
+      });
+      this.ouvintesBackupsLojas.set(chave, unsubscribe);
+    });
   },
 
   iniciarOuvinteNuvemRealtime() {
@@ -863,6 +904,7 @@ window.MasterApp = {
     this.setModulosCheckboxes(this.modulosPadraoPorRamo.adega);
 
     if (catInput) catInput.value = this.presetsCategorias.adega.lista.join(', ');
+    this.atualizarPreviewCategorias();
     
     this.renderSelectPlanos('Mensal Pro');
 
@@ -924,6 +966,7 @@ window.MasterApp = {
 
     if (logoInput) logoInput.value = c.logoUrl || '';
     if (catInput) catInput.value = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.join(', ') : (this.presetsCategorias[ramo]?.lista.join(', ') || this.presetsCategorias.adega.lista.join(', '));
+    this.atualizarPreviewCategorias();
     
     this.renderSelectPlanos(c.plano || 'Mensal Pro');
     if (valorInput) valorInput.value = c.valorMensal || 89.90;
