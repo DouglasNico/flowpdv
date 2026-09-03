@@ -69,7 +69,7 @@ window.MasterApp = {
   },
 
   modulosPadraoPorRamo: {
-    adega: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    adega: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true, pagamentos: { manual: true, tefIntegrado: true, vouchers: false, voucherVr: false, voucherVa: false, voucherAlelo: false, voucherSodexo: false, voucherTicket: false, voucherOutros: false } },
     mercado: { fardosPacks: true, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
     acougue: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
     hortifruti: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
@@ -216,6 +216,7 @@ window.MasterApp = {
     const modXml = document.getElementById('mod-xml');
     const modFiscal = document.getElementById('mod-fiscal');
     const modTef = document.getElementById('mod-tef');
+    const pagamentos = modulos.pagamentos || {};
 
     if (modFardos) modFardos.checked = modulos.fardosPacks !== false;
     if (modBalanca) modBalanca.checked = Boolean(modulos.balancaPeso);
@@ -225,6 +226,19 @@ window.MasterApp = {
     if (modXml) modXml.checked = modulos.importadorXml !== false;
     if (modFiscal) modFiscal.checked = modulos.fiscalNfce !== false;
     if (modTef) modTef.checked = modulos.tefCartao !== false;
+    const setPagamento = (id, valor, padrao = false) => {
+      const el = document.getElementById(id);
+      if (el) el.checked = valor !== undefined ? valor === true : padrao;
+    };
+    setPagamento('pag-manual', pagamentos.manual, true);
+    setPagamento('pag-tef-integrado', pagamentos.tefIntegrado, modulos.tefCartao !== false);
+    setPagamento('pag-vouchers', pagamentos.vouchers, false);
+    setPagamento('pag-vr', pagamentos.voucherVr, false);
+    setPagamento('pag-va', pagamentos.voucherVa, false);
+    setPagamento('pag-alelo', pagamentos.voucherAlelo, false);
+    setPagamento('pag-sodexo', pagamentos.voucherSodexo, false);
+    setPagamento('pag-ticket', pagamentos.voucherTicket, false);
+    setPagamento('pag-outros', pagamentos.voucherOutros, false);
   },
 
   getModulosCheckboxes() {
@@ -236,7 +250,18 @@ window.MasterApp = {
       fiadoWhatsApp: document.getElementById('mod-fiado')?.checked ?? true,
       importadorXml: document.getElementById('mod-xml')?.checked ?? true,
       fiscalNfce: document.getElementById('mod-fiscal')?.checked ?? true,
-      tefCartao: document.getElementById('mod-tef')?.checked ?? true
+      tefCartao: document.getElementById('mod-tef')?.checked ?? true,
+      pagamentos: {
+        manual: document.getElementById('pag-manual')?.checked ?? true,
+        tefIntegrado: document.getElementById('pag-tef-integrado')?.checked ?? true,
+        vouchers: document.getElementById('pag-vouchers')?.checked ?? false,
+        voucherVr: document.getElementById('pag-vr')?.checked ?? false,
+        voucherVa: document.getElementById('pag-va')?.checked ?? false,
+        voucherAlelo: document.getElementById('pag-alelo')?.checked ?? false,
+        voucherSodexo: document.getElementById('pag-sodexo')?.checked ?? false,
+        voucherTicket: document.getElementById('pag-ticket')?.checked ?? false,
+        voucherOutros: document.getElementById('pag-outros')?.checked ?? false
+      }
     };
   },
 
