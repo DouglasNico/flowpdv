@@ -338,6 +338,8 @@ window.MasterApp = {
             modulos: c.modulos || this.modulosPadraoPorRamo[c.ramoAtividade || 'adega'] || this.modulosPadraoPorRamo.adega,
             moduloComandas: c.moduloComandas || 'mesas_e_comandas',
             categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+            categoriasExcluidas: c.categoriasExcluidas || [],
+            categoriasExcluidas: c.categoriasExcluidas || [],
             plano: c.plano,
             valorMensal: c.valorMensal,
             vencimento: c.vencimento,
@@ -353,6 +355,12 @@ window.MasterApp = {
           await setDoc(doc(db, 'licencas', docId), payload, { merge: true });
           if (c.chaveLicenca && c.chaveLicenca !== docId) {
             await setDoc(doc(db, 'licencas', c.chaveLicenca), payload, { merge: true });
+          }
+          if (c.chaveLicenca) {
+            await setDoc(doc(db, 'backups_lojas', c.chaveLicenca), {
+              categorias: payload.categorias,
+              categoriasExcluidas: payload.categoriasExcluidas || []
+            }, { merge: true }).catch(() => {});
           }
         }
         console.log('[Firebase Master] Salvo com sucesso!');
@@ -488,14 +496,24 @@ window.MasterApp = {
         const alvo = (this.clientes || []).find(item =>
           String(item?.chaveLicenca || '').trim().toUpperCase() === chave
         );
-        if (!alvo || !Array.isArray(backup.categorias)) return;
+        if (!alvo) return;
 
-        const categorias = [...(alvo.categorias || []), ...backup.categorias]
-          .map(item => String(item || '').trim())
-          .filter((item, index, lista) => item && lista.findIndex(valor => valor.toLowerCase() === item.toLowerCase()) === index);
-        alvo.categorias = categorias;
-        this.salvarDados();
-        this.renderTabela();
+        const excluidas = (Array.isArray(backup.categoriasExcluidas) ? backup.categoriasExcluidas : [])
+          .map(c => String(c || '').toLowerCase().trim());
+
+        if (Array.isArray(backup.categorias)) {
+          const categorias = backup.categorias
+            .map(item => String(item || '').trim())
+            .filter(item => item && !excluidas.includes(item.toLowerCase()))
+            .filter((item, index, lista) => lista.findIndex(valor => valor.toLowerCase() === item.toLowerCase()) === index);
+
+          if (categorias.length > 0) {
+            alvo.categorias = categorias;
+            alvo.categoriasExcluidas = backup.categoriasExcluidas || [];
+            this.salvarDados();
+            this.renderTabela();
+          }
+        }
       });
       this.ouvintesBackupsLojas.set(chave, unsubscribe);
     });
@@ -840,7 +858,8 @@ window.MasterApp = {
         const ativosTerm = terminaisUnicos.length;
         const isLotado = ativosTerm >= maxTerm;
         const termBadge = '<span class="badge-terminal ' + (isLotado ? 'lotado' : 'livre') + '">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
-        const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.length : 0;
+        const exc = Array.isArray(c.categoriasExcluidas) ? c.categoriasExcluidas.map(s => s.toLowerCase().trim()) : [];
+        const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.filter(cat => !exc.includes(cat.toLowerCase().trim())).length : 0;
 
         return '<tr class="master-table-row">' +
             '<td class="cell-store">' +
@@ -990,7 +1009,15 @@ window.MasterApp = {
     this.setModulosCheckboxes(modulos);
 
     if (logoInput) logoInput.value = c.logoUrl || '';
-    if (catInput) catInput.value = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.join(', ') : (this.presetsCategorias[ramo]?.lista.join(', ') || this.presetsCategorias.adega.lista.join(', '));
+
+    let catsAtuais = [];
+    if (c.categorias && Array.isArray(c.categorias)) {
+      const exc = Array.isArray(c.categoriasExcluidas) ? c.categoriasExcluidas.map(s => s.toLowerCase().trim()) : [];
+      catsAtuais = c.categorias.filter(cat => !exc.includes(cat.toLowerCase().trim()));
+    } else {
+      catsAtuais = this.presetsCategorias[ramo]?.lista || this.presetsCategorias.adega.lista;
+    }
+    if (catInput) catInput.value = catsAtuais.join(', ');
     this.atualizarPreviewCategorias();
     
     this.renderSelectPlanos(c.plano || 'Mensal Pro');
@@ -1052,6 +1079,18 @@ window.MasterApp = {
     const logoUrl = document.getElementById('cli-logo-url')?.value.trim() || '';
     const categoriasRaw = document.getElementById('cli-categorias')?.value.trim() || '';
     const categorias = categoriasRaw ? categoriasRaw.split(',').map(s => s.trim()).filter(Boolean) : (this.presetsCategorias[ramoAtividade]?.lista || ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos']);
+
+    const cExistente = this.clientes.find(item => item && (item.id === idFinal || item.chaveLicenca === chaveLicenca));
+
+    const categoriasAnteriores = cExistente?.categorias || [];
+    const removidas = categoriasAnteriores.filter(c => !categorias.some(nova => nova.toLowerCase() === c.toLowerCase()));
+    let categoriasExcluidas = Array.isArray(cExistente?.categoriasExcluidas) ? [...cExistente.categoriasExcluidas] : [];
+    removidas.forEach(r => {
+      if (!categoriasExcluidas.some(x => x.toLowerCase() === r.toLowerCase())) {
+        categoriasExcluidas.push(r);
+      }
+    });
+    categoriasExcluidas = categoriasExcluidas.filter(c => !categorias.some(nova => nova.toLowerCase() === c.toLowerCase()));
     const plano = document.getElementById('cli-plano')?.value || 'Mensal Pro';
     const valorMensal = parseFloat(document.getElementById('cli-valor')?.value) || 89.90;
     const vencimento = document.getElementById('cli-vencimento')?.value || '2026-12-31';
@@ -1059,8 +1098,6 @@ window.MasterApp = {
     const pinGerente = document.getElementById('cli-pin-gerente')?.value.trim() || '1234';
     const limiteTerminais = Math.max(1, parseInt(document.getElementById('cli-limite-terminais')?.value) || 1);
     const moduloComandas = document.getElementById('cli-modulo-comandas')?.value || 'mesas_e_comandas';
-
-    const cExistente = this.clientes.find(item => item && (item.id === idFinal || item.chaveLicenca === chaveLicenca));
 
     const novoCliente = {
       id: idFinal,
@@ -1076,6 +1113,7 @@ window.MasterApp = {
       moduloComandas,
       logoUrl,
       categorias,
+      categoriasExcluidas,
       plano,
       valorMensal,
       vencimento,
