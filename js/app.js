@@ -635,6 +635,7 @@ window.MasterApp = {
               responsavel: data.responsavel || 'Responsável',
               whatsapp: data.whatsapp || '(19) 99999-7777',
               ramoAtividade: data.ramoAtividade || 'adega',
+              layoutPdv: data.layoutPdv === 'classico' ? 'classico' : 'moderno',
               icone: data.icone || '🍷',
               modulos: data.modulos || null,
               moduloComandas: data.moduloComandas || 'mesas_e_comandas',
@@ -693,6 +694,7 @@ window.MasterApp = {
 
             const itemFormatado = {
               ...cCloud,
+              layoutPdv: cCloud.layoutPdv === 'classico' ? 'classico' : 'moderno',
               logoUrl: logoUrlFinal,
               categorias: catsFinal,
               modulos: modulosFinal
