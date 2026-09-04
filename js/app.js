@@ -232,8 +232,6 @@ window.MasterApp = {
       const el = document.getElementById(id);
       if (el) el.checked = valor !== undefined ? valor === true : padrao;
     };
-    setPagamento('pag-manual', pagamentos.manual, true);
-    setPagamento('pag-tef-integrado', pagamentos.tefIntegrado, modulos.tefCartao !== false);
     setPagamento('pag-vouchers', pagamentos.vouchers, false);
     setPagamento('pag-vr', pagamentos.voucherVr, false);
     setPagamento('pag-va', pagamentos.voucherVa, false);
@@ -255,8 +253,6 @@ window.MasterApp = {
       fiscalNfce: document.getElementById('mod-fiscal')?.checked ?? true,
       tefCartao: document.getElementById('mod-tef')?.checked ?? true,
       pagamentos: {
-        manual: document.getElementById('pag-manual')?.checked ?? true,
-        tefIntegrado: document.getElementById('pag-tef-integrado')?.checked ?? true,
         vouchers: document.getElementById('pag-vouchers')?.checked ?? false,
         voucherVr: document.getElementById('pag-vr')?.checked ?? false,
         voucherVa: document.getElementById('pag-va')?.checked ?? false,
