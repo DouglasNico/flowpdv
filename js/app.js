@@ -547,6 +547,7 @@ window.MasterApp = {
                 responsavel: data.responsavel || 'Responsável',
                 whatsapp: data.whatsapp || '(19) 99999-7777',
                 ramoAtividade: data.ramoAtividade || 'adega',
+                layoutPdv: data.layoutPdv === 'classico' ? 'classico' : 'moderno',
                 icone: data.icone || '🍷',
                 modulos: data.modulos || null,
                 moduloComandas: data.moduloComandas || 'mesas_e_comandas',
@@ -606,6 +607,7 @@ window.MasterApp = {
                 if (c.modulos) existing.modulos = c.modulos;
                 if (c.moduloComandas !== undefined) existing.moduloComandas = c.moduloComandas;
                 if (c.ramoAtividade) existing.ramoAtividade = c.ramoAtividade;
+                if (c.layoutPdv === 'classico') existing.layoutPdv = 'classico';
               }
             }
             this.clientes = Array.from(dedupMap.values());
