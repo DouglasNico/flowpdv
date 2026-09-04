@@ -238,6 +238,18 @@ window.MasterApp = {
     setPagamento('pag-marca-pluxee', pagamentos.voucherMarcaPluxee ?? pagamentos.voucherSodexo, false);
     setPagamento('pag-marca-ticket', pagamentos.voucherMarcaTicket ?? pagamentos.voucherTicket, false);
     setPagamento('pag-outros', pagamentos.voucherOutros, false);
+    this.atualizarEstadoVouchers();
+  },
+
+  atualizarEstadoVouchers() {
+    const moduloVouchers = document.getElementById('pag-vouchers');
+    const habilitado = Boolean(moduloVouchers?.checked);
+    document.querySelectorAll('[data-voucher-option]').forEach(label => {
+      const checkbox = label.querySelector('input');
+      if (checkbox) checkbox.disabled = !habilitado;
+      label.style.opacity = habilitado ? '1' : '0.42';
+      label.style.cursor = habilitado ? 'pointer' : 'not-allowed';
+    });
   },
 
   getModulosCheckboxes() {
