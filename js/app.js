@@ -265,7 +265,7 @@ window.MasterApp = {
     };
   },
 
-  async salvarDados() {
+  async salvarDados(idEspecifico = null) {
     const clientesMap = new Map();
     for (const c of this.clientes) {
       if (!c) continue;
@@ -323,6 +323,7 @@ window.MasterApp = {
       try {
         const { db, setDoc, doc } = window.FirebaseDB;
         for (const c of this.clientes) {
+          if (idEspecifico && c.id !== idEspecifico && c.chaveLicenca !== idEspecifico) continue;
           const docId = c.id || c.chaveLicenca;
           const payload = {
             id: c.id,
@@ -1140,14 +1141,17 @@ window.MasterApp = {
       this.clientes.unshift(novoCliente);
     }
 
+    const btn = document.querySelector('#modal-cliente .btn-primary-action');
+    const oldText = btn ? btn.innerHTML : 'Salvar Cliente';
+    if (btn) btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;vertical-align:middle;"></span> Salvando...';
+
+    await this.salvarDados(novoCliente.id);
+
     this.fecharModalCliente();
     this.renderMetrics();
     this.renderTabela();
 
-    await this.salvarDados();
-    this.renderMetrics();
-    this.renderTabela();
-
+    if (btn) btn.innerHTML = oldText;
     this.showToast('🎉 "' + nome + '" atualizada com sucesso!');
   },
 
