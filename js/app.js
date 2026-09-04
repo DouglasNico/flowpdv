@@ -955,6 +955,8 @@ window.MasterApp = {
     
     const ramoSelect = document.getElementById('cli-ramo');
     if (ramoSelect) ramoSelect.value = 'adega';
+    const layoutPdvSelect = document.getElementById('cli-layout-pdv');
+    if (layoutPdvSelect) layoutPdvSelect.value = 'moderno';
     this.setModulosCheckboxes(this.modulosPadraoPorRamo.adega);
 
     if (catInput) catInput.value = this.presetsCategorias.adega.lista.join(', ');
@@ -989,6 +991,7 @@ window.MasterApp = {
     const respInput = document.getElementById('cli-responsavel');
     const zapInput = document.getElementById('cli-whatsapp');
     const ramoInput = document.getElementById('cli-ramo');
+    const layoutPdvInput = document.getElementById('cli-layout-pdv');
     const iconeInput = document.getElementById('cli-icone');
     const logoInput = document.getElementById('cli-logo-url');
     const catInput = document.getElementById('cli-categorias');
@@ -1013,6 +1016,7 @@ window.MasterApp = {
 
     const ramo = c.ramoAtividade || 'adega';
     if (ramoInput) ramoInput.value = ramo;
+    if (layoutPdvInput) layoutPdvInput.value = c.layoutPdv || 'moderno';
     if (iconeInput) iconeInput.value = c.icone || this.presetsCategorias[ramo]?.icone || '🍷';
     
     const modulos = c.modulos || this.modulosPadraoPorRamo[ramo] || this.modulosPadraoPorRamo.adega;
@@ -1084,6 +1088,7 @@ window.MasterApp = {
     const responsavel = document.getElementById('cli-responsavel')?.value.trim() || '';
     const whatsapp = document.getElementById('cli-whatsapp')?.value.trim() || '';
     const ramoAtividade = document.getElementById('cli-ramo')?.value || 'adega';
+    const layoutPdv = document.getElementById('cli-layout-pdv')?.value || 'moderno';
     const icone = document.getElementById('cli-icone')?.value || this.presetsCategorias[ramoAtividade]?.icone || '🍷';
     const modulos = this.getModulosCheckboxes();
     const logoUrl = document.getElementById('cli-logo-url')?.value.trim() || '';
@@ -1118,6 +1123,7 @@ window.MasterApp = {
       responsavel,
       whatsapp,
       ramoAtividade,
+      layoutPdv,
       icone,
       modulos,
       moduloComandas,
