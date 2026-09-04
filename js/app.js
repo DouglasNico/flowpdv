@@ -233,11 +233,10 @@ window.MasterApp = {
       if (el) el.checked = valor !== undefined ? valor === true : padrao;
     };
     setPagamento('pag-vouchers', pagamentos.vouchers, false);
-    setPagamento('pag-vr', pagamentos.voucherVr, false);
-    setPagamento('pag-va', pagamentos.voucherVa, false);
-    setPagamento('pag-alelo', pagamentos.voucherAlelo, false);
-    setPagamento('pag-sodexo', pagamentos.voucherSodexo, false);
-    setPagamento('pag-ticket', pagamentos.voucherTicket, false);
+    setPagamento('pag-marca-vr', pagamentos.voucherMarcaVr ?? pagamentos.voucherVr, false);
+    setPagamento('pag-marca-alelo', pagamentos.voucherMarcaAlelo ?? pagamentos.voucherAlelo, false);
+    setPagamento('pag-marca-pluxee', pagamentos.voucherMarcaPluxee ?? pagamentos.voucherSodexo, false);
+    setPagamento('pag-marca-ticket', pagamentos.voucherMarcaTicket ?? pagamentos.voucherTicket, false);
     setPagamento('pag-outros', pagamentos.voucherOutros, false);
   },
 
@@ -254,11 +253,10 @@ window.MasterApp = {
       tefCartao: document.getElementById('mod-tef')?.checked ?? true,
       pagamentos: {
         vouchers: document.getElementById('pag-vouchers')?.checked ?? false,
-        voucherVr: document.getElementById('pag-vr')?.checked ?? false,
-        voucherVa: document.getElementById('pag-va')?.checked ?? false,
-        voucherAlelo: document.getElementById('pag-alelo')?.checked ?? false,
-        voucherSodexo: document.getElementById('pag-sodexo')?.checked ?? false,
-        voucherTicket: document.getElementById('pag-ticket')?.checked ?? false,
+        voucherMarcaVr: document.getElementById('pag-marca-vr')?.checked ?? false,
+        voucherMarcaAlelo: document.getElementById('pag-marca-alelo')?.checked ?? false,
+        voucherMarcaPluxee: document.getElementById('pag-marca-pluxee')?.checked ?? false,
+        voucherMarcaTicket: document.getElementById('pag-marca-ticket')?.checked ?? false,
         voucherOutros: document.getElementById('pag-outros')?.checked ?? false
       }
     };
