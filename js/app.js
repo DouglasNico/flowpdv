@@ -212,6 +212,7 @@ window.MasterApp = {
     const modBalanca = document.getElementById('mod-balanca');
     const modValidade = document.getElementById('mod-validade');
     const modGrade = document.getElementById('mod-grade');
+    const modClube = document.getElementById('mod-clube');
     const modFiado = document.getElementById('mod-fiado');
     const modXml = document.getElementById('mod-xml');
     const modFiscal = document.getElementById('mod-fiscal');
@@ -222,6 +223,7 @@ window.MasterApp = {
     if (modBalanca) modBalanca.checked = Boolean(modulos.balancaPeso);
     if (modValidade) modValidade.checked = modulos.validadeLotes !== false;
     if (modGrade) modGrade.checked = Boolean(modulos.gradeRoupas);
+    if (modClube) modClube.checked = Boolean(modulos.clubeFidelidade);
     if (modFiado) modFiado.checked = modulos.fiadoWhatsApp !== false;
     if (modXml) modXml.checked = modulos.importadorXml !== false;
     if (modFiscal) modFiscal.checked = modulos.fiscalNfce !== false;
@@ -247,6 +249,7 @@ window.MasterApp = {
       balancaPeso: document.getElementById('mod-balanca')?.checked ?? false,
       validadeLotes: document.getElementById('mod-validade')?.checked ?? true,
       gradeRoupas: document.getElementById('mod-grade')?.checked ?? false,
+      clubeFidelidade: document.getElementById('mod-clube')?.checked ?? false,
       fiadoWhatsApp: document.getElementById('mod-fiado')?.checked ?? true,
       importadorXml: document.getElementById('mod-xml')?.checked ?? true,
       fiscalNfce: document.getElementById('mod-fiscal')?.checked ?? true,
