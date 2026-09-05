@@ -472,7 +472,7 @@
       <div class="modal-footer">
         <div class="modal-footer-main-row">
           <button type="button" class="btn-sec btn-modal-footer" onclick="MasterApp.fecharModalCliente()">Cancelar</button>
-          <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event)">💾 Salvar Alterações</button>
+          <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event).catch(err => { alert('Erro CRITICO ao salvar: ' + err.message); console.error(err); })">💾 Salvar Alterações</button>
         </div>
         <button type="button" id="btn-excluir-cliente" class="btn-excluir-modal" style="display: none;" onclick="MasterApp.excluirClienteModal()">
           🗑️ Excluir Licença
