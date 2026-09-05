@@ -278,7 +278,7 @@ window.MasterApp = {
     const clientesMap = new Map();
     for (const c of this.clientes) {
       if (!c) continue;
-      const docClean = (c.documento || '').replace(/\D/g, '');
+      const docClean = String(c.documento || '').replace(/\D/g, '');
       const key = docClean || c.chaveLicenca || c.id;
       if (!key) continue;
 
@@ -517,7 +517,7 @@ window.MasterApp = {
           const categorias = backup.categorias
             .map(item => String(item || '').trim())
             .filter(item => item && !excluidas.includes(item.toLowerCase()))
-            .filter((item, index, lista) => lista.findIndex(valor => valor.toLowerCase() === item.toLowerCase()) === index);
+            .filter((item, index, lista) => lista.findIndex(valor => valoString(r).toLowerCase() === item.toLowerCase()) === index);
 
           if (categorias.length > 0) {
             alvo.categorias = categorias;
@@ -584,7 +584,7 @@ window.MasterApp = {
             };
 
             for (const c of cloudClientes) {
-              const docClean = (c.documento || '').replace(/\D/g, '');
+              const docClean = String(c.documento || '').replace(/\D/g, '');
               const key = docClean || c.chaveLicenca || c.id;
               const existing = dedupMap.get(key);
               const termUnicosC = desduplicarTerminais(c.terminaisAtivos);
@@ -1104,14 +1104,14 @@ window.MasterApp = {
     const cExistente = this.clientes.find(item => item && (item.id === idFinal || item.chaveLicenca === chaveLicenca));
 
     const categoriasAnteriores = cExistente?.categorias || [];
-    const removidas = categoriasAnteriores.filter(c => !categorias.some(nova => nova.toLowerCase() === c.toLowerCase()));
+    const removidas = categoriasAnteriores.filter(c => !categorias.some(nova => String(nova).toLowerCase() === String(c).toLowerCase()));
     let categoriasExcluidas = Array.isArray(cExistente?.categoriasExcluidas) ? [...cExistente.categoriasExcluidas] : [];
     removidas.forEach(r => {
-      if (!categoriasExcluidas.some(x => x.toLowerCase() === r.toLowerCase())) {
+      if (!categoriasExcluidas.some(x => String(x).toLowerCase() === String(r).toLowerCase())) {
         categoriasExcluidas.push(r);
       }
     });
-    categoriasExcluidas = categoriasExcluidas.filter(c => !categorias.some(nova => nova.toLowerCase() === c.toLowerCase()));
+    categoriasExcluidas = categoriasExcluidas.filter(c => !categorias.some(nova => String(nova).toLowerCase() === String(c).toLowerCase()));
     const plano = document.getElementById('cli-plano')?.value || 'Mensal Pro';
     const valorMensal = parseFloat(document.getElementById('cli-valor')?.value) || 89.90;
     const vencimento = document.getElementById('cli-vencimento')?.value || '2026-12-31';
@@ -1146,7 +1146,7 @@ window.MasterApp = {
       terminaisAtivos: Array.isArray(cExistente?.terminaisAtivos) ? cExistente.terminaisAtivos : []
     };
 
-    const docClean = documento.replace(/\D/g, '');
+    const docClean = String(documento || '').replace(/\D/g, '');
     const idx = this.clientes.findIndex(c => 
       (id && c.id === id) ||
       (chaveLicenca && c.chaveLicenca === chaveLicenca) ||
