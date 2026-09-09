@@ -4283,3 +4283,146 @@ select:-webkit-autofill {
   background: rgba(248, 113, 113, 0.28) !important;
   color: #fecaca !important;
 }
+
+
+/* ==========================================================================
+   v3.3.0 — pagina premium: CTA na toolbar, KPIs em faixa, cards mais limpos
+   ========================================================================== */
+.app-shell--sidebar .stage {
+  gap: 16px;
+  padding: 28px 32px 40px;
+  max-width: 1480px;
+}
+
+.stage-kicker {
+  color: var(--brand-orange) !important;
+  margin-bottom: 6px !important;
+  letter-spacing: 0.16em !important;
+}
+
+.stage-title {
+  font-size: 30px !important;
+  letter-spacing: -0.045em !important;
+}
+
+.stage-sub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.app-shell--sidebar .kpi-rail,
+.app-shell--sidebar .metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  background: #2a4058 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18) !important;
+}
+
+.app-shell--sidebar .kpi,
+.app-shell--sidebar .metrics-grid .metric-card {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 16px 20px !important;
+  min-height: 92px;
+}
+
+.app-shell--sidebar .kpi + .kpi,
+.app-shell--sidebar .metrics-grid .metric-card + .metric-card {
+  border-left: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+.app-shell--sidebar .stage-tools,
+.app-shell--sidebar .toolbar,
+.app-shell--sidebar .controls-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: nowrap !important;
+  padding: 8px !important;
+  background: #2a4058 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 14px !important;
+}
+
+.app-shell--sidebar .search-box {
+  flex: 1 1 auto;
+  min-width: 180px;
+  height: 40px;
+  background: #1e3144;
+  border-color: rgba(255,255,255,0.08);
+  border-radius: 10px;
+}
+
+.app-shell--sidebar .filter-group {
+  flex: 0 0 auto;
+  background: #1e3144;
+  border-color: rgba(255,255,255,0.08);
+  border-radius: 10px;
+}
+
+.app-shell--sidebar .btn-novo-cliente {
+  flex: 0 0 auto;
+  height: 40px !important;
+  padding: 0 16px !important;
+  border-radius: 10px !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  white-space: nowrap;
+}
+
+.license-board {
+  gap: 12px !important;
+}
+
+.license-card {
+  background: #2e4660 !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+.license-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(243,146,55,0.28) !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.22) !important;
+}
+
+.license-actions .btn-ghost,
+.license-actions .btn-sm,
+.license-actions .btn-editar-modern {
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+@media (max-width: 980px) {
+  .app-shell--sidebar .stage-tools {
+    flex-wrap: wrap !important;
+  }
+  .app-shell--sidebar .search-box {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+  .app-shell--sidebar .btn-novo-cliente {
+    margin-left: auto !important;
+  }
+  .app-shell--sidebar .kpi-rail,
+  .app-shell--sidebar .metrics-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .app-shell--sidebar .kpi:nth-child(n+3),
+  .app-shell--sidebar .metrics-grid .metric-card:nth-child(n+3) {
+    border-top: 1px solid rgba(255,255,255,0.08) !important;
+  }
+}

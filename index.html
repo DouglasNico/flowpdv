@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.2.11">
+  <link rel="stylesheet" href="css/style.css?v=3.3.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.11')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.0')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.11');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.0');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -116,10 +116,8 @@
       <header class="stage-header">
         <div class="stage-heading">
           <p class="stage-kicker">Painel SaaS</p>
-          <div class="stage-title-row">
-            <h1 class="stage-title">Licenças</h1>
-            <button type="button" class="btn-primary-cta btn-novo-cliente" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">+ Nova licença</button>
-          </div>
+          <h1 class="stage-title">Licenças</h1>
+          <p class="stage-sub">Clientes ativos, vencimento e terminais.</p>
         </div>
       </header>
 
@@ -157,6 +155,7 @@
           <button type="button" class="filter-btn" data-filter="vencendo" onclick="MasterApp.setFiltro('vencendo', this)">Vencendo</button>
           <button type="button" class="filter-btn" data-filter="bloqueadas" onclick="MasterApp.setFiltro('bloqueadas', this)">Bloqueados</button>
         </div>
+        <button type="button" class="btn-primary-cta btn-novo-cliente" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">Nova licença</button>
       </section>
 
       <section class="license-board" id="lista-clientes-cards" aria-live="polite"></section>
@@ -622,6 +621,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.2.11"></script>
+  <script src="js/app.js?v=3.3.0"></script>
 </body>
 </html>
