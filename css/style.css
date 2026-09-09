@@ -4426,3 +4426,104 @@ select:-webkit-autofill {
     border-top: 1px solid rgba(255,255,255,0.08) !important;
   }
 }
+
+
+/* ==========================================================================
+   v3.3.1 — Modal: categorias em select, add no topo, plano compacto
+   ========================================================================== */
+#modal-cliente .cli-cat-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+  align-items: end;
+}
+
+#modal-cliente .cli-cat-toolbar .form-group {
+  margin: 0;
+}
+
+#modal-cliente .cli-cat-add-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
+#modal-cliente .cli-cat-add-row input,
+#modal-cliente .cli-cat-add-btn {
+  height: 40px !important;
+  min-height: 40px !important;
+  box-sizing: border-box !important;
+  border-radius: 10px !important;
+  margin: 0 !important;
+}
+
+#modal-cliente .cli-cat-add-btn {
+  padding: 0 14px;
+  border: 1px solid rgba(243,146,55,0.5);
+  background: rgba(243,146,55,0.16);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#modal-cliente .cli-cat-add-btn:hover {
+  background: rgba(243,146,55,0.28);
+}
+
+#modal-cliente .cli-cat-board {
+  margin-top: 0;
+}
+
+#modal-cliente .cli-plano-stack {
+  gap: 12px;
+}
+
+#modal-cliente .cli-plano-top {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 12px;
+}
+
+#modal-cliente .cli-plano-top .form-group {
+  margin: 0;
+}
+
+#modal-cliente .cli-plano-controls {
+  grid-template-columns: minmax(0, 1.4fr) 90px 120px !important;
+}
+
+#modal-cliente .cli-plano-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+#modal-cliente .cli-plano-shortcuts .quick-day-btn {
+  width: 100%;
+  height: 36px !important;
+  border-radius: 10px;
+  background: #1e3144;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#modal-cliente .cli-plano-shortcuts .quick-day-btn:hover {
+  border-color: rgba(243,146,55,0.45);
+  background: rgba(243,146,55,0.14);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  #modal-cliente .cli-cat-toolbar,
+  #modal-cliente .cli-plano-top {
+    grid-template-columns: 1fr;
+  }
+}

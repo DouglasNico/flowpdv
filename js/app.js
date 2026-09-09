@@ -249,6 +249,8 @@ window.MasterApp = {
     const catEl = document.getElementById('cli-categorias');
 
     if (ramoEl) ramoEl.value = tipo;
+    const presetSelect = document.getElementById('cli-preset-categorias');
+    if (presetSelect) presetSelect.value = tipo;
     if (iconeEl) iconeEl.value = preset.icone;
     if (catEl) catEl.value = preset.lista.join(', ');
     this.atualizarPreviewCategorias();
@@ -1036,6 +1038,8 @@ window.MasterApp = {
     
     const ramoSelect = document.getElementById('cli-ramo');
     if (ramoSelect) ramoSelect.value = 'adega';
+    const presetSelectNovo = document.getElementById('cli-preset-categorias');
+    if (presetSelectNovo) presetSelectNovo.value = 'adega';
     const layoutPdvSelect = document.getElementById('cli-layout-pdv');
     if (layoutPdvSelect) layoutPdvSelect.value = 'moderno';
     this.setModulosCheckboxes(this.modulosPadraoPorRamo.adega);
@@ -1098,6 +1102,8 @@ window.MasterApp = {
 
     const ramo = c.ramoAtividade || 'adega';
     if (ramoInput) ramoInput.value = ramo;
+    const presetSelectEdit = document.getElementById('cli-preset-categorias');
+    if (presetSelectEdit) presetSelectEdit.value = ramo;
     if (layoutPdvInput) layoutPdvInput.value = c.layoutPdv || 'moderno';
     if (iconeInput) iconeInput.value = c.icone || this.presetsCategorias[ramo]?.icone || '🍷';
     

@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.3.0">
+  <link rel="stylesheet" href="css/style.css?v=3.3.1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.0')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.1')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.0');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.1');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -295,32 +295,39 @@
 
           <!-- ABA: CATEGORIAS -->
           <div class="cli-tab-panel" id="tab-categorias" role="tabpanel" hidden>
-            <p class="cli-tab-hint">Escolha um preset de segmento ou monte a lista manualmente.</p>
-            <div class="presets-category-grid">
-              <button type="button" class="preset-cat-btn cat-adega" onclick="MasterApp.aplicarPresetCategorias('adega')">🍷 Adega</button>
-              <button type="button" class="preset-cat-btn cat-mercado" onclick="MasterApp.aplicarPresetCategorias('mercado')">🛒 Mercado</button>
-              <button type="button" class="preset-cat-btn cat-acougue" onclick="MasterApp.aplicarPresetCategorias('acougue')">🥩 Açougue</button>
-              <button type="button" class="preset-cat-btn cat-hortifruti" onclick="MasterApp.aplicarPresetCategorias('hortifruti')">🥬 Hortifrúti</button>
-              <button type="button" class="preset-cat-btn cat-padaria" onclick="MasterApp.aplicarPresetCategorias('padaria')">🥖 Padaria</button>
-              <button type="button" class="preset-cat-btn cat-conveniencia" onclick="MasterApp.aplicarPresetCategorias('conveniencia')">🏪 Conveniência</button>
-              <button type="button" class="preset-cat-btn cat-tabacaria" onclick="MasterApp.aplicarPresetCategorias('tabacaria')">🚬 Tabacaria</button>
-              <button type="button" class="preset-cat-btn cat-vestuario" onclick="MasterApp.aplicarPresetCategorias('vestuario')">👗 Vestuário</button>
-              <button type="button" class="preset-cat-btn cat-geral" onclick="MasterApp.aplicarPresetCategorias('geral')">⚡ Geral</button>
+            <div class="cli-cat-toolbar">
+              <div class="form-group">
+                <label for="cli-preset-categorias">Preset do segmento</label>
+                <select id="cli-preset-categorias" onchange="MasterApp.aplicarPresetCategorias(this.value)">
+                  <option value="adega">Adega</option>
+                  <option value="mercado">Mercado</option>
+                  <option value="acougue">Acougue</option>
+                  <option value="hortifruti">Hortifruti</option>
+                  <option value="padaria">Padaria</option>
+                  <option value="conveniencia">Conveniencia</option>
+                  <option value="tabacaria">Tabacaria</option>
+                  <option value="vestuario">Vestuario</option>
+                  <option value="geral">Geral</option>
+                </select>
+              </div>
+              <div class="form-group cli-cat-add-field">
+                <label for="cli-cat-nova">Nova categoria</label>
+                <div class="cli-cat-add-row">
+                  <input type="text" id="cli-cat-nova" placeholder="Ex: Cervejas" maxlength="48" onkeydown="if(event.key==='Enter'){event.preventDefault();MasterApp.adicionarCategoriaChip();}">
+                  <button type="button" class="cli-cat-add-btn" onclick="MasterApp.adicionarCategoriaChip()">Adicionar</button>
+                </div>
+              </div>
             </div>
 
             <div class="cli-cat-board">
               <div class="cli-cat-board-head">
-                <strong>Categorias cadastradas</strong>
+                <strong>Cadastradas</strong>
                 <span id="cli-categorias-count" class="cli-cat-count">0</span>
               </div>
               <div id="cli-categorias-preview" class="cli-cat-chips" aria-live="polite"></div>
-              <div class="cli-cat-add-row">
-                <input type="text" id="cli-cat-nova" placeholder="Nova categoria…" maxlength="48" onkeydown="if(event.key==='Enter'){event.preventDefault();MasterApp.adicionarCategoriaChip();}">
-                <button type="button" class="btn-attach-logo" onclick="MasterApp.adicionarCategoriaChip()">Adicionar</button>
-              </div>
               <details class="cli-cat-advanced">
-                <summary>Editar lista completa (vírgulas)</summary>
-                <textarea id="cli-categorias" rows="3" placeholder="Ex: Cervejas, Destilados, Vinhos…" oninput="MasterApp.atualizarPreviewCategorias()"></textarea>
+                <summary>Editar lista completa</summary>
+                <textarea id="cli-categorias" rows="3" placeholder="Cervejas, Destilados, Vinhos…" oninput="MasterApp.atualizarPreviewCategorias()"></textarea>
               </details>
             </div>
           </div>
@@ -328,10 +335,19 @@
           <!-- ABA: PLANO -->
           <div class="cli-tab-panel" id="tab-plano" role="tabpanel" hidden>
             <div class="cli-plano-stack">
-              <div class="form-group">
-                <label>Plano contratado *</label>
-                <select id="cli-plano" required onchange="MasterApp.atualizarValorPlano()"></select>
-                <input type="hidden" id="cli-valor" value="89.90">
+              <div class="cli-plano-top">
+                <div class="form-group">
+                  <label>Plano contratado *</label>
+                  <select id="cli-plano" required onchange="MasterApp.atualizarValorPlano()"></select>
+                  <input type="hidden" id="cli-valor" value="89.90">
+                </div>
+                <div class="form-group">
+                  <label>Status *</label>
+                  <select id="cli-status" required>
+                    <option value="ativa">Ativa / Liberado</option>
+                    <option value="bloqueada">Bloqueada</option>
+                  </select>
+                </div>
               </div>
 
               <div class="cli-plano-card">
@@ -352,18 +368,12 @@
                     <label class="cli-plano-add-spacer" aria-hidden="true">&nbsp;</label>
                     <button type="button" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
                   </div>
-                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(7)">+7 dias</button>
-                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(15)">+15 dias</button>
-                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(30)">+30 dias</button>
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label>Status do sistema *</label>
-                <select id="cli-status" required>
-                  <option value="ativa">Ativa / Liberado</option>
-                  <option value="bloqueada">Bloqueada</option>
-                </select>
+                <div class="cli-plano-shortcuts">
+                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(7)">+7</button>
+                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(15)">+15</button>
+                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(30)">+30</button>
+                </div>
               </div>
             </div>
           </div>
@@ -621,6 +631,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.3.0"></script>
+  <script src="js/app.js?v=3.3.1"></script>
 </body>
 </html>
