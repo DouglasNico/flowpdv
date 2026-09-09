@@ -1,12 +1,12 @@
-{
+﻿{
   "name": "FlowPDV Master Admin",
   "short_name": "FlowMaster",
   "description": "Painel SaaS de Gestão de Clientes, Licenças e Faturamento FlowPDV",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0f172a",
-  "theme_color": "#7c3aed",
+  "background_color": "#273545",
+  "theme_color": "#273545",
   "lang": "pt-BR",
   "icons": [
     {
