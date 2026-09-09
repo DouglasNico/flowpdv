@@ -1,6 +1,6 @@
 /* ==========================================================================
    FlowPDV Master Admin ? Design System (from scratch)
-   Navy/slate surfaces · Brand orange CTAs · Cyan secondary accents
+   Navy/slate surfaces ? Brand orange CTAs ? Cyan secondary accents
    Fonts: Plus Jakarta Sans + JetBrains Mono
    ========================================================================== */
 
@@ -2372,7 +2372,7 @@ select:-webkit-autofill {
   margin-bottom: 8px;
 }
 
-/* Wordmark for dark surfaces: Flow white · PDV orange */
+/* Wordmark for dark surfaces: Flow white ? PDV orange */
 .brand-mark {
   display: inline-flex;
   align-items: center;
@@ -3406,7 +3406,7 @@ select:-webkit-autofill {
 }
 
 /* ==========================================================================
-   v3.2.2 â€” Modal premium polish
+   v3.2.2 ? Modal premium polish
    ========================================================================== */
 .modal-cliente-sheet {
   background: #2a4058 !important;
@@ -3614,5 +3614,155 @@ select:-webkit-autofill {
 
   .cli-logo-actions {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* ==========================================================================
+   v3.2.3 ? Modal cliente: footer row + selects escuros + altura auto
+   ========================================================================== */
+.modal-cliente-sheet {
+  height: auto !important;
+  max-height: min(90vh, 780px) !important;
+  color-scheme: dark;
+}
+
+.modal-cliente-sheet .modal-body--tabs {
+  flex: 0 1 auto !important;
+  max-height: calc(90vh - 190px);
+  padding-bottom: 18px !important;
+}
+
+/* Footer: UMA linha ? Excluir | ..... | Cancelar | Salvar */
+.modal-cliente-sheet > .modal-footer,
+.modal-cliente-sheet .modal-footer--cliente,
+#modal-cliente .modal-footer.modal-footer--cliente {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  padding: 14px 18px !important;
+  margin: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  background: #24384c !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-footer-spacer {
+  flex: 1 1 auto;
+  min-width: 8px;
+}
+
+#modal-cliente #btn-excluir-cliente,
+#modal-cliente .btn-danger-ghost {
+  width: auto !important;
+  min-width: 88px;
+  height: 42px !important;
+  margin: 0 !important;
+  padding: 0 16px !important;
+  border-radius: 10px;
+  background: transparent;
+  color: #fca5a5;
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+#modal-cliente #btn-excluir-cliente:hover,
+#modal-cliente .btn-danger-ghost:hover {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fff;
+  border-color: #f87171;
+}
+
+#modal-cliente .modal-footer--cliente .btn-modal-footer {
+  width: auto !important;
+  min-width: 110px;
+  height: 42px !important;
+  flex: 0 0 auto;
+  margin: 0 !important;
+}
+
+#modal-cliente .modal-footer--cliente .btn-pri {
+  min-width: 160px;
+  box-shadow: none !important;
+}
+
+/* Todos os selects do modal ? sem fundo branco do Windows */
+.modal-cliente-sheet select,
+.modal-cliente-sheet .cli-select,
+#modal-cliente select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  color-scheme: dark !important;
+  background-color: #1e3144 !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 10px !important;
+  height: 42px !important;
+  padding: 0 36px 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+}
+
+.modal-cliente-sheet select option,
+#modal-cliente select option {
+  background: #1e3144;
+  color: #f8fafc;
+}
+
+.cli-atendimento {
+  display: grid;
+  grid-template-columns: 1fr minmax(200px, 240px);
+  gap: 12px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px !important;
+}
+
+.cli-atendimento-copy label {
+  display: block;
+  margin-bottom: 4px;
+  color: #f1f5f9 !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.cli-atendimento .cli-select {
+  width: 100%;
+}
+
+.modal-cliente-sheet .cli-logo-card {
+  background: #24384c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-cliente-sheet .mod-chip {
+  min-height: 44px;
+}
+
+@media (max-width: 640px) {
+  #modal-cliente .modal-footer.modal-footer--cliente {
+    flex-wrap: wrap !important;
+  }
+
+  .modal-footer-spacer {
+    display: none;
+  }
+
+  #modal-cliente #btn-excluir-cliente {
+    order: 3;
+    width: 100% !important;
+  }
+
+  .cli-atendimento {
+    grid-template-columns: 1fr;
   }
 }
