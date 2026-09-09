@@ -1,6 +1,6 @@
 /* ==========================================================================
-   FlowPDV Master Admin — Design System (from scratch)
-   Navy/slate surfaces · Brand orange CTAs · Cyan secondary accents
+   FlowPDV Master Admin ? Design System (from scratch)
+   Navy/slate surfaces � Brand orange CTAs � Cyan secondary accents
    Fonts: Plus Jakarta Sans + JetBrains Mono
    ========================================================================== */
 
@@ -168,7 +168,7 @@ code,
   background: #4a6a88;
 }
 
-/* Number inputs — hide spinners */
+/* Number inputs ? hide spinners */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none !important;
@@ -194,7 +194,7 @@ select:-webkit-autofill {
 }
 
 /* ==========================================================================
-   1) LOGIN — split brand + form (new) + legacy .login-card
+   1) LOGIN ? split brand + form (new) + legacy .login-card
    ========================================================================== */
 .login-screen {
   min-height: 100vh;
@@ -209,7 +209,7 @@ select:-webkit-autofill {
     var(--surface-body);
 }
 
-/* New split login — activates when brand pane is present */
+/* New split login ? activates when brand pane is present */
 .login-screen:has(> .login-brand-pane) {
   display: grid;
   grid-template-columns: minmax(280px, 1.05fr) minmax(320px, 0.95fr);
@@ -401,7 +401,7 @@ select:-webkit-autofill {
 }
 
 /* ==========================================================================
-   2) APP SHELL — topbar + workspace (new)
+   2) APP SHELL ? topbar + workspace (new)
    Legacy: .app-container / .master-header / .master-main
    ========================================================================== */
 .app-shell {
@@ -574,7 +574,7 @@ select:-webkit-autofill {
 }
 
 /* ==========================================================================
-   4) STATS STRIP — one panel, vertical rules (NOT floating cards)
+   4) STATS STRIP ? one panel, vertical rules (NOT floating cards)
    Also styles legacy .metrics-grid / .metric-card as strip cells
    ========================================================================== */
 .stats-strip,
@@ -688,7 +688,7 @@ select:-webkit-autofill {
 }
 
 /* ==========================================================================
-   5) TOOLBAR — search + filter pills
+   5) TOOLBAR ? search + filter pills
    Legacy: .controls-bar
    ========================================================================== */
 .toolbar,
@@ -1297,7 +1297,7 @@ select:-webkit-autofill {
 }
 
 /* ==========================================================================
-   7) MODALS — overlay + sheet + drawer
+   7) MODALS ? overlay + sheet + drawer
    .modal-card aliases .modal-sheet for backward compatibility
    ========================================================================== */
 .modal-overlay {
@@ -1860,7 +1860,7 @@ select:-webkit-autofill {
 }
 
 /* ==========================================================================
-   RESPONSIVE — 1100 / 768 / 480
+   RESPONSIVE ? 1100 / 768 / 480
    ========================================================================== */
 @media (max-width: 1100px) {
   .login-screen:has(> .login-brand-pane) {
@@ -2324,7 +2324,7 @@ select:-webkit-autofill {
 .nav-pill { min-height: 38px; }
 
 /* ==========================================================================
-   v3.1 — SIDEBAR SHELL + LICENSE CARDS (layout break from old table dashboard)
+   v3.1 ? SIDEBAR SHELL + LICENSE CARDS (layout break from old table dashboard)
    ========================================================================== */
 :root {
   --sidebar-w: 248px;
@@ -2372,7 +2372,7 @@ select:-webkit-autofill {
   margin-bottom: 8px;
 }
 
-/* Wordmark for dark surfaces: Flow white · PDV orange */
+/* Wordmark for dark surfaces: Flow white � PDV orange */
 .brand-mark {
   display: inline-flex;
   align-items: center;
@@ -2556,7 +2556,7 @@ select:-webkit-autofill {
   margin: 0;
 }
 
-/* KPI rail — compact strip, not big dashboard cards */
+/* KPI rail ? compact strip, not big dashboard cards */
 .app-shell--sidebar .kpi-rail,
 .app-shell--sidebar .metrics-grid {
   display: grid;
@@ -2633,7 +2633,7 @@ select:-webkit-autofill {
   box-shadow: none;
 }
 
-/* License board — card grid instead of table */
+/* License board ? card grid instead of table */
 .license-board {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -2931,62 +2931,93 @@ select:-webkit-autofill {
 }
 
 /* ==========================================================================
-   v3.2 � Modal cliente: sheet central + abas
+   v3.2.1 ? Modal cliente polido (sheet + abas)
    ========================================================================== */
+#modal-cliente.modal-overlay {
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
 .modal-cliente-sheet {
-  width: min(720px, 96vw);
-  max-width: 720px;
-  height: min(720px, 92vh);
-  max-height: min(720px, 92vh);
-  border-radius: var(--radius-xl);
+  width: min(680px, 96vw);
+  max-width: 680px;
+  height: auto;
+  max-height: min(88vh, 820px);
+  border-radius: 18px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: linear-gradient(180deg, #334d68 0%, var(--surface-raised) 28%);
+  border: 1px solid var(--border-default);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
   animation: sheetIn 0.22s var(--ease);
+}
+
+.modal-cliente-sheet .modal-head,
+.modal-cliente-sheet .modal-header {
+  padding: 16px 20px;
+  background: transparent;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-cliente-sheet .modal-header-titles h3 {
+  font-size: 17px;
+  letter-spacing: -0.02em;
 }
 
 .cli-tabs {
   display: flex;
   gap: 4px;
-  padding: 10px 14px 0;
-  background: var(--surface-panel);
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 10px 14px;
+  margin: 0 12px;
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
   flex-shrink: 0;
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cli-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .cli-tab {
   appearance: none;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   color: var(--text-secondary);
   font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  padding: 10px 14px;
-  border-radius: 10px 10px 0 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 8px 12px;
+  border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s var(--ease), background 0.15s var(--ease);
+  flex: 1 1 auto;
+  text-align: center;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease);
 }
 
 .cli-tab:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .cli-tab.is-active {
   color: #fff;
-  background: var(--surface-raised);
-  border-bottom-color: var(--brand-orange);
+  background: var(--brand-orange-soft);
+  border-color: rgba(243, 146, 55, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(243, 146, 55, 0.12);
 }
 
 .modal-body--tabs {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 16px 18px 20px;
+  padding: 16px 20px 8px;
+  background: transparent;
 }
 
 .cli-tab-panel[hidden] {
@@ -2995,7 +3026,6 @@ select:-webkit-autofill {
 
 .cli-tab-panel.is-active {
   display: block;
-  animation: sheetIn 0.18s var(--ease);
 }
 
 .cli-tab-hint {
@@ -3003,40 +3033,46 @@ select:-webkit-autofill {
   color: var(--text-muted);
   margin: 0 0 12px;
   font-weight: 500;
+  line-height: 1.4;
 }
 
 .cli-logo-card {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 72px 1fr;
   gap: 14px;
+  align-items: center;
   padding: 14px;
   margin-bottom: 16px;
-  background: rgba(15, 23, 42, 0.35);
-  border: 1px dashed var(--border-default);
-  border-radius: var(--radius-md);
-  flex-wrap: wrap;
+  background: rgba(15, 23, 42, 0.28);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
 }
 
 .cli-logo-avatar {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: 14px;
   background: var(--surface-inset);
   border: 1px solid var(--border-default);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 30px;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .cli-logo-meta {
-  flex: 1;
-  min-width: 200px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.cli-logo-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .cli-logo-meta strong {
@@ -3044,34 +3080,73 @@ select:-webkit-autofill {
   color: #fff;
 }
 
-.cli-logo-meta > span {
+.cli-logo-sub {
   font-size: 11px;
   color: var(--text-muted);
 }
 
 .cli-logo-actions {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: auto 1fr;
   gap: 8px;
-  margin-top: 6px;
-  flex-wrap: wrap;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.btn-attach-logo {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(243, 146, 55, 0.45);
+  background: var(--brand-orange-soft);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-attach-logo:hover {
+  background: rgba(243, 146, 55, 0.28);
 }
 
 .cli-logo-url {
-  flex: 1;
-  min-width: 160px;
-  height: 34px;
+  width: 100%;
+  min-width: 0;
+  height: 36px !important;
   font-size: 12px !important;
+  padding: 0 10px !important;
 }
 
 .cli-logo-ready {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   color: var(--ok);
   background: var(--ok-soft);
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  border: 1px solid rgba(52, 211, 153, 0.28);
   border-radius: var(--radius-pill);
-  padding: 6px 10px;
+  padding: 3px 8px;
+}
+
+.modal-cliente-sheet .cli-form-grid,
+.modal-cliente-sheet .form-grid {
+  gap: 12px 14px;
+}
+
+.modal-cliente-sheet .form-group label {
+  font-size: 11px;
+  margin-bottom: 5px;
+  color: var(--text-secondary);
+}
+
+.modal-cliente-sheet .form-group input:not([type='checkbox']):not([type='radio']),
+.modal-cliente-sheet .form-group select,
+.modal-cliente-sheet .form-group textarea,
+.modal-cliente-sheet .cli-logo-url {
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.45);
+  border-color: var(--border-default);
 }
 
 .mod-grid {
@@ -3083,15 +3158,25 @@ select:-webkit-autofill {
 .mod-chip {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: rgba(15, 23, 42, 0.45);
+  gap: 10px;
+  padding: 11px 12px;
+  background: rgba(15, 23, 42, 0.35);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: 10px;
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
+  transition: border-color 0.15s var(--ease), background 0.15s var(--ease);
+}
+
+.mod-chip:hover {
+  border-color: var(--border-strong);
+}
+
+.mod-chip:has(input:checked) {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.35);
 }
 
 .mod-chip input {
@@ -3104,15 +3189,15 @@ select:-webkit-autofill {
 .cli-subbox {
   margin-top: 12px;
   padding: 12px 14px;
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: var(--radius-md);
+  background: rgba(15, 23, 42, 0.32);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
 }
 
 .cli-subbox strong,
 .cli-subbox > label {
   display: block;
-  color: var(--accent-cyan);
+  color: var(--accent-cyan-bright);
   font-size: 12px;
   font-weight: 800;
   margin-bottom: 8px;
@@ -3129,11 +3214,12 @@ select:-webkit-autofill {
 .cli-subbox--row select {
   min-width: 180px;
   height: 38px;
+  border-radius: 8px;
 }
 
 .voucher-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 6px;
 }
 
@@ -3144,6 +3230,42 @@ select:-webkit-autofill {
   font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.modal-cliente-sheet .presets-category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.modal-cliente-sheet .preset-cat-btn {
+  height: 40px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.modal-cliente-sheet .form-box-highlight {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.28);
+  border: 1px solid var(--border-default);
+}
+
+.modal-cliente-sheet .quick-days-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.modal-cliente-sheet .quick-day-btn {
+  height: 34px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .cli-chave-row {
@@ -3157,6 +3279,12 @@ select:-webkit-autofill {
   font-weight: 800;
   color: var(--accent-cyan-bright);
   letter-spacing: 0.4px;
+}
+
+.cli-chave-row .btn-sec {
+  height: 40px;
+  padding: 0 14px;
+  flex-shrink: 0;
 }
 
 #cli-pin-gerente {
@@ -3179,6 +3307,7 @@ select:-webkit-autofill {
   font-family: var(--font-mono);
   font-weight: 800;
   color: var(--accent-cyan);
+  border-radius: 8px;
 }
 
 .cli-term-list {
@@ -3210,26 +3339,69 @@ select:-webkit-autofill {
   gap: 6px;
 }
 
+.modal-footer--cliente {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(15, 23, 42, 0.28);
+  flex-wrap: wrap;
+}
+
+.modal-footer--cliente .modal-footer-main-row {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-excluir-inline {
+  width: auto !important;
+  margin: 0 !important;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 12px;
+}
+
 @media (max-width: 640px) {
+  #modal-cliente.modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
   .modal-cliente-sheet {
     width: 100%;
     max-width: 100%;
-    height: 96vh;
-    max-height: 96vh;
-    border-radius: 14px 14px 0 0;
-    align-self: flex-end;
+    max-height: 94vh;
+    border-radius: 16px 16px 0 0;
   }
 
-  .mod-grid {
+  .mod-grid,
+  .modal-cliente-sheet .presets-category-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .modal-cliente-sheet .quick-days-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cli-logo-card {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .cli-logo-actions {
     grid-template-columns: 1fr;
   }
 
   .cli-tabs {
-    padding: 8px 8px 0;
+    margin: 0 10px;
+    padding: 6px;
   }
 
   .cli-tab {
-    padding: 8px 10px;
+    padding: 8px 8px;
     font-size: 11px;
   }
 }
+

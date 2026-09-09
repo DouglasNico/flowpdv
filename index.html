@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.2.0">
+  <link rel="stylesheet" href="css/style.css?v=3.2.1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.0')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.1')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.0');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.1');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -196,18 +196,20 @@
             <div class="cli-logo-card">
               <div id="cli-logo-img-preview" class="cli-logo-avatar" aria-hidden="true">🏪</div>
               <div class="cli-logo-meta">
-                <strong id="cli-logo-status-title">Logo da loja</strong>
-                <span>Anexe uma imagem ou cole uma URL</span>
+                <div class="cli-logo-title-row">
+                  <strong id="cli-logo-status-title">Logo da loja</strong>
+                  <div id="cli-logo-preview-box" class="cli-logo-ready" style="display: none;">Pronta</div>
+                </div>
+                <span class="cli-logo-sub">PNG/JPG — usada no PDV e nos cards</span>
                 <div class="cli-logo-actions">
                   <input type="file" id="cli-logo-file" accept="image/*" hidden onchange="MasterApp.fazerUploadLogoComputador(event)">
-                  <button type="button" class="btn-primary-cta btn-sm" onclick="document.getElementById('cli-logo-file').click()">📎 Anexar logo</button>
-                  <input type="text" id="cli-logo-url" class="cli-logo-url" placeholder="https://… ou data URL" oninput="MasterApp.previewLogo()">
+                  <button type="button" class="btn-attach-logo" onclick="document.getElementById('cli-logo-file').click()">Anexar imagem</button>
+                  <input type="text" id="cli-logo-url" class="cli-logo-url" placeholder="ou cole uma URL…" oninput="MasterApp.previewLogo()">
                 </div>
               </div>
-              <div id="cli-logo-preview-box" class="cli-logo-ready" style="display: none;">Pronta p/ sync</div>
             </div>
 
-            <div class="form-grid">
+            <div class="form-grid cli-form-grid">
               <div class="form-group span-2">
                 <label>Razão Social / Nome Fantasia *</label>
                 <input type="text" id="cli-nome" required placeholder="Ex: Adega do Douglas">
@@ -217,15 +219,15 @@
                 <input type="text" id="cli-documento" required placeholder="00.000.000/0001-00">
               </div>
               <div class="form-group">
-                <label>Nome do Responsável</label>
+                <label>Responsável</label>
                 <input type="text" id="cli-responsavel" placeholder="Ex: Douglas Nico">
               </div>
               <div class="form-group">
-                <label>WhatsApp / Celular (com DDD) *</label>
+                <label>WhatsApp *</label>
                 <input type="text" id="cli-whatsapp" required placeholder="(19) 99999-7777">
               </div>
               <div class="form-group">
-                <label>Ramo de Atividade (Segmento) *</label>
+                <label>Segmento *</label>
                 <select id="cli-ramo" required onchange="MasterApp.aoMudarRamoSelect(this.value)">
                   <option value="adega">🍷 Adega & Depósito de Bebidas</option>
                   <option value="mercado">🛒 Supermercado & Mercearia</option>
@@ -389,12 +391,12 @@
         </form>
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer modal-footer--cliente">
+        <button type="button" id="btn-excluir-cliente" class="btn-excluir-modal btn-excluir-inline" style="display: none;" onclick="MasterApp.excluirClienteModal()">Excluir</button>
         <div class="modal-footer-main-row">
           <button type="button" class="btn-sec btn-modal-footer" onclick="MasterApp.fecharModalCliente()">Cancelar</button>
-          <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event).catch(err => { alert('Erro CRITICO ao salvar: ' + err.message); console.error(err); })">Salvar</button>
+          <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event).catch(err => { alert('Erro CRITICO ao salvar: ' + err.message); console.error(err); })">Salvar alterações</button>
         </div>
-        <button type="button" id="btn-excluir-cliente" class="btn-excluir-modal" style="display: none;" onclick="MasterApp.excluirClienteModal()">Excluir licença</button>
       </div>
     </div>
   </div>
@@ -604,6 +606,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.2.0"></script>
+  <script src="js/app.js?v=3.2.1"></script>
 </body>
 </html>
