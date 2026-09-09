@@ -4157,3 +4157,124 @@ select:-webkit-autofill {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
+
+/* ==========================================================================
+   v3.2.7 — X centralizado + Plano alinhado
+   ========================================================================== */
+#modal-cliente .cli-cat-chip-x {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px;
+  min-height: 22px;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+  line-height: 0 !important;
+  flex-shrink: 0;
+}
+
+#modal-cliente .cli-cat-chip-x svg {
+  display: block;
+  width: 10px;
+  height: 10px;
+}
+
+#modal-cliente .cli-cat-chip:hover .cli-cat-chip-x {
+  background: rgba(248, 113, 113, 0.28) !important;
+  color: #fecaca !important;
+}
+
+#modal-cliente .cli-plano-date-row {
+  grid-template-columns: minmax(0, 1.5fr) 88px 118px !important;
+  gap: 10px !important;
+  align-items: start !important;
+}
+
+#modal-cliente .cli-plano-date-row .form-group label,
+#modal-cliente .cli-plano-add-spacer {
+  display: block;
+  height: 18px;
+  margin-bottom: 6px !important;
+  line-height: 18px;
+  font-size: 11px !important;
+}
+
+#modal-cliente .cli-plano-date-row .venc-date-input,
+#modal-cliente .cli-plano-date-row .venc-dias-number,
+#modal-cliente .cli-plano-add {
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  box-sizing: border-box !important;
+  border-radius: 10px !important;
+  margin: 0 !important;
+}
+
+#modal-cliente .cli-plano-dias .venc-dias-number {
+  width: 100% !important;
+  text-align: center;
+  padding: 0 8px !important;
+}
+
+#modal-cliente .cli-plano-add-wrap {
+  margin: 0;
+}
+
+#modal-cliente .cli-plano-add {
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 0 10px !important;
+  background: #1e3144 !important;
+  color: #fff !important;
+  border: 1px solid rgba(243, 146, 55, 0.55) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+}
+
+#modal-cliente .cli-plano-add:hover {
+  background: rgba(243, 146, 55, 0.2) !important;
+  border-color: var(--brand-orange) !important;
+}
+
+#modal-cliente .quick-days-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+#modal-cliente .quick-day-btn {
+  height: 40px !important;
+  border-radius: 10px !important;
+  background: #1e3144 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #f1f5f9 !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+#modal-cliente .quick-day-btn:hover {
+  background: rgba(243, 146, 55, 0.16) !important;
+  border-color: rgba(243, 146, 55, 0.5) !important;
+  color: #fff !important;
+}
+
+@media (max-width: 640px) {
+  #modal-cliente .cli-plano-date-row {
+    grid-template-columns: 1fr 88px !important;
+  }
+
+  #modal-cliente .cli-plano-add-wrap {
+    grid-column: 1 / -1;
+  }
+}

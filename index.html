@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.2.6">
+  <link rel="stylesheet" href="css/style.css?v=3.2.7">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.6')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.7')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.6');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.7');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -349,7 +349,10 @@
                     <label for="cli-dias-add">Dias</label>
                     <input type="number" id="cli-dias-add" placeholder="30" value="30" class="venc-dias-number">
                   </div>
-                  <button type="button" class="btn-add-dias cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
+                  <div class="form-group cli-plano-add-wrap">
+                    <label class="cli-plano-add-spacer" aria-hidden="true">&nbsp;</label>
+                    <button type="button" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
+                  </div>
                 </div>
                 <p class="cli-tab-hint cli-plano-quick-label">Atalhos</p>
                 <div class="quick-days-grid">
@@ -625,6 +628,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.2.6"></script>
+  <script src="js/app.js?v=3.2.7"></script>
 </body>
 </html>

@@ -205,7 +205,11 @@ window.MasterApp = {
         .replace(/"/g, '&quot;');
       return '<button type="button" class="cli-cat-chip" title="Remover" onclick="MasterApp.removerCategoriaChip(' + idx + ')">' +
         '<span class="cli-cat-chip-label">' + safe + '</span>' +
-        '<span class="cli-cat-chip-x" aria-hidden="true">×</span>' +
+        '<span class="cli-cat-chip-x" aria-hidden="true">' +
+          '<svg width="10" height="10" viewBox="0 0 10 10" fill="none">' +
+            '<path d="M2 2l6 6M8 2L2 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>' +
+          '</svg>' +
+        '</span>' +
       '</button>';
     }).join('');
   },
