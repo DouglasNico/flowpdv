@@ -358,7 +358,7 @@ window.MasterApp = {
             dataExpiracao: c.vencimento ? (c.vencimento.includes('T') ? c.vencimento : c.vencimento + 'T23:59:59.000Z') : '2026-12-31T23:59:59.000Z',
             status: c.status,
             chaveLicenca: c.chaveLicenca,
-            pinGerente: c.pinGerente || '1234',
+            pinGerente: c.pinGerente || '',
             limiteTerminais: Math.max(1, parseInt(c.limiteTerminais) || 1),
             terminaisAtivos: Array.isArray(c.terminaisAtivos) ? c.terminaisAtivos : [],
             atualizadoEm: new Date().toISOString()
@@ -517,7 +517,7 @@ window.MasterApp = {
           const categorias = backup.categorias
             .map(item => String(item || '').trim())
             .filter(item => item && !excluidas.includes(item.toLowerCase()))
-            .filter((item, index, lista) => lista.findIndex(valor => valoString(r).toLowerCase() === item.toLowerCase()) === index);
+            .filter((item, index, lista) => lista.findIndex(valor => String(valor).toLowerCase() === item.toLowerCase()) === index);
 
           if (categorias.length > 0) {
             alvo.categorias = categorias;
@@ -558,7 +558,7 @@ window.MasterApp = {
                 vencimento: data.vencimento ? (data.vencimento.includes('T') ? data.vencimento.split('T')[0] : data.vencimento) : '2026-12-31',
                 status: data.status || 'ativa',
                 chaveLicenca: data.chaveLicenca || doc.id,
-                pinGerente: data.pinGerente || '1234',
+                pinGerente: data.pinGerente || '',
                 limiteTerminais: parseInt(data.limiteTerminais) || 1,
                 terminaisAtivos: Array.isArray(data.terminaisAtivos) ? data.terminaisAtivos : []
               });
@@ -648,7 +648,7 @@ window.MasterApp = {
               vencimento: data.vencimento ? (data.vencimento.includes('T') ? data.vencimento.split('T')[0] : data.vencimento) : '2026-12-31',
               status: data.status || 'ativa',
               chaveLicenca: data.chaveLicenca || doc.id,
-              pinGerente: data.pinGerente || '1234',
+              pinGerente: data.pinGerente || '',
               limiteTerminais: parseInt(data.limiteTerminais) || 1,
               terminaisAtivos: Array.isArray(data.terminaisAtivos) ? data.terminaisAtivos : []
             });
@@ -954,7 +954,8 @@ window.MasterApp = {
     if (idInput) idInput.value = '';
     if (btnExcluir) btnExcluir.style.display = 'none';
     if (chaveInput) chaveInput.value = 'LIC-FLOW-' + Math.floor(100000 + Math.random() * 900000);
-    if (pinInput) pinInput.value = '1234';
+    // PIN sorteado: nenhuma loja nasce com o PIN de fábrica que todo mundo sabe.
+    if (pinInput) pinInput.value = String(Math.floor(1000 + Math.random() * 9000));
     if (limiteInput) limiteInput.value = '1';
     if (termInfoBox) termInfoBox.style.display = 'none';
     if (logoInput) logoInput.value = '';
@@ -1044,7 +1045,7 @@ window.MasterApp = {
     if (valorInput) valorInput.value = c.valorMensal || 89.90;
     if (vencInput) vencInput.value = c.vencimento ? (c.vencimento.includes('T') ? c.vencimento.split('T')[0] : c.vencimento) : '';
     if (chaveInput) chaveInput.value = c.chaveLicenca || c.id;
-    if (pinInput) pinInput.value = c.pinGerente || '1234';
+    if (pinInput) pinInput.value = c.pinGerente || String(Math.floor(1000 + Math.random() * 9000));
     if (limiteInput) limiteInput.value = c.limiteTerminais || 1;
     if (moduloComandasSelect) moduloComandasSelect.value = c.moduloComandas || 'mesas_e_comandas';
     
@@ -1086,7 +1087,16 @@ window.MasterApp = {
 
     const idInput = document.getElementById('cliente-id');
     const id = idInput ? idInput.value : '';
-    const chaveLicenca = document.getElementById('cli-chave')?.value.trim() || ('LIC-FLOW-' + Date.now().toString().slice(-6));
+    const chaveLicenca = (document.getElementById('cli-chave')?.value.trim() || ('LIC-FLOW-' + Date.now().toString().slice(-6))).toUpperCase();
+
+    // A chave vira a conta de acesso da loja na nuvem; caractere fora deste
+    // conjunto quebra o isolamento definido nas regras do Firestore.
+    if (!/^[A-Z0-9][A-Z0-9-]{3,40}$/.test(chaveLicenca)) {
+      alert('A chave da licença só pode ter letras, números e hífen (4 a 41 caracteres). Ex: LIC-FLOW-123456');
+      document.getElementById('cli-chave')?.focus();
+      return;
+    }
+
     const idFinal = id || ('CLI-' + chaveLicenca.slice(-4));
 
     const nome = document.getElementById('cli-nome')?.value.trim() || 'Cliente';
@@ -1116,7 +1126,12 @@ window.MasterApp = {
     const valorMensal = parseFloat(document.getElementById('cli-valor')?.value) || 89.90;
     const vencimento = document.getElementById('cli-vencimento')?.value || '2026-12-31';
     const status = document.getElementById('cli-status')?.value || 'ativa';
-    const pinGerente = document.getElementById('cli-pin-gerente')?.value.trim() || '1234';
+    const pinGerente = document.getElementById('cli-pin-gerente')?.value.trim() || '';
+    if (!/^\d{4,8}$/.test(pinGerente) || ['1234', '0000', '1111', '12345678'].includes(pinGerente)) {
+      alert('Defina um PIN de gerente de 4 a 8 dígitos e evite sequências óbvias como 1234 ou 0000.');
+      document.getElementById('cli-pin-gerente')?.focus();
+      return;
+    }
     const limiteTerminais = Math.max(1, parseInt(document.getElementById('cli-limite-terminais')?.value) || 1);
     const moduloComandas = document.getElementById('cli-modulo-comandas')?.value || 'mesas_e_comandas';
 
