@@ -1345,6 +1345,7 @@ select:-webkit-autofill {
   display: flex;
   flex-direction: column;
   background: var(--surface-raised);
+  border: none;
   border-left: 1px solid var(--border-default);
   border-radius: 0;
   box-shadow: -12px 0 40px rgba(0, 0, 0, 0.4);
@@ -1353,10 +1354,49 @@ select:-webkit-autofill {
   margin: 0;
 }
 
+/* Drawer wins over .modal-card sheet styles */
+.modal-overlay .modal-drawer.modal-card {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  width: min(var(--drawer-w), 100vw);
+  max-width: 640px;
+  min-width: 0;
+  height: 100%;
+  max-height: none;
+  border-radius: 0;
+  border: none;
+  border-left: 1px solid var(--border-default);
+  margin: 0;
+  animation: drawerIn 0.28s var(--ease);
+  box-shadow: -16px 0 48px rgba(0, 0, 0, 0.45);
+}
+
 .modal-overlay:has(.modal-drawer) {
   align-items: stretch;
   justify-content: flex-end;
   padding: 0;
+}
+
+.modal-drawer .modal-head,
+.modal-drawer .modal-header {
+  padding: 18px 22px;
+  background: linear-gradient(180deg, #334d68 0%, var(--surface-panel) 100%);
+}
+
+.modal-drawer .modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 22px 24px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-drawer .modal-footer,
+.modal-drawer .modal-foot {
+  padding: 14px 22px;
+  background: rgba(15, 23, 42, 0.35);
 }
 
 @keyframes sheetIn {
@@ -2359,11 +2399,11 @@ select:-webkit-autofill {
 }
 
 .brand-flow {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .brand-pdv {
-  color: var(--brand-orange);
+  color: var(--brand-orange) !important;
 }
 
 .brand-mark--lg .brand-mark-icon {
@@ -2475,11 +2515,12 @@ select:-webkit-autofill {
 }
 
 .stage-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  display: block;
+  width: 100%;
+}
+
+.stage-heading {
+  width: 100%;
 }
 
 .stage-kicker {
@@ -2488,7 +2529,15 @@ select:-webkit-autofill {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent-cyan);
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+}
+
+.stage-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .stage-title {
@@ -2496,7 +2545,15 @@ select:-webkit-autofill {
   font-weight: 800;
   letter-spacing: -0.04em;
   color: #fff;
-  line-height: 1.1;
+  line-height: 1;
+  margin: 0;
+}
+
+.stage-title-row .btn-novo-cliente,
+.stage-title-row .btn-primary-cta {
+  flex-shrink: 0;
+  height: 42px;
+  margin: 0;
 }
 
 /* KPI rail — compact strip, not big dashboard cards */
