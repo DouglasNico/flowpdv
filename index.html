@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.2.1">
+  <link rel="stylesheet" href="css/style.css?v=3.2.2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.1')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.2')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.1');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.2');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -200,11 +200,13 @@
                   <strong id="cli-logo-status-title">Logo da loja</strong>
                   <div id="cli-logo-preview-box" class="cli-logo-ready" style="display: none;">Pronta</div>
                 </div>
-                <span class="cli-logo-sub">PNG/JPG — usada no PDV e nos cards</span>
+                <span class="cli-logo-sub">PNG ou JPG · aparece no PDV e nos cards</span>
                 <div class="cli-logo-actions">
+                  <input type="hidden" id="cli-logo-url" value="">
                   <input type="file" id="cli-logo-file" accept="image/*" hidden onchange="MasterApp.fazerUploadLogoComputador(event)">
                   <button type="button" class="btn-attach-logo" onclick="document.getElementById('cli-logo-file').click()">Anexar imagem</button>
-                  <input type="text" id="cli-logo-url" class="cli-logo-url" placeholder="ou cole uma URL…" oninput="MasterApp.previewLogo()">
+                  <input type="text" id="cli-logo-url-visible" class="cli-logo-url" placeholder="ou cole um link https://…" oninput="MasterApp.onLogoUrlVisibleInput()" autocomplete="off">
+                  <button type="button" class="btn-logo-clear" id="cli-logo-clear" style="display:none" onclick="MasterApp.limparLogoCliente()" title="Remover logo">✕</button>
                 </div>
               </div>
             </div>
@@ -606,6 +608,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.2.1"></script>
+  <script src="js/app.js?v=3.2.2"></script>
 </body>
 </html>

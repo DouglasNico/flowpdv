@@ -3405,3 +3405,214 @@ select:-webkit-autofill {
   }
 }
 
+/* ==========================================================================
+   v3.2.2 — Modal premium polish
+   ========================================================================== */
+.modal-cliente-sheet {
+  background: #2a4058 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-cliente-sheet .modal-eyebrow {
+  color: var(--brand-orange) !important;
+  letter-spacing: 0.14em;
+}
+
+.modal-cliente-sheet .modal-header-titles h3 {
+  color: #fff !important;
+  font-weight: 800;
+}
+
+.modal-cliente-sheet .cli-tab-hint {
+  color: #cbd5e1 !important;
+  font-size: 13px;
+}
+
+.modal-cliente-sheet .form-group label,
+.modal-cliente-sheet .box-label,
+.modal-cliente-sheet .cli-subbox > label,
+.modal-cliente-sheet .cli-subbox strong {
+  color: #e2e8f0 !important;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+
+.modal-cliente-sheet .cli-logo-sub,
+.modal-cliente-sheet .cli-tab-hint {
+  color: #94a3b8 !important;
+}
+
+.modal-cliente-sheet .form-group input:not([type='checkbox']):not([type='radio']),
+.modal-cliente-sheet .form-group select,
+.modal-cliente-sheet .cli-logo-url {
+  color: #f8fafc !important;
+  background: #1e3144 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.modal-cliente-sheet .form-group input::placeholder,
+.modal-cliente-sheet .cli-logo-url::placeholder {
+  color: #64748b !important;
+}
+
+.modal-cliente-sheet #cli-categorias {
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+  color: #f1f5f9 !important;
+  font-size: 13px !important;
+}
+
+.modal-cliente-sheet .categorias-preview span,
+.modal-cliente-sheet .categorias-preview .cat-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.cli-logo-actions {
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+}
+
+.cli-logo-url.is-local-file {
+  color: #6ee7b7 !important;
+  font-weight: 700;
+  cursor: default;
+}
+
+.btn-logo-clear {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.4);
+  color: #94a3b8;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.btn-logo-clear:hover {
+  color: #fff;
+  border-color: rgba(248, 113, 113, 0.5);
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* Presets unificados (sem arco-iris) */
+.modal-cliente-sheet .preset-cat-btn,
+.modal-cliente-sheet .preset-cat-btn[class*='cat-'] {
+  background: #1e3144 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.modal-cliente-sheet .preset-cat-btn:hover {
+  border-color: rgba(243, 146, 55, 0.45) !important;
+  background: rgba(243, 146, 55, 0.12) !important;
+  color: #fff !important;
+}
+
+/* Quick days unificados */
+.modal-cliente-sheet .quick-day-btn,
+.modal-cliente-sheet .quick-day-btn.cortesia,
+.modal-cliente-sheet .quick-day-btn.normal {
+  background: #1e3144 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.modal-cliente-sheet .quick-day-btn:hover {
+  border-color: rgba(243, 146, 55, 0.5) !important;
+  color: #fff !important;
+  background: rgba(243, 146, 55, 0.14) !important;
+}
+
+.modal-cliente-sheet .mod-chip {
+  background: #1e3144;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+.modal-cliente-sheet .mod-chip:has(input:checked) {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.modal-cliente-sheet .cli-subbox {
+  background: #24384c;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-cliente-sheet .form-box-highlight {
+  background: #24384c !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-cliente-sheet .venc-feedback-badge {
+  color: #6ee7b7 !important;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+/* Footer sempre em uma linha */
+.modal-footer--cliente {
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100%;
+}
+
+.modal-footer--cliente #btn-excluir-cliente.btn-excluir-modal {
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+  display: none;
+}
+
+.modal-footer--cliente #btn-excluir-cliente[style*='inline-flex'],
+.modal-footer--cliente #btn-excluir-cliente[style*='flex'] {
+  display: inline-flex !important;
+}
+
+.modal-footer--cliente .modal-footer-main-row {
+  margin-left: auto !important;
+  flex: 0 0 auto;
+}
+
+.modal-cliente-sheet .btn-pri {
+  box-shadow: none !important;
+  background: var(--brand-orange) !important;
+}
+
+.modal-cliente-sheet .btn-pri:hover {
+  background: var(--brand-orange-deep) !important;
+  filter: none;
+}
+
+.modal-cliente-sheet .cli-tabs {
+  background: #1e3144;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.modal-cliente-sheet .cli-tab {
+  color: #94a3b8;
+}
+
+.modal-cliente-sheet .cli-tab.is-active {
+  color: #fff;
+  background: rgba(243, 146, 55, 0.18);
+  border-color: rgba(243, 146, 55, 0.45);
+}
+
+@media (max-width: 640px) {
+  .modal-footer--cliente {
+    flex-wrap: wrap !important;
+  }
+
+  .cli-logo-actions {
+    grid-template-columns: 1fr !important;
+  }
+}

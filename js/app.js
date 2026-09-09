@@ -1079,7 +1079,7 @@ window.MasterApp = {
     if (termInfoBox) termInfoBox.style.display = 'block';
 
     if (statusInput) statusInput.value = c.status || 'ativa';
-    if (btnExcluir) btnExcluir.style.display = 'block';
+    if (btnExcluir) btnExcluir.style.display = 'inline-flex';
 
     this.renderListaTerminaisModal(c);
     this.previewLogo();
@@ -1471,16 +1471,59 @@ window.MasterApp = {
     const url = document.getElementById('cli-logo-url')?.value.trim() || '';
     const box = document.getElementById('cli-logo-preview-box');
     const imgDiv = document.getElementById('cli-logo-img-preview');
+    const visible = document.getElementById('cli-logo-url-visible');
+    const clearBtn = document.getElementById('cli-logo-clear');
+    const statusTitle = document.getElementById('cli-logo-status-title');
 
     if (!box || !imgDiv) return;
 
     if (url && (url.startsWith('http') || url.startsWith('data:image'))) {
       imgDiv.innerHTML = '<img src="' + url + '" alt="" style="width:100%;height:100%;object-fit:contain;">';
       box.style.display = 'inline-flex';
+      if (clearBtn) clearBtn.style.display = 'inline-flex';
+      if (visible) {
+        if (url.startsWith('data:image')) {
+          visible.value = 'Imagem anexada do computador';
+          visible.readOnly = true;
+          visible.classList.add('is-local-file');
+          if (statusTitle) statusTitle.textContent = 'Logo da loja';
+        } else {
+          visible.value = url;
+          visible.readOnly = false;
+          visible.classList.remove('is-local-file');
+          if (statusTitle) statusTitle.textContent = 'Logo da loja';
+        }
+      }
     } else {
       imgDiv.innerHTML = '🏪';
       box.style.display = 'none';
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (visible) {
+        visible.value = '';
+        visible.readOnly = false;
+        visible.classList.remove('is-local-file');
+      }
+      if (statusTitle) statusTitle.textContent = 'Logo da loja';
     }
+  },
+
+  onLogoUrlVisibleInput() {
+    const visible = document.getElementById('cli-logo-url-visible');
+    const hidden = document.getElementById('cli-logo-url');
+    if (!visible || !hidden || visible.readOnly) return;
+    const v = visible.value.trim();
+    if (!v || v.startsWith('http')) {
+      hidden.value = v;
+      this.previewLogo();
+    }
+  },
+
+  limparLogoCliente() {
+    const hidden = document.getElementById('cli-logo-url');
+    const file = document.getElementById('cli-logo-file');
+    if (hidden) hidden.value = '';
+    if (file) file.value = '';
+    this.previewLogo();
   },
 
   setAbaCliente(tabId, btnEl) {
