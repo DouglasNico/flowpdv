@@ -842,12 +842,14 @@ window.MasterApp = {
   },
 
   renderTabela() {
+    const board = document.getElementById('lista-clientes-cards');
     const tbody = document.getElementById('master-table-tbody') || document.getElementById('tabela-clientes-tbody');
-    if (!tbody) return;
+    const alvo = board || tbody;
+    if (!alvo) return;
 
     try {
       const termoBusca = (document.getElementById('master-search-input')?.value || document.getElementById('search-input')?.value || '').toLowerCase().trim();
-      
+
       let lista = (this.clientes || []).filter(c => {
         if (!c) return false;
         if (this.filtroAtual === 'ativas') return c.status === 'ativa';
@@ -860,103 +862,97 @@ window.MasterApp = {
       });
 
       if (termoBusca) {
-        lista = lista.filter(c => 
+        lista = lista.filter(c =>
           (c.nome && c.nome.toLowerCase().includes(termoBusca)) ||
           (c.documento && c.documento.includes(termoBusca)) ||
-          (c.chaveLicenca && c.chaveLicenca.toLowerCase().includes(termoBusca))
+          (c.chaveLicenca && c.chaveLicenca.toLowerCase().includes(termoBusca)) ||
+          (c.responsavel && c.responsavel.toLowerCase().includes(termoBusca))
         );
       }
 
       if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 32px; color: var(--text-dim);">Nenhum cliente encontrado.</td></tr>';
+        alvo.innerHTML = '<div class="license-empty">Nenhuma licença encontrada com esses filtros.</div>';
         return;
       }
 
-      tbody.innerHTML = lista.map(c => {
+      alvo.innerHTML = lista.map(c => {
         const diasRestantes = this.calcularDiasRestantes(c.vencimento);
         const isAtivo = c.status === 'ativa';
 
         let statusBadge = '';
+        let tone = 'ok';
         if (!isAtivo) {
-          statusBadge = '<span class="badge badge-bloqueada">🛑 Bloqueada</span>';
+          statusBadge = 'Bloqueada';
+          tone = 'danger';
         } else if (diasRestantes < 0) {
-          statusBadge = '<span class="badge badge-bloqueada">⚠️ Vencida</span>';
+          statusBadge = 'Vencida';
+          tone = 'danger';
         } else if (diasRestantes === 0) {
-          statusBadge = '<span class="badge badge-vencendo" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); font-weight: 800;">⏳ Vence Hoje</span>';
+          statusBadge = 'Vence hoje';
+          tone = 'warn';
         } else if (diasRestantes === 1) {
-          statusBadge = '<span class="badge badge-vencendo" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); font-weight: 800;">⏳ Vence Amanhã</span>';
+          statusBadge = 'Vence amanhã';
+          tone = 'warn';
         } else if (diasRestantes <= 5) {
-          statusBadge = '<span class="badge badge-vencendo">⏳ Vence em ' + diasRestantes + 'd</span>';
+          statusBadge = 'Vence em ' + diasRestantes + 'd';
+          tone = 'warn';
         } else {
-          statusBadge = '<span class="badge badge-ativa">🟢 Ativa (' + diasRestantes + 'd)</span>';
+          statusBadge = 'Ativa · ' + diasRestantes + 'd';
+          tone = 'ok';
         }
 
         const logoHtml = c.logoUrl && c.logoUrl.length > 5
-          ? '<img src="' + c.logoUrl + '" style="width: 40px; height: 40px; object-fit: contain; border-radius: 8px; background: #0f172a; border: 1px solid rgba(255,255,255,0.15);">'
-          : '<div style="width: 40px; height: 40px; border-radius: 8px; background: #1e293b; display: flex; align-items: center; justify-content: center; font-size: 20px;">' + (c.icone || '🍷') + '</div>';
+          ? '<img class="lic-avatar" src="' + c.logoUrl + '" alt="">'
+          : '<div class="lic-avatar lic-avatar--emoji">' + (c.icone || '🏪') + '</div>';
 
         const dataStr = this.formatarDataExibicao(c.vencimento);
         const maxTerm = parseInt(c.limiteTerminais) || 1;
         const terminaisUnicos = this.obterTerminaisDeduplicados(c.terminaisAtivos);
         const ativosTerm = terminaisUnicos.length;
-        const isLotado = ativosTerm >= maxTerm;
-        const termBadge = '<span class="badge-terminal ' + (isLotado ? 'lotado' : 'livre') + '">💻 ' + ativosTerm + '/' + maxTerm + ' PC(s)</span>';
-        const exc = Array.isArray(c.categoriasExcluidas) ? c.categoriasExcluidas.map(s => s.toLowerCase().trim()) : [];
-        const numCats = (c.categorias && Array.isArray(c.categorias)) ? c.categorias.filter(cat => !exc.includes(cat.toLowerCase().trim())).length : 0;
+        const chave = c.chaveLicenca || c.id || '';
+        const zapDigits = (c.whatsapp || '').replace(/\D/g, '');
+        const valor = parseFloat(c.valorMensal || 0).toFixed(2).replace('.', ',');
+        const idSafe = String(c.id || '').replace(/'/g, "\\'");
 
-        return '<tr class="master-table-row">' +
-            '<td class="cell-store">' +
-              '<div style="display: flex; align-items: center; gap: 12px;">' +
-                logoHtml +
-                '<div>' +
-                  '<strong style="color: var(--text-main); font-size: 14px; display: block;">' + c.nome + '</strong>' +
-                  '<span style="font-size: 12px; color: var(--text-dim);">' + (c.documento || 'Sem Documento') + ' • <strong style="color: #a78bfa;">' + numCats + ' categorias</strong></span>' +
-                '</div>' +
-              '</div>' +
-            '</td>' +
-            '<td class="cell-chave" data-label="Chave">' +
-              '<span class="mobile-td-label">🔑 Chave:</span>' +
-              '<div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(99, 102, 241, 0.08); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.2);">' +
-                '<code style="font-family: monospace; font-size: 12px; font-weight: 700; color: #818cf8;">' + (c.chaveLicenca || c.id) + '</code>' +
-                '<button type="button" onclick="MasterApp.copiarChaveLicenca(\'' + (c.chaveLicenca || c.id) + '\')" title="Copiar Chave de Licença" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; border-radius: 6px; padding: 2px 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s;" onmouseover="this.style.background=\'#4f46e5\'; this.style.color=\'#fff\';" onmouseout="this.style.background=\'rgba(255,255,255,0.08)\'; this.style.color=\'#e2e8f0\';">' +
-                  '📋 Copiar' +
-                '</button>' +
-              '</div>' +
-            '</td>' +
-            '<td class="cell-contato" data-label="WhatsApp / Contato">' +
-              '<span class="mobile-td-label">📱 Contato:</span>' +
-              '<div>' +
-                '<a href="https://wa.me/55' + (c.whatsapp || '').replace(/\D/g, '') + '" target="_blank" style="color: #38bdf8; font-size: 13px; font-weight: 700; text-decoration: none;">' + (c.whatsapp || '-') + '</a>' +
-                '<span style="display: block; font-size: 11px; color: var(--text-dim);">' + (c.responsavel || '') + '</span>' +
-              '</div>' +
-            '</td>' +
-            '<td class="cell-plano" data-label="Plano">' +
-              '<span class="mobile-td-label">🏷️ Plano:</span>' +
-              '<div>' +
-                '<span style="font-size: 12px; color: var(--accent-cyan); font-weight: 700;">' + c.plano + '</span>' +
-                '<span style="display: block; font-size: 11px; color: var(--text-dim);">R$ ' + parseFloat(c.valorMensal || 0).toFixed(2).replace('.', ',') + '/mês</span>' +
-              '</div>' +
-            '</td>' +
-            '<td class="cell-venc" data-label="Vencimento">' +
-              '<span class="mobile-td-label">📅 Vencimento:</span>' +
-              '<strong style="font-family: monospace; font-size: 13px; color: var(--text-main);">' + dataStr + '</strong>' +
-            '</td>' +
-            '<td class="cell-status" data-label="Status">' +
-              '<span class="mobile-td-label">⚡ Status:</span>' +
-              '<div>' + statusBadge + '</div>' +
-            '</td>' +
-            '<td class="cell-term" data-label="Terminais">' +
-              '<span class="mobile-td-label">💻 Terminais:</span>' +
-              '<div>' + termBadge + '</div>' +
-            '</td>' +
-            '<td class="cell-acoes" style="text-align: right;">' +
-              '<button type="button" class="btn-editar-modern" onclick="MasterApp.abrirModalEditarCliente(\'' + c.id + '\')">' +
-                '✏️ Editar' +
-              '</button>' +
-            '</td>' +
-          '</tr>';
+        return `
+          <article class="license-card tone-${tone}">
+            <div class="license-card-top">
+              ${logoHtml}
+              <div class="license-card-id">
+                <h3 class="license-name">${c.nome || 'Sem nome'}</h3>
+                <p class="license-meta">${c.documento || 'Sem documento'} · ${c.responsavel || '—'}</p>
+              </div>
+              <span class="license-status status-${tone}">${statusBadge}</span>
+            </div>
+            <div class="license-card-grid">
+              <div>
+                <span class="lic-k">Plano</span>
+                <strong class="lic-v">${c.plano || '—'}</strong>
+                <span class="lic-s">R$ ${valor}/mês</span>
+              </div>
+              <div>
+                <span class="lic-k">Vencimento</span>
+                <strong class="lic-v mono">${dataStr}</strong>
+              </div>
+              <div>
+                <span class="lic-k">Terminais</span>
+                <strong class="lic-v">${ativosTerm}/${maxTerm}</strong>
+              </div>
+              <div>
+                <span class="lic-k">WhatsApp</span>
+                <a class="lic-v link" href="https://wa.me/55${zapDigits}" target="_blank" rel="noopener">${c.whatsapp || '—'}</a>
+              </div>
+            </div>
+            <div class="license-card-foot">
+              <code class="license-key">${chave}</code>
+              <div class="license-actions">
+                <button type="button" class="btn-ghost btn-sm" onclick="MasterApp.copiarChaveLicenca('${chave}')">Copiar</button>
+                <button type="button" class="btn-editar-modern" onclick="MasterApp.abrirModalEditarCliente('${idSafe}')">Editar</button>
+              </div>
+            </div>
+          </article>`;
       }).join('');
-    } catch(err) {
+    } catch (err) {
       console.error('[MasterApp] Erro ao renderizar tabela:', err);
     }
   },

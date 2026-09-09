@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.0.0">
+  <link rel="stylesheet" href="css/style.css?v=3.1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -65,59 +65,68 @@
     </section>
   </div>
 
-  <div class="app-shell" id="app-container" style="display: none;">
-    <header class="topbar master-header">
-      <div class="topbar-left brand-group">
-        <img src="icon.png" alt="FlowPDV" class="brand-icon">
-        <div class="topbar-brand-text">
-          <div class="brand-title">Flow<span>PDV</span> <span class="badge-master">MASTER</span></div>
-          <div class="brand-subtitle">SaaS · Licenças</div>
-        </div>
+  <div class="app-shell app-shell--sidebar" id="app-container" style="display: none;">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="FlowPDV-Logo.png" alt="FlowPDV" class="sidebar-logo">
+        <span class="badge-master">MASTER</span>
       </div>
-      <nav class="topbar-nav header-actions">
-        <button type="button" class="nav-pill btn-ghost" id="btn-header-auditoria" onclick="MasterApp.abrirModalAuditoria()">Auditoria</button>
-        <button type="button" class="nav-pill btn-ghost" id="btn-header-planos" onclick="MasterApp.abrirModalPlanos()">Planos</button>
-        <button type="button" class="nav-pill btn-primary-cta btn-novo-cliente" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">Nova licença</button>
-        <div id="master-logged-user" class="header-user-chip">
+      <nav class="sidebar-nav">
+        <button type="button" class="side-link is-active" id="btn-nav-licencas">
+          <span class="side-link-ico">◈</span>
+          <span>Licenças</span>
+        </button>
+        <button type="button" class="side-link" id="btn-header-planos" onclick="MasterApp.abrirModalPlanos()">
+          <span class="side-link-ico">▣</span>
+          <span>Planos</span>
+        </button>
+        <button type="button" class="side-link" id="btn-header-auditoria" onclick="MasterApp.abrirModalAuditoria()">
+          <span class="side-link-ico">☰</span>
+          <span>Auditoria</span>
+        </button>
+      </nav>
+      <div class="sidebar-foot">
+        <div id="master-logged-user" class="sidebar-user">
           <span class="header-user-dot"></span>
           <span id="master-user-email">admin@flowpdv.com</span>
         </div>
-        <button type="button" class="btn-logout" id="btn-header-logout" onclick="MasterApp.executarLogout()">Sair</button>
-      </nav>
-    </header>
+        <button type="button" class="btn-logout side-logout" id="btn-header-logout" onclick="MasterApp.executarLogout()">Sair</button>
+      </div>
+    </aside>
 
-    <main class="workspace master-main">
-      <section class="page-hero">
+    <div class="stage">
+      <header class="stage-header">
         <div>
-          <h1 class="page-hero-title">Licenças</h1>
-          <p class="page-hero-sub">Clientes ativos, vencimentos e terminais vinculados</p>
+          <p class="stage-kicker">Painel SaaS</p>
+          <h1 class="stage-title">Licenças</h1>
         </div>
+        <button type="button" class="btn-primary-cta btn-novo-cliente" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">+ Nova licença</button>
+      </header>
+
+      <section class="kpi-rail metrics-grid">
+        <article class="kpi metric-card mrr">
+          <span class="kpi-label">MRR</span>
+          <strong class="kpi-value metric-value" id="metric-mrr">R$ 0,00</strong>
+          <span class="kpi-hint metric-sub" id="metric-mrr-sub">Receita recorrente</span>
+        </article>
+        <article class="kpi metric-card ativas">
+          <span class="kpi-label">Ativos</span>
+          <strong class="kpi-value metric-value" id="metric-ativas">0</strong>
+          <span class="kpi-hint metric-sub">Sistemas ok</span>
+        </article>
+        <article class="kpi metric-card vencendo">
+          <span class="kpi-label">Vencendo 7d</span>
+          <strong class="kpi-value metric-value" id="metric-vencendo">0</strong>
+          <span class="kpi-hint metric-sub">Cobrança</span>
+        </article>
+        <article class="kpi metric-card bloqueadas">
+          <span class="kpi-label">Bloqueados</span>
+          <strong class="kpi-value metric-value" id="metric-bloqueadas">0</strong>
+          <span class="kpi-hint metric-sub">Suspensos</span>
+        </article>
       </section>
 
-      <section class="stats-strip metrics-grid">
-        <div class="stat-cell metric-card mrr">
-          <span class="stat-label">MRR</span>
-          <strong class="stat-value metric-value" id="metric-mrr">R$ 0,00</strong>
-          <span class="stat-hint metric-sub" id="metric-mrr-sub">Receita recorrente</span>
-        </div>
-        <div class="stat-cell metric-card ativas">
-          <span class="stat-label">Ativos</span>
-          <strong class="stat-value metric-value" id="metric-ativas">0</strong>
-          <span class="stat-hint metric-sub">Sistemas ok</span>
-        </div>
-        <div class="stat-cell metric-card vencendo">
-          <span class="stat-label">Vencendo 7d</span>
-          <strong class="stat-value metric-value" id="metric-vencendo">0</strong>
-          <span class="stat-hint metric-sub">Cobrança</span>
-        </div>
-        <div class="stat-cell metric-card bloqueadas">
-          <span class="stat-label">Bloqueados</span>
-          <strong class="stat-value metric-value" id="metric-bloqueadas">0</strong>
-          <span class="stat-hint metric-sub">Suspensos</span>
-        </div>
-      </section>
-
-      <section class="toolbar controls-bar">
+      <section class="stage-tools toolbar controls-bar">
         <div class="search-box">
           <span class="search-icon" aria-hidden="true">⌕</span>
           <input type="text" id="master-search-input" placeholder="Buscar loja, CNPJ, responsável ou chave..." oninput="MasterApp.filtrarTabela()">
@@ -130,26 +139,9 @@
         </div>
       </section>
 
-      <section class="data-panel table-section">
-        <div class="data-panel-scroll">
-          <table class="master-table">
-            <thead>
-              <tr>
-                <th>Estabelecimento</th>
-                <th>Licença</th>
-                <th>WhatsApp</th>
-                <th>Plano</th>
-                <th>Vencimento</th>
-                <th>Status</th>
-                <th>Terminais</th>
-                <th style="text-align: right;">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="master-table-tbody"></tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+      <section class="license-board" id="lista-clientes-cards" aria-live="polite"></section>
+      <div id="master-table-tbody" hidden aria-hidden="true"></div>
+    </div>
   </div>
 
   <!-- MODAL: CADASTRAR / EDITAR CLIENTE & LICENÇA -->
@@ -663,6 +655,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.0.0"></script>
+  <script src="js/app.js?v=3.1.0"></script>
 </body>
 </html>
