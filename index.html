@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.2.3">
+  <link rel="stylesheet" href="css/style.css?v=3.2.4">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.3')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.4')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.3');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.4');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -296,7 +296,7 @@
 
           <!-- ABA: CATEGORIAS -->
           <div class="cli-tab-panel" id="tab-categorias" role="tabpanel" hidden>
-            <p class="cli-tab-hint">Preset por segmento ou edite a lista manualmente.</p>
+            <p class="cli-tab-hint">Escolha um preset de segmento ou monte a lista manualmente.</p>
             <div class="presets-category-grid">
               <button type="button" class="preset-cat-btn cat-adega" onclick="MasterApp.aplicarPresetCategorias('adega')">🍷 Adega</button>
               <button type="button" class="preset-cat-btn cat-mercado" onclick="MasterApp.aplicarPresetCategorias('mercado')">🛒 Mercado</button>
@@ -308,10 +308,21 @@
               <button type="button" class="preset-cat-btn cat-vestuario" onclick="MasterApp.aplicarPresetCategorias('vestuario')">👗 Vestuário</button>
               <button type="button" class="preset-cat-btn cat-geral" onclick="MasterApp.aplicarPresetCategorias('geral')">⚡ Geral</button>
             </div>
-            <div class="form-group span-2" style="margin-top: 14px;">
-              <label>Categorias (separadas por vírgula)</label>
-              <input type="text" id="cli-categorias" placeholder="Ex: Cervejas, Destilados, Vinhos…" oninput="MasterApp.atualizarPreviewCategorias()">
-              <div id="cli-categorias-preview" class="categorias-preview" aria-live="polite"></div>
+
+            <div class="cli-cat-board">
+              <div class="cli-cat-board-head">
+                <strong>Categorias cadastradas</strong>
+                <span id="cli-categorias-count" class="cli-cat-count">0</span>
+              </div>
+              <div id="cli-categorias-preview" class="cli-cat-chips" aria-live="polite"></div>
+              <div class="cli-cat-add-row">
+                <input type="text" id="cli-cat-nova" placeholder="Nova categoria…" maxlength="48" onkeydown="if(event.key==='Enter'){event.preventDefault();MasterApp.adicionarCategoriaChip();}">
+                <button type="button" class="btn-attach-logo" onclick="MasterApp.adicionarCategoriaChip()">Adicionar</button>
+              </div>
+              <details class="cli-cat-advanced">
+                <summary>Editar lista completa (vírgulas)</summary>
+                <textarea id="cli-categorias" rows="3" placeholder="Ex: Cervejas, Destilados, Vinhos…" oninput="MasterApp.atualizarPreviewCategorias()"></textarea>
+              </details>
             </div>
           </div>
 
@@ -394,7 +405,7 @@
       </div>
 
       <div class="modal-footer modal-footer--cliente">
-        <button type="button" id="btn-excluir-cliente" class="btn-danger-ghost" style="display: none;" onclick="MasterApp.excluirClienteModal()">Excluir</button>
+        <button type="button" id="btn-excluir-cliente" class="btn-danger-ghost" hidden onclick="MasterApp.excluirClienteModal()">Excluir</button>
         <div class="modal-footer-spacer" aria-hidden="true"></div>
         <button type="button" class="btn-sec btn-modal-footer" onclick="MasterApp.fecharModalCliente()">Cancelar</button>
         <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event).catch(err => { alert('Erro CRITICO ao salvar: ' + err.message); console.error(err); })">Salvar alterações</button>
@@ -607,6 +618,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.2.3"></script>
+  <script src="js/app.js?v=3.2.4"></script>
 </body>
 </html>

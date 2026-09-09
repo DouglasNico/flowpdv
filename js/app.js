@@ -184,9 +184,56 @@ window.MasterApp = {
   atualizarPreviewCategorias() {
     const input = document.getElementById('cli-categorias');
     const preview = document.getElementById('cli-categorias-preview');
+    const countEl = document.getElementById('cli-categorias-count');
     if (!input || !preview) return;
-    const categorias = input.value.split(',').map(item => item.trim()).filter(Boolean);
-    preview.innerHTML = categorias.map(categoria => `<span class="categoria-chip-preview">${categoria}</span>`).join('');
+
+    const categorias = input.value.split(',').map((item) => item.trim()).filter(Boolean);
+    if (countEl) {
+      countEl.textContent = categorias.length === 1 ? '1 item' : categorias.length + ' itens';
+    }
+
+    if (categorias.length === 0) {
+      preview.innerHTML = '<p class="cli-cat-empty">Nenhuma categoria ainda. Use um preset ou adicione abaixo.</p>';
+      return;
+    }
+
+    preview.innerHTML = categorias.map((categoria, idx) => {
+      const safe = String(categoria)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+      return '<button type="button" class="cli-cat-chip" title="Remover" onclick="MasterApp.removerCategoriaChip(' + idx + ')">' +
+        '<span class="cli-cat-chip-label">' + safe + '</span>' +
+        '<span class="cli-cat-chip-x" aria-hidden="true">×</span>' +
+      '</button>';
+    }).join('');
+  },
+
+  removerCategoriaChip(idx) {
+    const input = document.getElementById('cli-categorias');
+    if (!input) return;
+    const cats = input.value.split(',').map((item) => item.trim()).filter(Boolean);
+    if (idx < 0 || idx >= cats.length) return;
+    cats.splice(idx, 1);
+    input.value = cats.join(', ');
+    this.atualizarPreviewCategorias();
+  },
+
+  adicionarCategoriaChip() {
+    const novaEl = document.getElementById('cli-cat-nova');
+    const input = document.getElementById('cli-categorias');
+    if (!novaEl || !input) return;
+    const nome = novaEl.value.trim();
+    if (!nome) return;
+    const cats = input.value.split(',').map((item) => item.trim()).filter(Boolean);
+    if (!cats.some((c) => c.toLowerCase() === nome.toLowerCase())) {
+      cats.push(nome);
+      input.value = cats.join(', ');
+    }
+    novaEl.value = '';
+    this.atualizarPreviewCategorias();
+    novaEl.focus();
   },
 
   aplicarPresetCategorias(tipo) {
@@ -975,7 +1022,7 @@ window.MasterApp = {
     const titleEl = document.getElementById('modal-cliente-title');
     if (titleEl) titleEl.innerText = 'Nova Licença / Cliente';
     if (idInput) idInput.value = '';
-    if (btnExcluir) btnExcluir.style.display = 'none';
+    if (btnExcluir) btnExcluir.hidden = true;
     if (chaveInput) chaveInput.value = 'LIC-FLOW-' + Math.floor(100000 + Math.random() * 900000);
     // PIN sorteado: nenhuma loja nasce com o PIN de fábrica que todo mundo sabe.
     if (pinInput) pinInput.value = String(Math.floor(1000 + Math.random() * 9000));
@@ -1079,7 +1126,7 @@ window.MasterApp = {
     if (termInfoBox) termInfoBox.style.display = 'block';
 
     if (statusInput) statusInput.value = c.status || 'ativa';
-    if (btnExcluir) btnExcluir.style.display = 'inline-flex';
+    if (btnExcluir) btnExcluir.hidden = false;
 
     this.renderListaTerminaisModal(c);
     this.previewLogo();
