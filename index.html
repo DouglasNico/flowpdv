@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -6,7 +6,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FlowPDV Master â€” GestÃ£o SaaS & LicenÃ§as</title>
+  <title>FlowPDV Master — Gestão SaaS & Licenças</title>
   <link rel="icon" type="image/png" href="icon.png">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#273545">
@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.2.10">
+  <link rel="stylesheet" href="css/style.css?v=3.2.11">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.10')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.11')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.10');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.11');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -49,9 +49,9 @@
         <img src="icon.png" alt="" class="brand-mark-icon">
         <span class="brand-mark-word"><span class="brand-flow" style="color:#fff">Flow</span><span class="brand-pdv" style="color:#f39237">PDV</span></span>
       </div>
-      <p class="login-brand-tagline login-tagline">Controle total das licenÃ§as, planos e operaÃ§Ã£o das lojas.</p>
+      <p class="login-brand-tagline login-tagline">Controle total das licenças, planos e operação das lojas.</p>
       <ul class="login-brand-points">
-        <li>LicenÃ§as e terminais em tempo real</li>
+        <li>Licenças e terminais em tempo real</li>
         <li>Planos e faturamento (MRR)</li>
         <li>Auditoria das lojas</li>
       </ul>
@@ -71,7 +71,7 @@
           </div>
           <div class="form-group">
             <label class="form-label-login">Senha</label>
-            <input type="password" id="login-password" class="input-login" required placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password">
+            <input type="password" id="login-password" class="input-login" required placeholder="••••••••" autocomplete="current-password">
           </div>
           <div id="login-error-msg" class="login-error" style="display: none;">E-mail ou senha incorretos.</div>
           <button type="submit" id="btn-submit-login" class="btn-login-primary">Entrar</button>
@@ -91,15 +91,15 @@
       </div>
       <nav class="sidebar-nav">
         <button type="button" class="side-link is-active" id="btn-nav-licencas">
-          <span class="side-link-ico">â—ˆ</span>
-          <span>LicenÃ§as</span>
+          <span class="side-link-ico">◈</span>
+          <span>Licenças</span>
         </button>
         <button type="button" class="side-link" id="btn-header-planos" onclick="MasterApp.abrirModalPlanos()">
-          <span class="side-link-ico">â–£</span>
+          <span class="side-link-ico">▣</span>
           <span>Planos</span>
         </button>
         <button type="button" class="side-link" id="btn-header-auditoria" onclick="MasterApp.abrirModalAuditoria()">
-          <span class="side-link-ico">â˜°</span>
+          <span class="side-link-ico">☰</span>
           <span>Auditoria</span>
         </button>
       </nav>
@@ -117,8 +117,8 @@
         <div class="stage-heading">
           <p class="stage-kicker">Painel SaaS</p>
           <div class="stage-title-row">
-            <h1 class="stage-title">LicenÃ§as</h1>
-            <button type="button" class="btn-primary-cta btn-novo-cliente" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">+ Nova licenÃ§a</button>
+            <h1 class="stage-title">Licenças</h1>
+            <button type="button" class="btn-primary-cta btn-novo-cliente" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">+ Nova licença</button>
           </div>
         </div>
       </header>
@@ -137,7 +137,7 @@
         <article class="kpi metric-card vencendo">
           <span class="kpi-label">Vencendo 7d</span>
           <strong class="kpi-value metric-value" id="metric-vencendo">0</strong>
-          <span class="kpi-hint metric-sub">CobranÃ§a</span>
+          <span class="kpi-hint metric-sub">Cobrança</span>
         </article>
         <article class="kpi metric-card bloqueadas">
           <span class="kpi-label">Bloqueados</span>
@@ -148,8 +148,8 @@
 
       <section class="stage-tools toolbar controls-bar">
         <div class="search-box">
-          <span class="search-icon" aria-hidden="true">âŒ•</span>
-          <input type="text" id="master-search-input" placeholder="Buscar loja, CNPJ, responsÃ¡vel ou chave..." oninput="MasterApp.filtrarTabela()">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input type="text" id="master-search-input" placeholder="Buscar loja, CNPJ, responsável ou chave..." oninput="MasterApp.filtrarTabela()">
         </div>
         <div class="filter-group">
           <button type="button" class="filter-btn active" data-filter="todos" onclick="MasterApp.setFiltro('todos', this)">Todos</button>
@@ -164,23 +164,23 @@
     </div>
   </div>
 
-  <!-- MODAL: CADASTRAR / EDITAR CLIENTE & LICENÃ‡A (sheet central + abas) -->
+  <!-- MODAL: CADASTRAR / EDITAR CLIENTE & LICENÇA (sheet central + abas) -->
   <div class="modal-overlay" id="modal-cliente" onclick="if(event.target===this) MasterApp.fecharModalCliente()">
     <div class="modal-sheet modal-card modal-cliente-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-cliente-title">
       <div class="modal-head modal-header">
         <div class="modal-header-main">
           <img src="icon.png" alt="" class="modal-brand-thumb">
           <div class="modal-header-titles">
-            <span class="modal-eyebrow">LicenÃ§a</span>
-            <h3 id="modal-cliente-title">Editar Cliente & LicenÃ§a</h3>
+            <span class="modal-eyebrow">Licença</span>
+            <h3 id="modal-cliente-title">Editar Cliente & Licença</h3>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalCliente()" title="Fechar">âœ•</button>
+        <button type="button" class="btn-close" onclick="MasterApp.fecharModalCliente()" title="Fechar">✕</button>
       </div>
 
-      <nav class="cli-tabs" role="tablist" aria-label="SeÃ§Ãµes da licenÃ§a">
+      <nav class="cli-tabs" role="tablist" aria-label="Seções da licença">
         <button type="button" class="cli-tab is-active" role="tab" data-tab="cliente" onclick="MasterApp.setAbaCliente('cliente', this)">Cliente</button>
-        <button type="button" class="cli-tab" role="tab" data-tab="modulos" onclick="MasterApp.setAbaCliente('modulos', this)">MÃ³dulos</button>
+        <button type="button" class="cli-tab" role="tab" data-tab="modulos" onclick="MasterApp.setAbaCliente('modulos', this)">Módulos</button>
         <button type="button" class="cli-tab" role="tab" data-tab="categorias" onclick="MasterApp.setAbaCliente('categorias', this)">Categorias</button>
         <button type="button" class="cli-tab" role="tab" data-tab="plano" onclick="MasterApp.setAbaCliente('plano', this)">Plano</button>
         <button type="button" class="cli-tab" role="tab" data-tab="acesso" onclick="MasterApp.setAbaCliente('acesso', this)">Acesso</button>
@@ -189,31 +189,31 @@
       <div class="modal-body modal-body--tabs">
         <form id="form-cliente" onsubmit="MasterApp.salvarCliente(event)">
           <input type="hidden" id="cliente-id">
-          <input type="hidden" id="cli-icone" value="ðŸ·">
+          <input type="hidden" id="cli-icone" value="🍷">
 
           <!-- ABA: CLIENTE -->
           <div class="cli-tab-panel is-active" id="tab-cliente" role="tabpanel">
             <div class="cli-logo-card">
-              <div id="cli-logo-img-preview" class="cli-logo-avatar" aria-hidden="true">ðŸª</div>
+              <div id="cli-logo-img-preview" class="cli-logo-avatar" aria-hidden="true">🏪</div>
               <div class="cli-logo-meta">
                 <div class="cli-logo-title-row">
                   <strong id="cli-logo-status-title">Logo da loja</strong>
                   <div id="cli-logo-preview-box" class="cli-logo-ready" style="display: none;">Pronta</div>
                 </div>
-                <span class="cli-logo-sub">PNG ou JPG Â· aparece no PDV e nos cards</span>
+                <span class="cli-logo-sub">PNG ou JPG · aparece no PDV e nos cards</span>
                 <div class="cli-logo-actions">
                   <input type="hidden" id="cli-logo-url" value="">
                   <input type="file" id="cli-logo-file" accept="image/*" hidden onchange="MasterApp.fazerUploadLogoComputador(event)">
                   <button type="button" class="btn-attach-logo" onclick="document.getElementById('cli-logo-file').click()">Anexar imagem</button>
-                  <input type="text" id="cli-logo-url-visible" class="cli-logo-url" placeholder="ou cole um link https://â€¦" oninput="MasterApp.onLogoUrlVisibleInput()" autocomplete="off">
-                  <button type="button" class="btn-logo-clear" id="cli-logo-clear" style="display:none" onclick="MasterApp.limparLogoCliente()" title="Remover logo">âœ•</button>
+                  <input type="text" id="cli-logo-url-visible" class="cli-logo-url" placeholder="ou cole um link https://…" oninput="MasterApp.onLogoUrlVisibleInput()" autocomplete="off">
+                  <button type="button" class="btn-logo-clear" id="cli-logo-clear" style="display:none" onclick="MasterApp.limparLogoCliente()" title="Remover logo">✕</button>
                 </div>
               </div>
             </div>
 
             <div class="form-grid cli-form-grid">
               <div class="form-group span-2">
-                <label>RazÃ£o Social / Nome Fantasia *</label>
+                <label>Razão Social / Nome Fantasia *</label>
                 <input type="text" id="cli-nome" required placeholder="Ex: Adega do Douglas">
               </div>
               <div class="form-group">
@@ -221,7 +221,7 @@
                 <input type="text" id="cli-documento" required placeholder="00.000.000/0001-00">
               </div>
               <div class="form-group">
-                <label>ResponsÃ¡vel</label>
+                <label>Responsável</label>
                 <input type="text" id="cli-responsavel" placeholder="Ex: Douglas Nico">
               </div>
               <div class="form-group">
@@ -231,42 +231,42 @@
               <div class="form-group">
                 <label>Segmento *</label>
                 <select id="cli-ramo" required onchange="MasterApp.aoMudarRamoSelect(this.value)">
-                  <option value="adega">ðŸ· Adega & DepÃ³sito de Bebidas</option>
-                  <option value="mercado">ðŸ›’ Supermercado & Mercearia</option>
-                  <option value="acougue">ðŸ¥© AÃ§ougue & Casa de Carnes</option>
-                  <option value="hortifruti">ðŸ¥¬ HortifrÃºti & SacolÃ£o</option>
-                  <option value="padaria">ðŸ¥– Padaria & Confeitaria</option>
-                  <option value="conveniencia">ðŸª Loja de ConveniÃªncia</option>
-                  <option value="tabacaria">ðŸš¬ Tabacaria & Hookah</option>
-                  <option value="vestuario">ðŸ‘— Loja de Roupas & CalÃ§ados</option>
-                  <option value="lanchonete">ðŸ” Lanchonete & Restaurante</option>
-                  <option value="geral">âš¡ ComÃ©rcio Geral / Varejo</option>
+                  <option value="adega">🍷 Adega & Depósito de Bebidas</option>
+                  <option value="mercado">🛒 Supermercado & Mercearia</option>
+                  <option value="acougue">🥩 Açougue & Casa de Carnes</option>
+                  <option value="hortifruti">🥬 Hortifrúti & Sacolão</option>
+                  <option value="padaria">🥖 Padaria & Confeitaria</option>
+                  <option value="conveniencia">🏪 Loja de Conveniência</option>
+                  <option value="tabacaria">🚬 Tabacaria & Hookah</option>
+                  <option value="vestuario">👗 Loja de Roupas & Calçados</option>
+                  <option value="lanchonete">🍔 Lanchonete & Restaurante</option>
+                  <option value="geral">⚡ Comércio Geral / Varejo</option>
                 </select>
               </div>
               <div class="form-group span-2">
                 <label>Layout do PDV</label>
                 <select id="cli-layout-pdv">
-                  <option value="moderno">âœ¨ PDV Moderno</option>
-                  <option value="classico">ðŸ–¥ï¸ PDV ClÃ¡ssico</option>
+                  <option value="moderno">✨ PDV Moderno</option>
+                  <option value="classico">🖥️ PDV Clássico</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <!-- ABA: MÃ“DULOS -->
+          <!-- ABA: MÓDULOS -->
           <div class="cli-tab-panel" id="tab-modulos" role="tabpanel" hidden>
             <p class="cli-tab-hint">Marque o que este lojista pode usar no PDV.</p>
             <div class="mod-grid">
-              <label class="mod-chip"><input type="checkbox" id="mod-fardos" checked><span>ðŸ“¦ Fardos & Packs</span></label>
-              <label class="mod-chip"><input type="checkbox" id="mod-balanca"><span>âš–ï¸ BalanÃ§a / Kg</span></label>
-              <label class="mod-chip"><input type="checkbox" id="mod-validade" checked><span>ðŸ“… Validade</span></label>
-              <label class="mod-chip"><input type="checkbox" id="mod-grade"><span>ðŸ‘— Grade tamanho/cor</span></label>
-              <label class="mod-chip"><input type="checkbox" id="mod-clube"><span>ðŸ… Clube Fidelidade</span></label>
-              <label class="mod-chip"><input type="checkbox" id="mod-fiado" checked><span>ðŸ“– Fiado & WhatsApp</span></label>
-              <label class="mod-chip"><input type="checkbox" id="mod-xml" checked><span>ðŸ“¥ Importador XML</span></label>
-              <label class="mod-chip"><input type="checkbox" id="mod-fiscal" checked><span>ðŸ›ï¸ NFC-e</span></label>
-              <label class="mod-chip"><input type="checkbox" id="mod-tef" checked><span>ðŸ’³ TEF / CartÃ£o</span></label>
-              <label class="mod-chip"><input type="checkbox" id="pag-vouchers" onchange="MasterApp.atualizarEstadoVouchers()"><span>ðŸŽ« Vouchers</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-fardos" checked><span>📦 Fardos & Packs</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-balanca"><span>⚖️ Balança / Kg</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-validade" checked><span>📅 Validade</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-grade"><span>👗 Grade tamanho/cor</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-clube"><span>🏅 Clube Fidelidade</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-fiado" checked><span>📖 Fiado & WhatsApp</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-xml" checked><span>📥 Importador XML</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-fiscal" checked><span>🏛️ NFC-e</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-tef" checked><span>💳 TEF / Cartão</span></label>
+              <label class="mod-chip"><input type="checkbox" id="pag-vouchers" onchange="MasterApp.atualizarEstadoVouchers()"><span>🎫 Vouchers</span></label>
             </div>
 
             <div id="box-modulo-vouchers" class="cli-subbox">
@@ -283,7 +283,7 @@
             <div class="cli-subbox cli-atendimento">
               <div class="cli-atendimento-copy">
                 <label for="cli-modulo-comandas">Atendimento (Mesas / Comandas)</label>
-                <span class="cli-tab-hint">Se desativado, oculta o botÃ£o no PDV.</span>
+                <span class="cli-tab-hint">Se desativado, oculta o botão no PDV.</span>
               </div>
               <select id="cli-modulo-comandas" class="cli-select">
                 <option value="mesas_e_comandas">Mesas & Comandas</option>
@@ -298,15 +298,15 @@
           <div class="cli-tab-panel" id="tab-categorias" role="tabpanel" hidden>
             <p class="cli-tab-hint">Escolha um preset de segmento ou monte a lista manualmente.</p>
             <div class="presets-category-grid">
-              <button type="button" class="preset-cat-btn cat-adega" onclick="MasterApp.aplicarPresetCategorias('adega')">ðŸ· Adega</button>
-              <button type="button" class="preset-cat-btn cat-mercado" onclick="MasterApp.aplicarPresetCategorias('mercado')">ðŸ›’ Mercado</button>
-              <button type="button" class="preset-cat-btn cat-acougue" onclick="MasterApp.aplicarPresetCategorias('acougue')">ðŸ¥© AÃ§ougue</button>
-              <button type="button" class="preset-cat-btn cat-hortifruti" onclick="MasterApp.aplicarPresetCategorias('hortifruti')">ðŸ¥¬ HortifrÃºti</button>
-              <button type="button" class="preset-cat-btn cat-padaria" onclick="MasterApp.aplicarPresetCategorias('padaria')">ðŸ¥– Padaria</button>
-              <button type="button" class="preset-cat-btn cat-conveniencia" onclick="MasterApp.aplicarPresetCategorias('conveniencia')">ðŸª ConveniÃªncia</button>
-              <button type="button" class="preset-cat-btn cat-tabacaria" onclick="MasterApp.aplicarPresetCategorias('tabacaria')">ðŸš¬ Tabacaria</button>
-              <button type="button" class="preset-cat-btn cat-vestuario" onclick="MasterApp.aplicarPresetCategorias('vestuario')">ðŸ‘— VestuÃ¡rio</button>
-              <button type="button" class="preset-cat-btn cat-geral" onclick="MasterApp.aplicarPresetCategorias('geral')">âš¡ Geral</button>
+              <button type="button" class="preset-cat-btn cat-adega" onclick="MasterApp.aplicarPresetCategorias('adega')">🍷 Adega</button>
+              <button type="button" class="preset-cat-btn cat-mercado" onclick="MasterApp.aplicarPresetCategorias('mercado')">🛒 Mercado</button>
+              <button type="button" class="preset-cat-btn cat-acougue" onclick="MasterApp.aplicarPresetCategorias('acougue')">🥩 Açougue</button>
+              <button type="button" class="preset-cat-btn cat-hortifruti" onclick="MasterApp.aplicarPresetCategorias('hortifruti')">🥬 Hortifrúti</button>
+              <button type="button" class="preset-cat-btn cat-padaria" onclick="MasterApp.aplicarPresetCategorias('padaria')">🥖 Padaria</button>
+              <button type="button" class="preset-cat-btn cat-conveniencia" onclick="MasterApp.aplicarPresetCategorias('conveniencia')">🏪 Conveniência</button>
+              <button type="button" class="preset-cat-btn cat-tabacaria" onclick="MasterApp.aplicarPresetCategorias('tabacaria')">🚬 Tabacaria</button>
+              <button type="button" class="preset-cat-btn cat-vestuario" onclick="MasterApp.aplicarPresetCategorias('vestuario')">👗 Vestuário</button>
+              <button type="button" class="preset-cat-btn cat-geral" onclick="MasterApp.aplicarPresetCategorias('geral')">⚡ Geral</button>
             </div>
 
             <div class="cli-cat-board">
@@ -316,12 +316,12 @@
               </div>
               <div id="cli-categorias-preview" class="cli-cat-chips" aria-live="polite"></div>
               <div class="cli-cat-add-row">
-                <input type="text" id="cli-cat-nova" placeholder="Nova categoriaâ€¦" maxlength="48" onkeydown="if(event.key==='Enter'){event.preventDefault();MasterApp.adicionarCategoriaChip();}">
+                <input type="text" id="cli-cat-nova" placeholder="Nova categoria…" maxlength="48" onkeydown="if(event.key==='Enter'){event.preventDefault();MasterApp.adicionarCategoriaChip();}">
                 <button type="button" class="btn-attach-logo" onclick="MasterApp.adicionarCategoriaChip()">Adicionar</button>
               </div>
               <details class="cli-cat-advanced">
-                <summary>Editar lista completa (vÃ­rgulas)</summary>
-                <textarea id="cli-categorias" rows="3" placeholder="Ex: Cervejas, Destilados, Vinhosâ€¦" oninput="MasterApp.atualizarPreviewCategorias()"></textarea>
+                <summary>Editar lista completa (vírgulas)</summary>
+                <textarea id="cli-categorias" rows="3" placeholder="Ex: Cervejas, Destilados, Vinhos…" oninput="MasterApp.atualizarPreviewCategorias()"></textarea>
               </details>
             </div>
           </div>
@@ -373,22 +373,22 @@
           <div class="cli-tab-panel" id="tab-acesso" role="tabpanel" hidden>
             <div class="form-grid">
               <div class="form-group span-2">
-                <label>Chave de LicenÃ§a</label>
+                <label>Chave de Licença</label>
                 <div class="cli-chave-row">
                   <input type="text" id="cli-chave" readonly title="Gerada automaticamente">
                   <button type="button" class="btn-sec" onclick="MasterApp.copiarChaveLicenca(document.getElementById('cli-chave').value)">Copiar</button>
                 </div>
               </div>
               <div class="form-group span-2 cli-subbox">
-                <label for="cli-pin-gerente">ðŸ”‘ PIN do Gerente no PDV</label>
-                <input type="text" id="cli-pin-gerente" maxlength="8" inputmode="numeric" placeholder="4 a 8 dÃ­gitos">
-                <span class="cli-tab-hint">Usada no PDV para desbloquear configuraÃ§Ãµes.</span>
+                <label for="cli-pin-gerente">🔑 PIN do Gerente no PDV</label>
+                <input type="text" id="cli-pin-gerente" maxlength="8" inputmode="numeric" placeholder="4 a 8 dígitos">
+                <span class="cli-tab-hint">Usada no PDV para desbloquear configurações.</span>
               </div>
               <div class="form-group span-2 cli-subbox">
                 <div class="cli-subbox--row" style="margin:0;padding:0;border:none;background:transparent;">
                   <div>
-                    <label>ðŸ’» Limite de computadores</label>
-                    <span class="cli-tab-hint">PCs simultÃ¢neos autorizados.</span>
+                    <label>💻 Limite de computadores</label>
+                    <span class="cli-tab-hint">PCs simultâneos autorizados.</span>
                   </div>
                   <div class="cli-term-limit">
                     <input type="number" id="cli-limite-terminais" min="1" max="99" value="1">
@@ -412,7 +412,7 @@
         <button type="button" id="btn-excluir-cliente" class="btn-danger-ghost" hidden onclick="MasterApp.excluirClienteModal()">Excluir</button>
         <div class="modal-footer-spacer" aria-hidden="true"></div>
         <button type="button" class="btn-sec btn-modal-footer" onclick="MasterApp.fecharModalCliente()">Cancelar</button>
-        <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event).catch(err => { alert('Erro CRITICO ao salvar: ' + err.message); console.error(err); })">Salvar alteraÃ§Ãµes</button>
+        <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event).catch(err => { alert('Erro CRITICO ao salvar: ' + err.message); console.error(err); })">Salvar alterações</button>
       </div>
     </div>
   </div>
@@ -422,21 +422,21 @@
     <div class="modal-sheet modal-card" style="max-width: 720px;">
       <div class="modal-head modal-header">
         <div class="modal-header-main">
-          <div class="modal-header-icon" aria-hidden="true">â–£</div>
+          <div class="modal-header-icon" aria-hidden="true">▣</div>
           <div class="modal-header-titles">
             <span class="modal-eyebrow">Comercial</span>
             <h3>Planos & Mensalidades</h3>
-            <span class="modal-subtitle">CatÃ¡logo de planos oferecidos aos clientes</span>
+            <span class="modal-subtitle">Catálogo de planos oferecidos aos clientes</span>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalPlanos()" title="Fechar">âœ•</button>
+        <button type="button" class="btn-close" onclick="MasterApp.fecharModalPlanos()" title="Fechar">✕</button>
       </div>
 
       <div class="modal-body" style="padding: 20px 24px;">
-        <!-- FormulÃ¡rio RÃ¡pido de CriaÃ§Ã£o / EdiÃ§Ã£o de Plano -->
+        <!-- Formulário Rápido de Criação / Edição de Plano -->
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
           <h4 id="plano-form-title" style="font-size: 14px; font-weight: 800; color: var(--accent-cyan); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
-            <span>âž•</span> Novo Plano
+            <span>➕</span> Novo Plano
           </h4>
           <form id="form-cadastrar-plano" onsubmit="MasterApp.salvarPlano(event)">
             <input type="hidden" id="plano-id" value="">
@@ -450,25 +450,25 @@
                 <input type="number" step="0.01" id="plano-valor" placeholder="89.90" required style="width: 100%; height: 42px; background: #0b1120; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: var(--accent-green); font-weight: 800;">
               </div>
               <div>
-                <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">RecorrÃªncia</label>
+                <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Recorrência</label>
                 <select id="plano-periodo" style="width: 100%; height: 42px; background: #0b1120; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 10px; color: #fff; font-weight: 600;">
-                  <option value="mÃªs">/ mÃªs</option>
+                  <option value="mês">/ mês</option>
                   <option value="tri">/ tri</option>
                   <option value="semestre">/ sem</option>
                   <option value="ano">/ ano</option>
-                  <option value="Ãºnico">Ãºnico</option>
+                  <option value="único">único</option>
                 </select>
               </div>
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
               <div style="font-size: 11px; color: var(--text-dim);">
-                ðŸ’¡ Os planos cadastrados aqui ficam disponÃ­veis automaticamente no cadastro do cliente.
+                💡 Os planos cadastrados aqui ficam disponíveis automaticamente no cadastro do cliente.
               </div>
               <div style="display: flex; gap: 8px;">
                 <button type="button" id="btn-cancelar-edicao-plano" class="btn-sec" style="display: none; height: 38px; padding: 0 14px; font-size: 13px;" onclick="MasterApp.cancelarEdicaoPlano()">Cancelar</button>
                 <button type="submit" id="btn-salvar-plano" class="btn-pri" style="height: 38px; padding: 0 18px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, var(--accent-green), #047857);">
-                  ðŸ’¾ Salvar Plano
+                  💾 Salvar Plano
                 </button>
               </div>
             </div>
@@ -478,7 +478,7 @@
         <!-- Lista de Planos Ativos -->
         <div>
           <h4 class="titulo-planos-cadastrados">
-            <span>ðŸ“‹</span> Planos Cadastrados no Sistema
+            <span>📋</span> Planos Cadastrados no Sistema
           </h4>
           <div id="lista-planos-container" style="display: flex; flex-direction: column; gap: 8px;">
             <!-- Renderizado dinamicamente via JS -->
@@ -497,18 +497,18 @@
     <div class="modal-sheet modal-card modal-sheet--wide" style="max-width: 1040px; width: 96%; max-height: 92vh;">
       <div class="modal-head modal-header">
         <div class="modal-header-main">
-          <div class="modal-header-icon" aria-hidden="true">â˜°</div>
+          <div class="modal-header-icon" aria-hidden="true">☰</div>
           <div class="modal-header-titles">
             <span class="modal-eyebrow">Monitoramento</span>
             <h3>Auditoria das lojas</h3>
             <span class="modal-subtitle">Eventos em tempo real</span>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalAuditoria()">âœ•</button>
+        <button type="button" class="btn-close" onclick="MasterApp.fecharModalAuditoria()">✕</button>
       </div>
 
       <div class="modal-body" style="padding: 16px 20px; overflow-y: auto;">
-        <!-- Filtros RÃ¡pidos -->
+        <!-- Filtros Rápidos -->
         <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: flex-end;">
           <div style="flex: 1; min-width: 200px;">
             <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Filtrar por Estabelecimento:</label>
@@ -518,29 +518,29 @@
           </div>
 
           <div style="flex: 1; min-width: 180px;">
-            <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Tipo de OperaÃ§Ã£o:</label>
+            <label style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Tipo de Operação:</label>
             <select id="filtro-auditoria-tipo" style="width: 100%; height: 38px; box-sizing: border-box; background: #24384c; border: 1px solid #334155; border-radius: 8px; padding: 0 12px; color: #fff; font-size: 12px; font-weight: 600; outline: none;" onchange="MasterApp.filtrarLogsAuditoria()">
               <option value="todos">Todos os Eventos</option>
-              <option value="cortesia">ðŸŽ Cortesias / DegustaÃ§Ãµes (PDV)</option>
-              <option value="cortesia_licenca">ðŸŽ Cortesias de LicenÃ§a (Master)</option>
-              <option value="exclusao_produto">ðŸ—‘ï¸ ExclusÃ£o de Produtos</option>
-              <option value="cadastro_produto">âž• Cadastro de Produtos</option>
-              <option value="edicao_produto">âœï¸ EdiÃ§Ã£o de Produtos</option>
-              <option value="ajuste_estoque">ðŸ“¦ Ajuste / Entrada de Estoque</option>
-              <option value="importacao_planilha">ðŸ“Š ImportaÃ§Ã£o de Planilha</option>
-              <option value="fechamento_caixa">ðŸ’° Fechamento de Caixa</option>
-              <option value="abertura_caixa">ðŸ”“ Abertura de Caixa</option>
-              <option value="sangria_caixa">ðŸ’¸ Sangria de Caixa</option>
-              <option value="cancelamento_venda">âš¡ Cancelamento de Venda</option>
+              <option value="cortesia">🎁 Cortesias / Degustações (PDV)</option>
+              <option value="cortesia_licenca">🎁 Cortesias de Licença (Master)</option>
+              <option value="exclusao_produto">🗑️ Exclusão de Produtos</option>
+              <option value="cadastro_produto">➕ Cadastro de Produtos</option>
+              <option value="edicao_produto">✏️ Edição de Produtos</option>
+              <option value="ajuste_estoque">📦 Ajuste / Entrada de Estoque</option>
+              <option value="importacao_planilha">📊 Importação de Planilha</option>
+              <option value="fechamento_caixa">💰 Fechamento de Caixa</option>
+              <option value="abertura_caixa">🔓 Abertura de Caixa</option>
+              <option value="sangria_caixa">💸 Sangria de Caixa</option>
+              <option value="cancelamento_venda">⚡ Cancelamento de Venda</option>
             </select>
           </div>
 
           <div style="display: flex; align-items: center; gap: 8px; height: 38px;">
             <button type="button" class="btn-atualizar-auditoria" onclick="MasterApp.carregarLogsAuditoria()">
-              <span>ðŸ”„ Atualizar</span>
+              <span>🔄 Atualizar</span>
             </button>
-            <button type="button" class="btn-limpar-auditoria" title="Apagar logs com mais de 30 dias para economizar espaÃ§o no Firebase" onclick="MasterApp.limparLogsAntigos()">
-              <span>ðŸ§¹ Limpar (>30d)</span>
+            <button type="button" class="btn-limpar-auditoria" title="Apagar logs com mais de 30 dias para economizar espaço no Firebase" onclick="MasterApp.limparLogsAntigos()">
+              <span>🧹 Limpar (>30d)</span>
             </button>
           </div>
         </div>
@@ -551,10 +551,10 @@
             <thead>
               <tr style="position: sticky; top: 0; background: #24384c; z-index: 2;">
                 <th style="padding: 10px 12px; width: 150px;">Data / Hora</th>
-                <th style="padding: 10px 12px; width: 190px;">Loja / LicenÃ§a</th>
+                <th style="padding: 10px 12px; width: 190px;">Loja / Licença</th>
                 <th style="padding: 10px 12px; width: 140px;">Operador</th>
-                <th style="padding: 10px 12px; width: 130px;">Tipo de AÃ§Ã£o</th>
-                <th style="padding: 10px 12px;">DescriÃ§Ã£o do Evento</th>
+                <th style="padding: 10px 12px; width: 130px;">Tipo de Ação</th>
+                <th style="padding: 10px 12px;">Descrição do Evento</th>
                 <th style="padding: 10px 8px; width: 50px;"></th>
               </tr>
             </thead>
@@ -567,7 +567,7 @@
 
       <div class="modal-footer" style="padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;">
         <div id="auditoria-contador-rodape" style="font-size: 12px; color: #94a3b8; font-weight: 600;">
-          ðŸ“Š Registros exibidos: <strong id="auditoria-total-count" style="color: #38bdf8; font-family: 'JetBrains Mono';">0</strong>
+          📊 Registros exibidos: <strong id="auditoria-total-count" style="color: #38bdf8; font-family: 'JetBrains Mono';">0</strong>
         </div>
         <button type="button" class="btn-sec" onclick="MasterApp.fecharModalAuditoria()">Fechar</button>
       </div>
@@ -579,13 +579,13 @@
     <div class="modal-sheet modal-card" style="max-width: 560px; width: 94%; height: auto; max-height: 85vh;">
       <div class="modal-head modal-header">
         <div class="modal-header-main">
-          <div class="modal-header-icon" aria-hidden="true">â“˜</div>
+          <div class="modal-header-icon" aria-hidden="true">ⓘ</div>
           <div class="modal-header-titles">
             <span class="modal-eyebrow">Auditoria</span>
             <h3>Detalhe do evento</h3>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalDetalheLog()">âœ•</button>
+        <button type="button" class="btn-close" onclick="MasterApp.fecharModalDetalheLog()">✕</button>
       </div>
       <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; flex: 1 1 auto; max-height: calc(85vh - 70px);">
         <div id="detalhe-log-conteudo">
@@ -622,6 +622,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.2.10"></script>
+  <script src="js/app.js?v=3.2.11"></script>
 </body>
 </html>
