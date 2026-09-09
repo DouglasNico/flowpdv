@@ -14,16 +14,28 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.1.2">
+  <link rel="stylesheet" href="css/style.css?v=3.1.3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('PWA Service Worker ativo:', reg.scope))
-          .catch(err => console.log('Erro no Service Worker:', err));
+      window.addEventListener('load', async () => {
+        try {
+          if (window.caches) {
+            const keys = await caches.keys();
+            await Promise.all(
+              keys
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.1.3')
+                .map((k) => caches.delete(k))
+            );
+          }
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.1.3');
+          await reg.update();
+          console.log('PWA Service Worker ativo:', reg.scope);
+        } catch (err) {
+          console.log('Erro no Service Worker:', err);
+        }
       });
     }
   </script>
@@ -35,7 +47,7 @@
     <aside class="login-brand-pane">
       <div class="brand-mark brand-mark--lg" aria-label="FlowPDV">
         <img src="icon.png" alt="" class="brand-mark-icon">
-        <span class="brand-mark-word"><span class="brand-flow">Flow</span><span class="brand-pdv">PDV</span></span>
+        <span class="brand-mark-word"><span class="brand-flow" style="color:#fff">Flow</span><span class="brand-pdv" style="color:#f39237">PDV</span></span>
       </div>
       <p class="login-brand-tagline login-tagline">Controle total das licenças, planos e operação das lojas.</p>
       <ul class="login-brand-points">
@@ -73,7 +85,7 @@
       <div class="sidebar-brand">
         <div class="brand-mark" aria-label="FlowPDV">
           <img src="icon.png" alt="" class="brand-mark-icon">
-          <span class="brand-mark-word"><span class="brand-flow">Flow</span><span class="brand-pdv">PDV</span></span>
+          <span class="brand-mark-word"><span class="brand-flow" style="color:#fff">Flow</span><span class="brand-pdv" style="color:#f39237">PDV</span></span>
         </div>
         <span class="badge-master">MASTER</span>
       </div>
@@ -663,6 +675,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.1.2"></script>
+  <script src="js/app.js?v=3.1.3"></script>
 </body>
 </html>
