@@ -1002,6 +1002,7 @@ window.MasterApp = {
     if (moduloComandasSelect) moduloComandasSelect.value = 'mesas_e_comandas';
 
     this.previewLogo();
+    this.setAbaCliente('cliente');
     if (modal) {
       document.body.classList.add('modal-open');
       modal.classList.add('active');
@@ -1083,6 +1084,7 @@ window.MasterApp = {
     this.renderListaTerminaisModal(c);
     this.previewLogo();
     this.atualizarFeedbackVencimentoModal();
+    this.setAbaCliente('cliente');
     if (modal) {
       document.body.classList.add('modal-open');
       modal.classList.add('active');
@@ -1473,12 +1475,24 @@ window.MasterApp = {
     if (!box || !imgDiv) return;
 
     if (url && (url.startsWith('http') || url.startsWith('data:image'))) {
-      imgDiv.innerHTML = '<img src="' + url + '" style="width: 100%; height: 100%; object-fit: contain;">';
-      box.style.display = 'flex';
+      imgDiv.innerHTML = '<img src="' + url + '" alt="" style="width:100%;height:100%;object-fit:contain;">';
+      box.style.display = 'inline-flex';
     } else {
-      imgDiv.innerHTML = '';
+      imgDiv.innerHTML = '🏪';
       box.style.display = 'none';
     }
+  },
+
+  setAbaCliente(tabId, btnEl) {
+    const tabs = document.querySelectorAll('#modal-cliente .cli-tab');
+    const panels = document.querySelectorAll('#modal-cliente .cli-tab-panel');
+    tabs.forEach((t) => t.classList.toggle('is-active', t.dataset.tab === tabId));
+    panels.forEach((p) => {
+      const on = p.id === 'tab-' + tabId;
+      p.classList.toggle('is-active', on);
+      p.hidden = !on;
+    });
+    if (btnEl) btnEl.classList.add('is-active');
   },
 
   fazerUploadLogoComputador(event) {

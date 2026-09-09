@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.1.3">
+  <link rel="stylesheet" href="css/style.css?v=3.2.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.1.3')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.0')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.1.3');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.0');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -164,9 +164,9 @@
     </div>
   </div>
 
-  <!-- MODAL: CADASTRAR / EDITAR CLIENTE & LICENÇA -->
-  <div class="modal-overlay" id="modal-cliente">
-    <div class="modal-drawer modal-card">
+  <!-- MODAL: CADASTRAR / EDITAR CLIENTE & LICENÇA (sheet central + abas) -->
+  <div class="modal-overlay" id="modal-cliente" onclick="if(event.target===this) MasterApp.fecharModalCliente()">
+    <div class="modal-sheet modal-card modal-cliente-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-cliente-title">
       <div class="modal-head modal-header">
         <div class="modal-header-main">
           <img src="icon.png" alt="" class="modal-brand-thumb">
@@ -178,295 +178,224 @@
         <button type="button" class="btn-close" onclick="MasterApp.fecharModalCliente()" title="Fechar">✕</button>
       </div>
 
-      <!-- 2. CORPO COM ROLAGEM DEDICADA -->
-      <div class="modal-body">
+      <nav class="cli-tabs" role="tablist" aria-label="Seções da licença">
+        <button type="button" class="cli-tab is-active" role="tab" data-tab="cliente" onclick="MasterApp.setAbaCliente('cliente', this)">Cliente</button>
+        <button type="button" class="cli-tab" role="tab" data-tab="modulos" onclick="MasterApp.setAbaCliente('modulos', this)">Módulos</button>
+        <button type="button" class="cli-tab" role="tab" data-tab="categorias" onclick="MasterApp.setAbaCliente('categorias', this)">Categorias</button>
+        <button type="button" class="cli-tab" role="tab" data-tab="plano" onclick="MasterApp.setAbaCliente('plano', this)">Plano</button>
+        <button type="button" class="cli-tab" role="tab" data-tab="acesso" onclick="MasterApp.setAbaCliente('acesso', this)">Acesso</button>
+      </nav>
+
+      <div class="modal-body modal-body--tabs">
         <form id="form-cliente" onsubmit="MasterApp.salvarCliente(event)">
           <input type="hidden" id="cliente-id">
+          <input type="hidden" id="cli-icone" value="🍷">
 
-          <div class="form-grid">
-            <div class="form-group span-2">
-              <label>Razão Social / Nome Fantasia *</label>
-              <input type="text" id="cli-nome" required placeholder="Ex: Adega do Douglas">
-            </div>
-
-            <div class="form-group">
-              <label>CNPJ ou CPF *</label>
-              <input type="text" id="cli-documento" required placeholder="00.000.000/0001-00">
-            </div>
-
-            <div class="form-group">
-              <label>Nome do Responsável</label>
-              <input type="text" id="cli-responsavel" placeholder="Ex: Douglas Nico">
-            </div>
-
-            <div class="form-group">
-              <label>WhatsApp / Celular (com DDD) *</label>
-              <input type="text" id="cli-whatsapp" required placeholder="(19) 99999-7777">
-            </div>
-
-            <div class="form-group">
-              <label>Ramo de Atividade (Segmento) *</label>
-              <select id="cli-ramo" required onchange="MasterApp.aoMudarRamoSelect(this.value)">
-                <option value="adega">🍷 Adega & Depósito de Bebidas</option>
-                <option value="mercado">🛒 Supermercado & Mercearia</option>
-                <option value="acougue">🥩 Açougue & Casa de Carnes</option>
-                <option value="hortifruti">🥬 Hortifrúti & Sacolão</option>
-                <option value="padaria">🥖 Padaria & Confeitaria</option>
-                <option value="conveniencia">🏪 Loja de Conveniência</option>
-                <option value="tabacaria">🚬 Tabacaria & Hookah</option>
-                <option value="vestuario">👗 Loja de Roupas & Calçados</option>
-                <option value="lanchonete">🍔 Lanchonete & Restaurante</option>
-                <option value="geral">⚡ Comércio Geral / Varejo</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Layout do PDV</label>
-              <select id="cli-layout-pdv">
-                <option value="moderno">✨ PDV Moderno</option>
-                <option value="classico">🖥️ PDV Clássico</option>
-              </select>
-            </div>
-
-            <!-- Ícone Personalizado -->
-            <input type="hidden" id="cli-icone" value="🍷">
-
-            <!-- SEÇÃO DE MÓDULOS LIBERADOS PARA ESTE CLIENTE -->
-            <div class="form-group span-2" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label style="color: var(--accent-cyan); font-weight: 800; margin-bottom: 0;">🧩 Módulos & Recursos Liberados</label>
-                <span style="font-size: 10.5px; color: var(--text-dim);">Personalize o que este lojista tem acesso</span>
-              </div>
-
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 8px;">
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="mod-fardos" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>📦 Fardos & Packs (Bebidas)</span>
-                </label>
-
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="mod-balanca" style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>⚖️ Balança / Venda por Kg</span>
-                </label>
-
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="mod-validade" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>📅 Controle de Validade</span>
-                </label>
-
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="mod-grade" style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>👗 Grade de Tamanhos & Cores</span>
-                </label>
-
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="mod-clube" style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>🏅 Clube Fidelidade</span>
-                </label>
-
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="mod-fiado" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>📖 Fiado & WhatsApp</span>
-                </label>
-
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="mod-xml" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>📥 Importador XML de NF-e</span>
-                </label>
-
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="mod-fiscal" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>🏛️ Emissão Fiscal NFC-e</span>
-                </label>
-
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="mod-tef" checked style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>💳 TEF / Cartão Integrado</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer; background: rgba(15,23,42,0.6); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                  <input type="checkbox" id="pag-vouchers" onchange="MasterApp.atualizarEstadoVouchers()" style="width: 16px; height: 16px; accent-color: var(--accent-cyan);">
-                  <span>🎫 Vouchers</span>
-                </label>
-                <div id="box-modulo-vouchers" style="grid-column: 1 / -1; background: rgba(15,23,42,0.8); border: 1px solid rgba(56,189,248,0.25); border-radius: 8px; padding: 10px 12px;">
-                  <strong style="display: block; color: #38bdf8; font-size: 12px; margin-bottom: 7px;">🎫 Marcas de Voucher liberadas</strong>
-                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 6px;">
-                    <label data-voucher-option><input type="checkbox" id="pag-marca-vr"> VR</label>
-                    <label data-voucher-option><input type="checkbox" id="pag-marca-alelo"> Alelo</label>
-                    <label data-voucher-option><input type="checkbox" id="pag-marca-pluxee"> Pluxee</label>
-                    <label data-voucher-option><input type="checkbox" id="pag-marca-ticket"> Ticket</label>
-                    <label data-voucher-option><input type="checkbox" id="pag-outros"> Outros vouchers</label>
-                  </div>
-                </div>
-                <div style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(15,23,42,0.8); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.25); margin-top: 4px; flex-wrap: wrap;">
-                  <div style="flex: 1; min-width: 180px;">
-                    <label style="color: #38bdf8; font-weight: 800; font-size: 12px; margin: 0; display: block;">🍽️ Módulo de Atendimento (Mesas / Comandas)</label>
-                    <span style="font-size: 10.5px; color: var(--text-dim); display: block; margin-top: 2px;">
-                      Define quais recursos de atendimento o cliente terá no PDV. Se desativado, oculta o botão da barra superior.
-                    </span>
-                  </div>
-                  <select id="cli-modulo-comandas" style="font-size: 12.5px; font-weight: 700; background: #24384c; color: #fff; border: 1px solid #334155; border-radius: 6px; height: 38px; padding: 0 10px; min-width: 210px;">
-                    <option value="mesas_e_comandas">🍽️ Mesas & Comandas (Padrão)</option>
-                    <option value="apenas_mesas">🪑 Apenas Mesas</option>
-                    <option value="apenas_comandas">🏷️ Apenas Comandas</option>
-                    <option value="desativado">🚫 Desativado (Ocultar do PDV)</option>
-                  </select>
+          <!-- ABA: CLIENTE -->
+          <div class="cli-tab-panel is-active" id="tab-cliente" role="tabpanel">
+            <div class="cli-logo-card">
+              <div id="cli-logo-img-preview" class="cli-logo-avatar" aria-hidden="true">🏪</div>
+              <div class="cli-logo-meta">
+                <strong id="cli-logo-status-title">Logo da loja</strong>
+                <span>Anexe uma imagem ou cole uma URL</span>
+                <div class="cli-logo-actions">
+                  <input type="file" id="cli-logo-file" accept="image/*" hidden onchange="MasterApp.fazerUploadLogoComputador(event)">
+                  <button type="button" class="btn-primary-cta btn-sm" onclick="document.getElementById('cli-logo-file').click()">📎 Anexar logo</button>
+                  <input type="text" id="cli-logo-url" class="cli-logo-url" placeholder="https://… ou data URL" oninput="MasterApp.previewLogo()">
                 </div>
               </div>
+              <div id="cli-logo-preview-box" class="cli-logo-ready" style="display: none;">Pronta p/ sync</div>
             </div>
 
-            <!-- CATEGORIAS PADRÃO DE PRODUTOS -->
-            <div class="form-group span-2 form-box-highlight">
-              <label class="box-label">🏷️ Categorias Padrão de Produtos</label>
-              <span style="font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 8px;">Clique em um segmento abaixo para preencher categorias recomendadas:</span>
-
-              <div class="presets-category-grid">
-                <button type="button" class="preset-cat-btn cat-adega" onclick="MasterApp.aplicarPresetCategorias('adega')">🍷 Adega</button>
-                <button type="button" class="preset-cat-btn cat-mercado" onclick="MasterApp.aplicarPresetCategorias('mercado')">🛒 Mercado</button>
-                <button type="button" class="preset-cat-btn cat-acougue" onclick="MasterApp.aplicarPresetCategorias('acougue')">🥩 Açougue</button>
-                <button type="button" class="preset-cat-btn cat-hortifruti" onclick="MasterApp.aplicarPresetCategorias('hortifruti')">🥬 Hortifrúti</button>
-                <button type="button" class="preset-cat-btn cat-padaria" onclick="MasterApp.aplicarPresetCategorias('padaria')">🥖 Padaria</button>
-                <button type="button" class="preset-cat-btn cat-conveniencia" onclick="MasterApp.aplicarPresetCategorias('conveniencia')">🏪 Conveniência</button>
-                <button type="button" class="preset-cat-btn cat-tabacaria" onclick="MasterApp.aplicarPresetCategorias('tabacaria')">🚬 Tabacaria</button>
-                <button type="button" class="preset-cat-btn cat-vestuario" onclick="MasterApp.aplicarPresetCategorias('vestuario')">👗 Vestuário</button>
-                <button type="button" class="preset-cat-btn cat-geral" onclick="MasterApp.aplicarPresetCategorias('geral')">⚡ Geral</button>
+            <div class="form-grid">
+              <div class="form-group span-2">
+                <label>Razão Social / Nome Fantasia *</label>
+                <input type="text" id="cli-nome" required placeholder="Ex: Adega do Douglas">
               </div>
+              <div class="form-group">
+                <label>CNPJ ou CPF *</label>
+                <input type="text" id="cli-documento" required placeholder="00.000.000/0001-00">
+              </div>
+              <div class="form-group">
+                <label>Nome do Responsável</label>
+                <input type="text" id="cli-responsavel" placeholder="Ex: Douglas Nico">
+              </div>
+              <div class="form-group">
+                <label>WhatsApp / Celular (com DDD) *</label>
+                <input type="text" id="cli-whatsapp" required placeholder="(19) 99999-7777">
+              </div>
+              <div class="form-group">
+                <label>Ramo de Atividade (Segmento) *</label>
+                <select id="cli-ramo" required onchange="MasterApp.aoMudarRamoSelect(this.value)">
+                  <option value="adega">🍷 Adega & Depósito de Bebidas</option>
+                  <option value="mercado">🛒 Supermercado & Mercearia</option>
+                  <option value="acougue">🥩 Açougue & Casa de Carnes</option>
+                  <option value="hortifruti">🥬 Hortifrúti & Sacolão</option>
+                  <option value="padaria">🥖 Padaria & Confeitaria</option>
+                  <option value="conveniencia">🏪 Loja de Conveniência</option>
+                  <option value="tabacaria">🚬 Tabacaria & Hookah</option>
+                  <option value="vestuario">👗 Loja de Roupas & Calçados</option>
+                  <option value="lanchonete">🍔 Lanchonete & Restaurante</option>
+                  <option value="geral">⚡ Comércio Geral / Varejo</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Layout do PDV</label>
+                <select id="cli-layout-pdv">
+                  <option value="moderno">✨ PDV Moderno</option>
+                  <option value="classico">🖥️ PDV Clássico</option>
+                </select>
+              </div>
+            </div>
+          </div>
 
-              <input type="text" id="cli-categorias" placeholder="Ex: Cervejas, Destilados, Vinhos, Tabacaria, Petiscos" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #38bdf8;" oninput="MasterApp.atualizarPreviewCategorias()">
+          <!-- ABA: MÓDULOS -->
+          <div class="cli-tab-panel" id="tab-modulos" role="tabpanel" hidden>
+            <p class="cli-tab-hint">Marque o que este lojista pode usar no PDV.</p>
+            <div class="mod-grid">
+              <label class="mod-chip"><input type="checkbox" id="mod-fardos" checked><span>📦 Fardos & Packs</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-balanca"><span>⚖️ Balança / Kg</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-validade" checked><span>📅 Validade</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-grade"><span>👗 Grade tamanho/cor</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-clube"><span>🏅 Clube Fidelidade</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-fiado" checked><span>📖 Fiado & WhatsApp</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-xml" checked><span>📥 Importador XML</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-fiscal" checked><span>🏛️ NFC-e</span></label>
+              <label class="mod-chip"><input type="checkbox" id="mod-tef" checked><span>💳 TEF / Cartão</span></label>
+              <label class="mod-chip"><input type="checkbox" id="pag-vouchers" onchange="MasterApp.atualizarEstadoVouchers()"><span>🎫 Vouchers</span></label>
+            </div>
+
+            <div id="box-modulo-vouchers" class="cli-subbox">
+              <strong>Marcas de voucher</strong>
+              <div class="voucher-grid">
+                <label data-voucher-option><input type="checkbox" id="pag-marca-vr"> VR</label>
+                <label data-voucher-option><input type="checkbox" id="pag-marca-alelo"> Alelo</label>
+                <label data-voucher-option><input type="checkbox" id="pag-marca-pluxee"> Pluxee</label>
+                <label data-voucher-option><input type="checkbox" id="pag-marca-ticket"> Ticket</label>
+                <label data-voucher-option><input type="checkbox" id="pag-outros"> Outros</label>
+              </div>
+            </div>
+
+            <div class="cli-subbox cli-subbox--row">
+              <div>
+                <label for="cli-modulo-comandas">🍽️ Atendimento (Mesas / Comandas)</label>
+                <span class="cli-tab-hint">Se desativado, oculta o botão no PDV.</span>
+              </div>
+              <select id="cli-modulo-comandas">
+                <option value="mesas_e_comandas">Mesas & Comandas</option>
+                <option value="apenas_mesas">Apenas Mesas</option>
+                <option value="apenas_comandas">Apenas Comandas</option>
+                <option value="desativado">Desativado</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ABA: CATEGORIAS -->
+          <div class="cli-tab-panel" id="tab-categorias" role="tabpanel" hidden>
+            <p class="cli-tab-hint">Preset por segmento ou edite a lista manualmente.</p>
+            <div class="presets-category-grid">
+              <button type="button" class="preset-cat-btn cat-adega" onclick="MasterApp.aplicarPresetCategorias('adega')">🍷 Adega</button>
+              <button type="button" class="preset-cat-btn cat-mercado" onclick="MasterApp.aplicarPresetCategorias('mercado')">🛒 Mercado</button>
+              <button type="button" class="preset-cat-btn cat-acougue" onclick="MasterApp.aplicarPresetCategorias('acougue')">🥩 Açougue</button>
+              <button type="button" class="preset-cat-btn cat-hortifruti" onclick="MasterApp.aplicarPresetCategorias('hortifruti')">🥬 Hortifrúti</button>
+              <button type="button" class="preset-cat-btn cat-padaria" onclick="MasterApp.aplicarPresetCategorias('padaria')">🥖 Padaria</button>
+              <button type="button" class="preset-cat-btn cat-conveniencia" onclick="MasterApp.aplicarPresetCategorias('conveniencia')">🏪 Conveniência</button>
+              <button type="button" class="preset-cat-btn cat-tabacaria" onclick="MasterApp.aplicarPresetCategorias('tabacaria')">🚬 Tabacaria</button>
+              <button type="button" class="preset-cat-btn cat-vestuario" onclick="MasterApp.aplicarPresetCategorias('vestuario')">👗 Vestuário</button>
+              <button type="button" class="preset-cat-btn cat-geral" onclick="MasterApp.aplicarPresetCategorias('geral')">⚡ Geral</button>
+            </div>
+            <div class="form-group span-2" style="margin-top: 14px;">
+              <label>Categorias (separadas por vírgula)</label>
+              <input type="text" id="cli-categorias" placeholder="Ex: Cervejas, Destilados, Vinhos…" oninput="MasterApp.atualizarPreviewCategorias()">
               <div id="cli-categorias-preview" class="categorias-preview" aria-live="polite"></div>
             </div>
+          </div>
 
-            <div class="form-group span-2">
-              <label>Logomarca / Foto da Loja (Link ou Arquivo Local)</label>
-              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <input type="text" id="cli-logo-url" placeholder="Cole a URL ou busque uma imagem no PC ->" style="flex: 1; min-width: 180px;" oninput="MasterApp.previewLogo()">
-                
-                <input type="file" id="cli-logo-file" accept="image/*" style="display: none;" onchange="MasterApp.fazerUploadLogoComputador(event)">
-                
-                <button type="button" class="btn-sec" style="background: #334155; color: #ffffff; border: 1px solid var(--border-color); height: 42px; font-weight: 700; padding: 0 14px; white-space: nowrap;" onclick="document.getElementById('cli-logo-file').click()">
-                  📁 Buscar Imagem
-                </button>
+          <!-- ABA: PLANO -->
+          <div class="cli-tab-panel" id="tab-plano" role="tabpanel" hidden>
+            <div class="form-grid">
+              <div class="form-group span-2">
+                <label>Plano Contratado *</label>
+                <select id="cli-plano" required onchange="MasterApp.atualizarValorPlano()"></select>
+                <input type="hidden" id="cli-valor" value="89.90">
               </div>
-
-              <!-- Caixa de Pré-visualização da Logo -->
-              <div id="cli-logo-preview-box" style="margin-top: 10px; display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.04); padding: 10px 14px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.2);">
-                <div id="cli-logo-img-preview" style="width: 46px; height: 46px; border-radius: 8px; overflow: hidden; background: #24384c; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;"></div>
-                <div>
-                  <div style="font-weight: 800; font-size: 13px; color: var(--accent-cyan);" id="cli-logo-status-title">Logomarca Carregada!</div>
-                  <div style="font-size: 11px; color: var(--text-dim);">Pronta para sincronizar com o PDV do cliente</div>
+              <div class="form-group span-2 form-box-highlight">
+                <div class="vencimento-header-row">
+                  <label class="box-label">Vencimento & dias</label>
+                  <span id="modal-venc-feedback" class="venc-feedback-badge"></span>
+                </div>
+                <div class="vencimento-inputs-row">
+                  <input type="date" id="cli-vencimento" required class="venc-date-input" onclick="if(typeof this.showPicker==='function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
+                  <div class="venc-add-group">
+                    <input type="number" id="cli-dias-add" placeholder="Dias" value="30" class="venc-dias-number">
+                    <button type="button" class="btn-add-dias" onclick="MasterApp.adicionarDiasPersonalizadosForm()">➕ Adicionar</button>
+                  </div>
+                </div>
+                <div class="quick-days-grid">
+                  <button type="button" class="quick-day-btn cortesia" onclick="MasterApp.setDiasRapidosForm(7)">+7</button>
+                  <button type="button" class="quick-day-btn cortesia" onclick="MasterApp.setDiasRapidosForm(15)">+15</button>
+                  <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(30)">+30</button>
+                  <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(60)">+60</button>
+                  <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(90)">+90</button>
+                  <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(365)">+1 Ano</button>
                 </div>
               </div>
-            </div>
-
-            <div class="form-group span-2">
-              <label>Plano Contratado *</label>
-              <select id="cli-plano" required onchange="MasterApp.atualizarValorPlano()" style="width: 100%; font-weight: 700;">
-                <!-- Preenchido dinamicamente com os planos cadastrados -->
-              </select>
-              <input type="hidden" id="cli-valor" value="89.90">
-            </div>
-
-            <!-- SEÇÃO DE VENCIMENTO E ADICIONAR DIAS PERSONALIZADOS -->
-            <div class="form-group span-2 form-box-highlight">
-              <div class="vencimento-header-row">
-                <label class="box-label">📅 Vencimento da Licença & Adicionar Dias</label>
-                <span id="modal-venc-feedback" class="venc-feedback-badge"></span>
+              <div class="form-group span-2">
+                <label>Status do Sistema *</label>
+                <select id="cli-status" required>
+                  <option value="ativa">🟢 Ativa / Liberado</option>
+                  <option value="bloqueada">🛑 Bloqueada</option>
+                </select>
               </div>
-              
-              <div class="vencimento-inputs-row">
-                <input type="date" id="cli-vencimento" required class="venc-date-input" onclick="if(typeof this.showPicker === 'function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
-                
-                <div class="venc-add-group">
-                  <input type="number" id="cli-dias-add" placeholder="Dias" value="30" class="venc-dias-number">
-                  <button type="button" class="btn-add-dias" onclick="MasterApp.adicionarDiasPersonalizadosForm()">
-                    ➕ Adicionar
-                  </button>
+            </div>
+          </div>
+
+          <!-- ABA: ACESSO (chave, pin, terminais) -->
+          <div class="cli-tab-panel" id="tab-acesso" role="tabpanel" hidden>
+            <div class="form-grid">
+              <div class="form-group span-2">
+                <label>Chave de Licença</label>
+                <div class="cli-chave-row">
+                  <input type="text" id="cli-chave" readonly title="Gerada automaticamente">
+                  <button type="button" class="btn-sec" onclick="MasterApp.copiarChaveLicenca(document.getElementById('cli-chave').value)">Copiar</button>
                 </div>
               </div>
-
-              <div class="quick-days-grid">
-                <button type="button" class="quick-day-btn cortesia" onclick="MasterApp.setDiasRapidosForm(7)">🎁 +7 Dias</button>
-                <button type="button" class="quick-day-btn cortesia" onclick="MasterApp.setDiasRapidosForm(15)">🎁 +15 Dias</button>
-                <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(30)">+30 Dias</button>
-                <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(60)">+60 Dias</button>
-                <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(90)">+90 Dias</button>
-                <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(365)">+1 Ano</button>
+              <div class="form-group span-2 cli-subbox">
+                <label for="cli-pin-gerente">🔑 PIN do Gerente no PDV</label>
+                <input type="text" id="cli-pin-gerente" maxlength="8" inputmode="numeric" placeholder="4 a 8 dígitos">
+                <span class="cli-tab-hint">Usada no PDV para desbloquear configurações.</span>
               </div>
-            </div>
-
-            <div class="form-group span-2">
-              <label>Chave de Licença (Gerada Automaticamente pelo Sistema)</label>
-              <div style="display: flex; gap: 8px;">
-                <input type="text" id="cli-chave" readonly style="flex: 1; font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 15px; color: #818cf8; letter-spacing: 0.5px; border-color: rgba(129, 140, 248, 0.35); cursor: not-allowed; user-select: all;" title="Chave gerada automaticamente pelo sistema">
-                <button type="button" class="btn-sec" style="height: 44px; font-weight: 700; padding: 0 14px;" onclick="MasterApp.copiarChaveLicenca(document.getElementById('cli-chave').value)">
-                  📋 Copiar
-                </button>
-              </div>
-            </div>
-
-            <!-- SENHA / PIN DO GERENTE NO PDV -->
-            <div class="form-group span-2" style="background: rgba(124, 58, 237, 0.05); border: 1px solid rgba(124, 58, 237, 0.2); padding: 12px 14px; border-radius: 10px;">
-              <label style="color: #a78bfa; font-weight: 800;">🔑 Senha / PIN do Gerente no PDV</label>
-              <input type="text" id="cli-pin-gerente" maxlength="8" inputmode="numeric" placeholder="4 a 8 dígitos" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 16px; color: #a78bfa; letter-spacing: 2px; margin-top: 6px;">
-              <span style="font-size: 11px; color: var(--text-dim); margin-top: 4px; display: block;">Senha usada pelo cliente no aplicativo PDV para desbloquear o sistema e configurações.</span>
-            </div>
-
-            <!-- LIMITE DE COMPUTADORES / TERMINAIS -->
-            <!-- SEÇÃO DE TERMINAIS & COMPUTADORES CONECTADOS -->
-            <div class="form-group span-2" style="background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.2); padding: 14px; border-radius: 12px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 180px;">
-                  <label style="color: #38bdf8; font-weight: 800; margin-bottom: 0;">💻 Limite de Computadores Permitidos</label>
-                  <span style="font-size: 11px; color: var(--text-dim); display: block; margin-top: 2px;">
-                    Quantidade máxima de computadores simultâneos autorizados.
-                  </span>
+              <div class="form-group span-2 cli-subbox">
+                <div class="cli-subbox--row" style="margin:0;padding:0;border:none;background:transparent;">
+                  <div>
+                    <label>💻 Limite de computadores</label>
+                    <span class="cli-tab-hint">PCs simultâneos autorizados.</span>
+                  </div>
+                  <div class="cli-term-limit">
+                    <input type="number" id="cli-limite-terminais" min="1" max="99" value="1">
+                    <span>PC(s)</span>
+                  </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <input type="number" id="cli-limite-terminais" min="1" max="99" value="1" style="width: 70px; height: 38px; text-align: center; font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 16px; color: #38bdf8; background: #24384c; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px;">
-                  <span style="font-size: 13px; font-weight: 700; color: #94a3b8;">PC(s)</span>
+                <div id="cli-terminais-info-box" class="cli-term-list">
+                  <div class="cli-term-list-head">
+                    <span>Vinculados: <strong id="cli-terminais-contagem">0 / 1</strong></span>
+                    <button type="button" class="btn-desvincular-terminais" id="btn-resetar-terminais" onclick="MasterApp.desvincularTerminaisClienteModal()">Desvincular todos</button>
+                  </div>
+                  <div id="cli-terminais-lista-cards"></div>
                 </div>
               </div>
-
-              <!-- Lista de Computadores Conectados com Hostname e Desvinculação Individual -->
-              <div id="cli-terminais-info-box" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-                  <span style="font-size: 12px; font-weight: 800; color: var(--text-muted);">
-                    🖥️ Computadores Vinculados: <strong id="cli-terminais-contagem" style="color: #38bdf8; font-family: 'JetBrains Mono', monospace;">0 / 1</strong>
-                  </span>
-                  <button type="button" class="btn-desvincular-terminais" id="btn-resetar-terminais" style="font-size: 11px; padding: 4px 10px;" onclick="MasterApp.desvincularTerminaisClienteModal()">
-                    🔄 Desvincular Todos
-                  </button>
-                </div>
-                
-                <!-- Container da Lista de Máquinas -->
-                <div id="cli-terminais-lista-cards" style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
-                  <!-- Inserido dinamicamente via JS -->
-                </div>
-              </div>
-            </div>
-
-            <!-- STATUS DO CLIENTE (ATIVO / BLOQUEADO) -->
-            <div class="form-group span-2">
-              <label>Status do Sistema *</label>
-              <select id="cli-status" required style="font-weight: 800;">
-                <option value="ativa" style="color: #34d399;">🟢 Ativa / Liberado para Uso</option>
-                <option value="bloqueada" style="color: #f87171;">🛑 Bloqueada / Travar Acesso Remoto</option>
-              </select>
             </div>
           </div>
         </form>
       </div>
 
-      <!-- 3. RODAPÉ FIXO COMPLETAMENTE FORA DA ÁREA DE SCROLL DA MODAL-BODY -->
       <div class="modal-footer">
         <div class="modal-footer-main-row">
           <button type="button" class="btn-sec btn-modal-footer" onclick="MasterApp.fecharModalCliente()">Cancelar</button>
-          <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event).catch(err => { alert('Erro CRITICO ao salvar: ' + err.message); console.error(err); })">💾 Salvar Alterações</button>
+          <button type="button" class="btn-pri btn-modal-footer" onclick="MasterApp.salvarCliente(event).catch(err => { alert('Erro CRITICO ao salvar: ' + err.message); console.error(err); })">Salvar</button>
         </div>
-        <button type="button" id="btn-excluir-cliente" class="btn-excluir-modal" style="display: none;" onclick="MasterApp.excluirClienteModal()">
-          🗑️ Excluir Licença
-        </button>
+        <button type="button" id="btn-excluir-cliente" class="btn-excluir-modal" style="display: none;" onclick="MasterApp.excluirClienteModal()">Excluir licença</button>
       </div>
-
     </div>
   </div>
 
@@ -675,6 +604,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.1.3"></script>
+  <script src="js/app.js?v=3.2.0"></script>
 </body>
 </html>
