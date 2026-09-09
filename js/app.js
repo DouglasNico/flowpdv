@@ -520,9 +520,12 @@ window.MasterApp = {
             .filter((item, index, lista) => lista.findIndex(valor => String(valor).toLowerCase() === item.toLowerCase()) === index);
 
           if (categorias.length > 0) {
+            const iguais = JSON.stringify(alvo.categorias || []) === JSON.stringify(categorias)
+              && JSON.stringify(alvo.categoriasExcluidas || []) === JSON.stringify(backup.categoriasExcluidas || []);
+            if (iguais) return;
             alvo.categorias = categorias;
             alvo.categoriasExcluidas = backup.categoriasExcluidas || [];
-            this.salvarDados();
+            try { localStorage.setItem('flowpdv_master_clientes', JSON.stringify(this.clientes)); } catch (e) {}
             this.renderTabela();
           }
         }
@@ -560,7 +563,8 @@ window.MasterApp = {
                 chaveLicenca: data.chaveLicenca || doc.id,
                 pinGerente: data.pinGerente || '',
                 limiteTerminais: parseInt(data.limiteTerminais) || 1,
-                terminaisAtivos: Array.isArray(data.terminaisAtivos) ? data.terminaisAtivos : []
+                terminaisAtivos: Array.isArray(data.terminaisAtivos) ? data.terminaisAtivos : [],
+                atualizadoEm: data.atualizadoEm || ''
               });
             }
           });
@@ -595,9 +599,18 @@ window.MasterApp = {
                   terminaisAtivos: termUnicosC
                 });
               } else {
+                const existenteMaisNovo = Date.parse(existing.atualizadoEm || 0) > Date.parse(c.atualizadoEm || 0);
+                const mestre = (!existenteMaisNovo || (c.id && String(c.id).startsWith('CLI-'))) ? c : existing;
+                existing.pinGerente = mestre.pinGerente || existing.pinGerente || c.pinGerente || '';
+                existing.logoUrl = mestre.logoUrl || existing.logoUrl || c.logoUrl || '';
+                existing.nome = mestre.nome || existing.nome;
+                existing.responsavel = mestre.responsavel || existing.responsavel;
+                existing.whatsapp = mestre.whatsapp || existing.whatsapp;
+                if (mestre.atualizadoEm) existing.atualizadoEm = mestre.atualizadoEm;
                 // Se um dos documentos for o principal (CLI-xxx) ou tiver sido limpo/desvinculado, preferir a versão atualizada
                 if (c.id && c.id.startsWith('CLI-')) {
                   existing.terminaisAtivos = termUnicosC;
+                  existing.id = c.id;
                 } else if (termUnicosC.length === 0 && (!existing.terminaisAtivos || existing.terminaisAtivos.length === 0)) {
                   existing.terminaisAtivos = [];
                 }
@@ -611,8 +624,22 @@ window.MasterApp = {
               }
             }
             this.clientes = Array.from(dedupMap.values());
-            this.renderMetrics();
-            this.renderTabela();
+            const modalCliente = document.getElementById('modal-cliente');
+            const editandoId = document.getElementById('cliente-id')?.value;
+            if (modalCliente && modalCliente.classList.contains('active') && editandoId) {
+              const editandoChave = (document.getElementById('cli-chave')?.value || '').trim().toUpperCase();
+              const atual = (this.clientes || []).find(x => x && (x.id === editandoId || String(x.chaveLicenca || '').toUpperCase() === editandoChave));
+              // Enquanto o formulário está aberto, não sobrescreve PIN/foto do cliente em edição.
+              if (atual) {
+                const pinForm = document.getElementById('cli-pin-gerente')?.value.trim();
+                const logoForm = document.getElementById('cli-logo-url')?.value.trim();
+                if (pinForm) atual.pinGerente = pinForm;
+                if (logoForm) atual.logoUrl = logoForm;
+              }
+            } else {
+              this.renderMetrics();
+              this.renderTabela();
+            }
           }
         });
       } catch (e) {
@@ -950,7 +977,7 @@ window.MasterApp = {
     const btnExcluir = document.getElementById('btn-excluir-cliente');
 
     const titleEl = document.getElementById('modal-cliente-title');
-    if (titleEl) titleEl.innerText = '➕ Nova Licença / Cliente';
+    if (titleEl) titleEl.innerText = 'Nova Licença / Cliente';
     if (idInput) idInput.value = '';
     if (btnExcluir) btnExcluir.style.display = 'none';
     if (chaveInput) chaveInput.value = 'LIC-FLOW-' + Math.floor(100000 + Math.random() * 900000);
@@ -1014,7 +1041,7 @@ window.MasterApp = {
     const btnExcluir = document.getElementById('btn-excluir-cliente');
 
     const titleEl = document.getElementById('modal-cliente-title');
-    if (titleEl) titleEl.innerText = '✏️ Editar Cliente & Licença';
+    if (titleEl) titleEl.innerText = 'Editar Cliente & Licença';
     if (idInput) idInput.value = c.id;
     if (nomeInput) nomeInput.value = c.nome || '';
     if (docInput) docInput.value = c.documento || '';

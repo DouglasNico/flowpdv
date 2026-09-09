@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=2.2.0">
+  <link rel="stylesheet" href="css/style.css?v=2.3.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -31,37 +31,29 @@
 <body>
 
   <!-- TELA DE LOGIN DO SUPER ADMIN -->
-  <div id="login-screen" style="display: flex; min-height: 100vh; align-items: center; justify-content: center; padding: 20px; position: fixed; inset: 0; background: radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.18), transparent 42%), radial-gradient(circle at 90% 0%, rgba(14, 165, 233, 0.12), transparent 40%), #273545; z-index: 99999;">
-    <div style="background: rgba(46, 70, 96, 0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px; padding: 36px 32px; width: 100%; max-width: 440px; box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.55); text-align: center;">
-      <div style="display: flex; justify-content: center; align-items: center; gap: 14px; margin-bottom: 24px;">
-        <img src="icon.png" alt="FlowPDV" style="width: 54px; height: 54px; border-radius: 14px; object-fit: cover; box-shadow: 0 8px 24px rgba(14, 165, 233, 0.35); border: 1px solid rgba(56, 189, 248, 0.35);">
-        <div style="text-align: left;">
-          <div style="font-size: 24px; font-weight: 800; color: #fff; letter-spacing: -0.5px;">Flow<span style="color: #7dd3fc;">PDV</span> <span style="font-size: 11px; background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); padding: 3px 8px; border-radius: 6px; font-weight: 800;">MASTER</span></div>
-          <div style="font-size: 13px; color: #94a3b8; font-weight: 600;">Painel de Controle Super Admin</div>
-        </div>
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <img src="FlowPDV-Logo.png" alt="FlowPDV" class="login-wordmark">
+      <div class="login-badge-row">
+        <span class="badge-master">MASTER SAAS</span>
+        <span class="login-access-pill">Acesso restrito</span>
       </div>
+      <p class="login-subtitle">Painel de controle de licenças, planos e auditoria</p>
 
-      <div style="background: rgba(36, 56, 76, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 14px; margin-bottom: 24px; font-size: 13px; color: #cbd5e1; text-align: center; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-        <span>🔒 Acesso Restrito</span>
-      </div>
-
-      <form id="form-login-master" onsubmit="MasterApp.executarLogin(event)">
-        <div style="text-align: left; margin-bottom: 16px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">E-mail do Administrador:</label>
-          <input type="email" id="login-email" required placeholder="seuemail@exemplo.com" style="width: 100%; height: 46px; background: #24384c; border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; padding: 0 16px; color: #fff; font-size: 14px; font-weight: 600; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#38bdf8'" onblur="this.style.borderColor='rgba(255,255,255,0.14)'">
+      <form id="form-login-master" class="login-form" onsubmit="MasterApp.executarLogin(event)">
+        <div class="form-group">
+          <label class="form-label-login">E-mail do Administrador</label>
+          <input type="email" id="login-email" class="input-login" required placeholder="seuemail@exemplo.com">
         </div>
-
-        <div style="text-align: left; margin-bottom: 20px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Senha de Acesso:</label>
-          <input type="password" id="login-password" required placeholder="••••••••" style="width: 100%; height: 46px; background: #24384c; border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; padding: 0 16px; color: #fff; font-size: 14px; font-weight: 600; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#38bdf8'" onblur="this.style.borderColor='rgba(255,255,255,0.14)'">
+        <div class="form-group">
+          <label class="form-label-login">Senha de Acesso</label>
+          <input type="password" id="login-password" class="input-login" required placeholder="••••••••">
         </div>
-
-        <div id="login-error-msg" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; font-size: 13px; font-weight: 600; padding: 10px; border-radius: 8px; margin-bottom: 16px; text-align: left;">
-          ❌ E-mail ou senha incorretos.
+        <div id="login-error-msg" class="login-error" style="display: none;">
+          E-mail ou senha incorretos.
         </div>
-
-        <button type="submit" id="btn-submit-login" style="width: 100%; height: 48px; background: linear-gradient(135deg, #38bdf8, #0ea5e9); color: #fff; font-size: 15px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 8px 20px rgba(14, 165, 233, 0.35); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-          <span>🔐 Entrar no Painel Master</span>
+        <button type="submit" id="btn-submit-login" class="btn-login-primary">
+          Entrar no Painel Master
         </button>
       </form>
     </div>
@@ -72,29 +64,29 @@
     <!-- Topo / Header -->
     <header class="master-header">
       <div class="brand-group">
-        <img src="icon.png" alt="FlowPDV Icon" style="width: 46px; height: 46px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35); border: 1px solid rgba(56, 189, 248, 0.35);">
+        <img src="icon.png" alt="FlowPDV" class="brand-icon">
         <div>
-          <div class="brand-title">Flow<span>PDV</span> <span class="badge-master">MASTER SAAS</span></div>
-          <div class="brand-subtitle">Painel de Gestão de Clientes & Licenças</div>
+          <div class="brand-title">Flow<span>PDV</span> <span class="badge-master">MASTER</span></div>
+          <div class="brand-subtitle">Gestão de clientes, licenças e faturamento</div>
         </div>
       </div>
 
       <div class="header-actions">
-        <div id="master-logged-user">
-          <span>👤</span>
+        <div id="master-logged-user" class="header-user-chip">
+          <span class="header-user-dot"></span>
           <span id="master-user-email">admin@flowpdv.com</span>
         </div>
+        <button type="button" class="btn-ghost" id="btn-header-auditoria" onclick="MasterApp.abrirModalAuditoria()">
+          Logs
+        </button>
+        <button type="button" class="btn-ghost" id="btn-header-planos" onclick="MasterApp.abrirModalPlanos()">
+          Planos
+        </button>
+        <button type="button" class="btn-primary-cta" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">
+          Nova Licença
+        </button>
         <button type="button" class="btn-logout" id="btn-header-logout" onclick="MasterApp.executarLogout()">
-          <span>🚪 Sair</span>
-        </button>
-        <button type="button" class="btn-planos" id="btn-header-auditoria" onclick="MasterApp.abrirModalAuditoria()">
-          <span>📋 Logs de Auditoria</span>
-        </button>
-        <button type="button" class="btn-planos" id="btn-header-planos" onclick="MasterApp.abrirModalPlanos()">
-          <span>📦 Planos & Mensalidades</span>
-        </button>
-        <button type="button" class="btn-novo-cliente" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">
-          <span>➕ Nova Licença / Cliente</span>
+          Sair
         </button>
       </div>
     </header>
@@ -106,8 +98,8 @@
       <section class="metrics-grid">
         <div class="metric-card mrr">
           <div class="metric-header">
-            <span>💵 Faturamento Mensal (MRR)</span>
-            <span class="metric-icon">📈</span>
+            <span>Faturamento Mensal (MRR)</span>
+            <span class="metric-icon-tile mrr">$</span>
           </div>
           <div class="metric-value" id="metric-mrr">R$ 0,00</div>
           <div class="metric-sub" id="metric-mrr-sub">Receita recorrente ativa</div>
@@ -115,8 +107,8 @@
 
         <div class="metric-card ativas">
           <div class="metric-header">
-            <span>🟢 Clientes Ativos</span>
-            <span class="metric-icon">🏪</span>
+            <span>Clientes Ativos</span>
+            <span class="metric-icon-tile ativas">●</span>
           </div>
           <div class="metric-value" id="metric-ativas">0</div>
           <div class="metric-sub">Sistemas operando normalmente</div>
@@ -124,8 +116,8 @@
 
         <div class="metric-card vencendo">
           <div class="metric-header">
-            <span>⚠️ Vencendo em 7 Dias</span>
-            <span class="metric-icon">⏳</span>
+            <span>Vencendo em 7 Dias</span>
+            <span class="metric-icon-tile vencendo">!</span>
           </div>
           <div class="metric-value" id="metric-vencendo">0</div>
           <div class="metric-sub">Enviar lembrete de cobrança</div>
@@ -133,8 +125,8 @@
 
         <div class="metric-card bloqueadas">
           <div class="metric-header">
-            <span>🛑 Bloqueados / Inadimplentes</span>
-            <span class="metric-icon">🔒</span>
+            <span>Bloqueados / Inadimplentes</span>
+            <span class="metric-icon-tile bloqueadas">✕</span>
           </div>
           <div class="metric-value" id="metric-bloqueadas">0</div>
           <div class="metric-sub">Acesso suspenso na nuvem</div>
@@ -144,8 +136,8 @@
       <!-- Barra de Pesquisa e Filtros -->
       <section class="controls-bar">
         <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="master-search-input" placeholder="Buscar por estabelecimento, CNPJ, responsável ou licença..." oninput="MasterApp.filtrarTabela()">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="master-search-input" placeholder="Buscar estabelecimento, CNPJ, responsável ou licença..." oninput="MasterApp.filtrarTabela()">
         </div>
 
         <div class="filter-group">
@@ -186,7 +178,13 @@
       
       <!-- 1. CABEÇALHO FIXO -->
       <div class="modal-header">
-        <h3 id="modal-cliente-title" style="margin: 0; font-size: 17px; font-weight: 800;">✏️ Editar Cliente & Licença</h3>
+        <div class="modal-header-main">
+          <div class="modal-header-icon" aria-hidden="true">✎</div>
+          <div class="modal-header-titles">
+            <span class="modal-eyebrow">Licenças</span>
+            <h3 id="modal-cliente-title">Editar Cliente & Licença</h3>
+          </div>
+        </div>
         <button type="button" class="btn-close" onclick="MasterApp.fecharModalCliente()" title="Fechar Modal">✕</button>
       </div>
 
@@ -486,9 +484,13 @@
   <div class="modal-overlay" id="modal-planos">
     <div class="modal-card" style="max-width: 680px;">
       <div class="modal-header">
-        <div class="modal-title-group">
-          <h2>📦 Gerenciar Planos & Mensalidades</h2>
-          <p>Crie e edite os planos comercializados para os clientes do FlowPDV</p>
+        <div class="modal-header-main">
+          <div class="modal-header-icon" aria-hidden="true">▣</div>
+          <div class="modal-header-titles">
+            <span class="modal-eyebrow">Comercial</span>
+            <h3>Planos & Mensalidades</h3>
+            <span class="modal-subtitle">Crie e edite os planos oferecidos aos clientes</span>
+          </div>
         </div>
         <button type="button" class="btn-close" onclick="MasterApp.fecharModalPlanos()" title="Fechar Modal">✕</button>
       </div>
@@ -557,11 +559,12 @@
   <div class="modal-overlay" id="modal-auditoria" onclick="if(event.target === this) MasterApp.fecharModalAuditoria()">
     <div class="modal-card" style="max-width: 980px; width: 95%; max-height: 90vh;">
       <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-size: 22px;">📋</span>
-          <div>
-            <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #fff;">Logs de Auditoria & Atividades das Lojas</h3>
-            <span style="font-size: 11px; color: #94a3b8;">Acompanhe exclusões, cancelamentos, fechamentos de caixa e importações em tempo real</span>
+        <div class="modal-header-main">
+          <div class="modal-header-icon" aria-hidden="true">☰</div>
+          <div class="modal-header-titles">
+            <span class="modal-eyebrow">Monitoramento</span>
+            <h3>Logs de Auditoria</h3>
+            <span class="modal-subtitle">Exclusões, caixas, cancelamentos e importações em tempo real</span>
           </div>
         </div>
         <button type="button" class="btn-close" onclick="MasterApp.fecharModalAuditoria()">✕</button>
@@ -638,7 +641,13 @@
   <div class="modal-overlay" id="modal-detalhe-log">
     <div class="modal-card" style="max-width: 580px; width: 95%; height: auto; max-height: 85vh; margin: auto;">
       <div class="modal-header">
-        <h3>📋 Detalhes do Registro de Auditoria</h3>
+        <div class="modal-header-main">
+          <div class="modal-header-icon" aria-hidden="true">ⓘ</div>
+          <div class="modal-header-titles">
+            <span class="modal-eyebrow">Auditoria</span>
+            <h3>Detalhes do Registro</h3>
+          </div>
+        </div>
         <button type="button" class="btn-close" onclick="MasterApp.fecharModalDetalheLog()">✕</button>
       </div>
       <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; flex: 1 1 auto; max-height: calc(85vh - 70px);">
@@ -676,6 +685,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=2.2.0"></script>
+  <script src="js/app.js?v=2.3.0"></script>
 </body>
 </html>
