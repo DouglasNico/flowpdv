@@ -109,7 +109,7 @@ window.MasterApp = {
   exibirTelaLogin() {
     const loginScreen = document.getElementById('login-screen');
     const appContainer = document.getElementById('app-container');
-    if (loginScreen) loginScreen.style.display = 'flex';
+    if (loginScreen) loginScreen.style.display = 'grid';
     if (appContainer) appContainer.style.display = 'none';
   },
 

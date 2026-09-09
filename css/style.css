@@ -209,14 +209,34 @@ select:-webkit-autofill {
     var(--surface-body);
 }
 
-/* New split login ? activates when brand pane is present */
+/* New split login — activates when brand pane is present */
+#login-screen,
+.login-screen {
+  width: 100vw;
+  max-width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+}
+
+#login-screen:has(> .login-brand-pane),
 .login-screen:has(> .login-brand-pane) {
-  display: grid;
-  grid-template-columns: minmax(280px, 1.05fr) minmax(320px, 0.95fr);
+  display: grid !important;
+  grid-template-columns: minmax(320px, 1.15fr) minmax(340px, 0.85fr) !important;
   align-items: stretch;
   justify-content: stretch;
+  width: 100vw;
+  max-width: 100%;
   padding: 0;
   background: var(--surface-body);
+}
+
+.login-screen > .login-brand-pane {
+  flex: 1 1 55%;
+}
+
+.login-screen > .login-form-pane {
+  flex: 1 1 45%;
 }
 
 .login-brand-pane {
@@ -1863,8 +1883,9 @@ select:-webkit-autofill {
    RESPONSIVE ? 1100 / 768 / 480
    ========================================================================== */
 @media (max-width: 1100px) {
+  #login-screen:has(> .login-brand-pane),
   .login-screen:has(> .login-brand-pane) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .login-brand-pane {
@@ -2331,7 +2352,7 @@ select:-webkit-autofill {
 }
 
 .app-shell--sidebar {
-  display: flex !important;
+  display: flex;
   flex-direction: row;
   align-items: stretch;
   min-height: 100vh;
@@ -2343,6 +2364,11 @@ select:-webkit-autofill {
   background:
     linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, transparent 40%),
     var(--surface-body);
+}
+
+#app-container[style*="display: none"],
+#login-screen[style*="display: none"] {
+  display: none !important;
 }
 
 .app-shell--sidebar .sidebar {
@@ -2377,6 +2403,14 @@ select:-webkit-autofill {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+}
+
+.brand-mark-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -4164,9 +4198,9 @@ select:-webkit-autofill {
    ========================================================================== */
 #modal-cliente .cli-plano-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  gap: 8px 10px;
-  align-items: end;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
 }
 
 #modal-cliente .cli-venc-field {
@@ -4187,9 +4221,7 @@ select:-webkit-autofill {
   color: #cbd5e1;
 }
 
-#modal-cliente .cli-venc-field .venc-date-input,
-#modal-cliente .cli-venc-field .venc-dias-number,
-#modal-cliente .cli-plano-controls .cli-plano-add {
+#modal-cliente .cli-venc-field .venc-date-input {
   width: 100%;
   height: 42px !important;
   min-height: 42px !important;
@@ -4198,24 +4230,46 @@ select:-webkit-autofill {
   border-radius: 10px !important;
   margin: 0 !important;
   padding: 0 12px !important;
-}
-
-#modal-cliente .cli-venc-field .venc-date-input {
   display: flex;
   align-items: center;
   cursor: pointer;
 }
 
-#modal-cliente .cli-venc-field .venc-dias-number {
-  text-align: center;
+#modal-cliente .cli-venc-add-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
 }
 
-#modal-cliente .cli-plano-controls .cli-plano-add {
+#modal-cliente .cli-venc-add-row .venc-dias-number {
+  width: 76px;
+  min-width: 76px;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  box-sizing: border-box !important;
+  border-radius: 10px !important;
+  margin: 0 !important;
+  padding: 0 8px !important;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+#modal-cliente .cli-venc-add-row .cli-plano-add {
+  flex: 1;
+  width: auto !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  box-sizing: border-box !important;
+  border-radius: 10px !important;
+  margin: 0 !important;
+  padding: 0 12px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: auto !important;
-  min-width: 118px;
   background: #1e3144 !important;
   color: #fff !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
@@ -4223,9 +4277,10 @@ select:-webkit-autofill {
   font-size: 12px !important;
   font-weight: 800 !important;
   cursor: pointer;
+  white-space: nowrap;
 }
 
-#modal-cliente .cli-plano-controls .cli-plano-add:hover {
+#modal-cliente .cli-venc-add-row .cli-plano-add:hover {
   background: rgba(243, 146, 55, 0.16) !important;
   border-color: rgba(243, 146, 55, 0.45) !important;
 }
@@ -4237,12 +4292,7 @@ select:-webkit-autofill {
 
 @media (max-width: 640px) {
   #modal-cliente .cli-plano-controls {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  #modal-cliente .cli-plano-controls .cli-plano-add {
-    grid-column: 1 / -1;
-    width: 100% !important;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -4482,7 +4532,7 @@ select:-webkit-autofill {
 }
 
 #modal-cliente .cli-plano-controls {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
 
 #modal-cliente .cli-plano-chave {
@@ -4522,7 +4572,36 @@ select:-webkit-autofill {
   font-family: var(--font-mono);
   font-weight: 800;
   letter-spacing: 0.6px;
+  padding: 0 14px !important;
   opacity: 1;
+}
+
+#modal-cliente .cli-plano-pin {
+  margin: 0;
+}
+
+#modal-cliente .cli-plano-pin .cli-pin-row input,
+#modal-cliente #cli-pin-gerente {
+  width: 100%;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  box-sizing: border-box !important;
+  border-radius: 10px !important;
+  padding: 0 14px !important;
+  margin: 0 !important;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-size: 15px;
+  background: var(--surface-panel);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+#modal-cliente #cli-pin-gerente:focus {
+  border-color: var(--brand-orange);
+  box-shadow: 0 0 0 3px var(--brand-orange-soft);
 }
 
 #modal-cliente .cli-plano-shortcuts {
@@ -4552,8 +4631,9 @@ select:-webkit-autofill {
 
 @media (max-width: 640px) {
   #modal-cliente .cli-cat-toolbar,
-  #modal-cliente .cli-plano-top {
-    grid-template-columns: 1fr;
+  #modal-cliente .cli-plano-top,
+  #modal-cliente .cli-plano-controls {
+    grid-template-columns: 1fr !important;
   }
 
   #modal-cliente .cli-plano-chave .cli-chave-row {
@@ -4566,5 +4646,6 @@ select:-webkit-autofill {
 }
 
 /* ==========================================================================
-   v3.3.3 — Plano: vencimento alinhado + chave bloqueada sem fundo laranja
+   v3.3.4 — Alinhamento Master com Flow, Vencimento 2 cols, Chave com padding,
+            PIN do Gerente na aba Plano e aba renomeada para Terminal
    ========================================================================== */

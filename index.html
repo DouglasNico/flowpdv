@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.3.3">
+  <link rel="stylesheet" href="css/style.css?v=3.3.4">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.3')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.4')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.3');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.4');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -85,9 +85,11 @@
       <div class="sidebar-brand">
         <div class="brand-mark" aria-label="FlowPDV">
           <img src="icon.png" alt="" class="brand-mark-icon">
-          <span class="brand-mark-word"><span class="brand-flow" style="color:#fff">Flow</span><span class="brand-pdv" style="color:#f39237">PDV</span></span>
+          <div class="brand-mark-col">
+            <span class="brand-mark-word"><span class="brand-flow" style="color:#fff">Flow</span><span class="brand-pdv" style="color:#f39237">PDV</span></span>
+            <span class="badge-master">MASTER</span>
+          </div>
         </div>
-        <span class="badge-master">MASTER</span>
       </div>
       <nav class="sidebar-nav">
         <button type="button" class="side-link is-active" id="btn-nav-licencas">
@@ -182,7 +184,7 @@
         <button type="button" class="cli-tab" role="tab" data-tab="modulos" onclick="MasterApp.setAbaCliente('modulos', this)">Módulos</button>
         <button type="button" class="cli-tab" role="tab" data-tab="categorias" onclick="MasterApp.setAbaCliente('categorias', this)">Categorias</button>
         <button type="button" class="cli-tab" role="tab" data-tab="plano" onclick="MasterApp.setAbaCliente('plano', this)">Plano</button>
-        <button type="button" class="cli-tab" role="tab" data-tab="acesso" onclick="MasterApp.setAbaCliente('acesso', this)">Acesso</button>
+        <button type="button" class="cli-tab" role="tab" data-tab="acesso" onclick="MasterApp.setAbaCliente('acesso', this)">Terminal</button>
       </nav>
 
       <div class="modal-body modal-body--tabs">
@@ -361,10 +363,12 @@
                     <input type="date" id="cli-vencimento" required class="venc-date-input" onclick="if(typeof this.showPicker==='function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
                   </div>
                   <div class="cli-venc-field">
-                    <label for="cli-dias-add">Dias</label>
-                    <input type="number" id="cli-dias-add" placeholder="30" value="30" class="venc-dias-number">
+                    <label for="cli-dias-add">Adicionar dias</label>
+                    <div class="cli-venc-add-row">
+                      <input type="number" id="cli-dias-add" placeholder="30" value="30" class="venc-dias-number">
+                      <button type="button" id="cli-plano-add-btn" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
+                    </div>
                   </div>
-                  <button type="button" id="cli-plano-add-btn" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
                 </div>
                 <div class="cli-plano-shortcuts">
                   <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(7)">+7</button>
@@ -382,17 +386,22 @@
                   <button type="button" class="btn-sec" onclick="MasterApp.copiarChaveLicenca(document.getElementById('cli-chave').value)">Copiar</button>
                 </div>
               </div>
+
+              <div class="cli-plano-card cli-plano-pin">
+                <div class="cli-plano-card-head">
+                  <label for="cli-pin-gerente" style="margin:0;cursor:pointer;"><strong>🔑 PIN do Gerente no PDV</strong></label>
+                </div>
+                <div class="cli-pin-row">
+                  <input type="text" id="cli-pin-gerente" maxlength="8" inputmode="numeric" placeholder="4 a 8 dígitos" autocomplete="off">
+                </div>
+                <span class="cli-tab-hint" style="margin-top: 6px; display: block;">Usado no PDV para desbloquear configurações.</span>
+              </div>
             </div>
           </div>
 
-          <!-- ABA: ACESSO (PIN, terminais) -->
+          <!-- ABA: TERMINAL (antiga Acesso) -->
           <div class="cli-tab-panel" id="tab-acesso" role="tabpanel" hidden>
             <div class="form-grid">
-              <div class="form-group span-2 cli-subbox">
-                <label for="cli-pin-gerente">🔑 PIN do Gerente no PDV</label>
-                <input type="text" id="cli-pin-gerente" maxlength="8" inputmode="numeric" placeholder="4 a 8 dígitos">
-                <span class="cli-tab-hint">Usada no PDV para desbloquear configurações.</span>
-              </div>
               <div class="form-group span-2 cli-subbox">
                 <div class="cli-subbox--row" style="margin:0;padding:0;border:none;background:transparent;">
                   <div>
@@ -631,6 +640,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.3.3"></script>
+  <script src="js/app.js?v=3.3.4"></script>
 </body>
 </html>
