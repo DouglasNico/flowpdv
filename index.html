@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.2.8">
+  <link rel="stylesheet" href="css/style.css?v=3.2.9">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.8')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.9')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.8');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.9');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -340,7 +340,7 @@
                   <strong>Vencimento</strong>
                   <span id="modal-venc-feedback" class="venc-feedback-badge"></span>
                 </div>
-                <div class="cli-plano-date-row">
+                <div class="cli-plano-controls">
                   <div class="form-group cli-plano-date">
                     <label for="cli-vencimento">Data</label>
                     <input type="date" id="cli-vencimento" required class="venc-date-input" onclick="if(typeof this.showPicker==='function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
@@ -353,9 +353,6 @@
                     <label class="cli-plano-add-spacer" aria-hidden="true">&nbsp;</label>
                     <button type="button" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
                   </div>
-                </div>
-                <p class="cli-tab-hint cli-plano-quick-label">Atalhos rápidos</p>
-                <div class="quick-days-grid">
                   <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(7)">+7 dias</button>
                   <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(15)">+15 dias</button>
                   <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(30)">+30 dias</button>
@@ -625,6 +622,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.2.8"></script>
+  <script src="js/app.js?v=3.2.9"></script>
 </body>
 </html>
