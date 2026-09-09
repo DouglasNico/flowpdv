@@ -4245,14 +4245,14 @@ select:-webkit-autofill {
 
 @media (max-width: 640px) {
   #modal-cliente .cli-plano-controls {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr !important;
   }
 
   #modal-cliente .cli-plano-date {
     grid-column: 1 / -1;
   }
 
-  #modal-cliente .cli-plano-controls .quick-day-btn:last-child {
+  #modal-cliente .cli-plano-add-wrap {
     grid-column: 1 / -1;
   }
 }
@@ -4484,7 +4484,7 @@ select:-webkit-autofill {
 
 #modal-cliente .cli-plano-top {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
@@ -4493,7 +4493,24 @@ select:-webkit-autofill {
 }
 
 #modal-cliente .cli-plano-controls {
-  grid-template-columns: minmax(0, 1.4fr) 90px 120px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) !important;
+}
+
+#modal-cliente .cli-plano-chave {
+  margin: 0;
+}
+
+#modal-cliente .cli-plano-chave .cli-chave-row {
+  align-items: stretch;
+}
+
+#modal-cliente .cli-plano-chave .cli-chave-row input,
+#modal-cliente .cli-plano-chave .cli-chave-row .btn-sec {
+  height: 40px !important;
+  min-height: 40px !important;
+  box-sizing: border-box;
+  border-radius: 10px;
+  margin: 0;
 }
 
 #modal-cliente .cli-plano-shortcuts {
@@ -4526,4 +4543,16 @@ select:-webkit-autofill {
   #modal-cliente .cli-plano-top {
     grid-template-columns: 1fr;
   }
+
+  #modal-cliente .cli-plano-chave .cli-chave-row {
+    flex-wrap: wrap;
+  }
+
+  #modal-cliente .cli-plano-chave .cli-chave-row .btn-sec {
+    width: 100%;
+  }
 }
+
+/* ==========================================================================
+   v3.3.2 — Plano: Data/Dias/Adicionar iguais + chave de licenca no card
+   ========================================================================== */

@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.3.1">
+  <link rel="stylesheet" href="css/style.css?v=3.3.2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.1')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.2')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.1');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.2');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -365,8 +365,8 @@
                     <input type="number" id="cli-dias-add" placeholder="30" value="30" class="venc-dias-number">
                   </div>
                   <div class="form-group cli-plano-add-wrap">
-                    <label class="cli-plano-add-spacer" aria-hidden="true">&nbsp;</label>
-                    <button type="button" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
+                    <label for="cli-plano-add-btn" class="cli-plano-add-spacer">&nbsp;</label>
+                    <button type="button" id="cli-plano-add-btn" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
                   </div>
                 </div>
                 <div class="cli-plano-shortcuts">
@@ -375,19 +375,22 @@
                   <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(30)">+30</button>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <!-- ABA: ACESSO (chave, pin, terminais) -->
-          <div class="cli-tab-panel" id="tab-acesso" role="tabpanel" hidden>
-            <div class="form-grid">
-              <div class="form-group span-2">
-                <label>Chave de Licença</label>
+              <div class="cli-plano-card cli-plano-chave">
+                <div class="cli-plano-card-head">
+                  <strong>Chave de Licença</strong>
+                </div>
                 <div class="cli-chave-row">
                   <input type="text" id="cli-chave" readonly title="Gerada automaticamente">
                   <button type="button" class="btn-sec" onclick="MasterApp.copiarChaveLicenca(document.getElementById('cli-chave').value)">Copiar</button>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- ABA: ACESSO (PIN, terminais) -->
+          <div class="cli-tab-panel" id="tab-acesso" role="tabpanel" hidden>
+            <div class="form-grid">
               <div class="form-group span-2 cli-subbox">
                 <label for="cli-pin-gerente">🔑 PIN do Gerente no PDV</label>
                 <input type="text" id="cli-pin-gerente" maxlength="8" inputmode="numeric" placeholder="4 a 8 dígitos">
@@ -631,6 +634,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.3.1"></script>
+  <script src="js/app.js?v=3.3.2"></script>
 </body>
 </html>
