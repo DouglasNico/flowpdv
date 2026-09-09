@@ -7,6 +7,7 @@ const ASSETS_TO_CACHE = [
   './js/app.js',
   './manifest.json',
   './icon.png',
+  './FlowPDV-Logo.png',
   './logoflow.png'
 ];
 
