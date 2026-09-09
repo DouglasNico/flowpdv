@@ -4278,3 +4278,31 @@ select:-webkit-autofill {
     grid-column: 1 / -1;
   }
 }
+
+/* ==========================================================================
+   v3.2.8 — Plano simplificado + cursor no calendário
+   ========================================================================== */
+#modal-cliente .quick-days-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+#modal-cliente #cli-vencimento,
+#modal-cliente .cli-plano-date .venc-date-input {
+  cursor: pointer !important;
+}
+
+#modal-cliente #cli-vencimento::-webkit-calendar-picker-indicator {
+  cursor: pointer !important;
+  opacity: 0.85;
+}
+
+#modal-cliente #cli-vencimento::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  #modal-cliente .quick-days-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

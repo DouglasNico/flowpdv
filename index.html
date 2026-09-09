@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.2.7">
+  <link rel="stylesheet" href="css/style.css?v=3.2.8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.7')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.8')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.7');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.8');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -354,14 +354,11 @@
                     <button type="button" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
                   </div>
                 </div>
-                <p class="cli-tab-hint cli-plano-quick-label">Atalhos</p>
+                <p class="cli-tab-hint cli-plano-quick-label">Atalhos rápidos</p>
                 <div class="quick-days-grid">
                   <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(7)">+7 dias</button>
                   <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(15)">+15 dias</button>
                   <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(30)">+30 dias</button>
-                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(60)">+60 dias</button>
-                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(90)">+90 dias</button>
-                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(365)">+1 ano</button>
                 </div>
               </div>
 
@@ -628,6 +625,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.2.7"></script>
+  <script src="js/app.js?v=3.2.8"></script>
 </body>
 </html>
