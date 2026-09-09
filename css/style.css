@@ -4256,3 +4256,30 @@ select:-webkit-autofill {
     grid-column: 1 / -1;
   }
 }
+
+/* X das categorias — SVG centrado (restauração) */
+#modal-cliente .cli-cat-chip-x {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px;
+  min-height: 22px;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+  line-height: 0 !important;
+  flex-shrink: 0;
+}
+#modal-cliente .cli-cat-chip-x svg {
+  display: block;
+  width: 10px;
+  height: 10px;
+}
+#modal-cliente .cli-cat-chip:hover .cli-cat-chip-x {
+  background: rgba(248, 113, 113, 0.28) !important;
+  color: #fecaca !important;
+}
