@@ -119,7 +119,7 @@ window.MasterApp = {
     const userEmailEl = document.getElementById('master-user-email');
 
     if (loginScreen) loginScreen.style.display = 'none';
-    if (appContainer) appContainer.style.display = 'block';
+    if (appContainer) appContainer.style.display = 'flex';
     if (userEmailEl && user) userEmailEl.textContent = user.email || 'Super Admin';
 
     await this.carregarDados();

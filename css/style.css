@@ -2291,6 +2291,7 @@ select:-webkit-autofill {
 }
 
 .app-shell--sidebar {
+  display: flex !important;
   flex-direction: row;
   align-items: stretch;
   min-height: 100vh;
@@ -2298,6 +2299,7 @@ select:-webkit-autofill {
   max-width: none;
   margin: 0;
   padding: 0;
+  width: 100%;
   background:
     linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, transparent 40%),
     var(--surface-body);
@@ -2310,7 +2312,7 @@ select:-webkit-autofill {
   width: var(--sidebar-w);
   height: 100vh;
   height: 100dvh;
-  flex-shrink: 0;
+  flex: 0 0 var(--sidebar-w);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -2328,6 +2330,56 @@ select:-webkit-autofill {
   padding: 4px 8px 18px;
   border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 8px;
+}
+
+/* Wordmark for dark surfaces: Flow white · PDV orange */
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand-mark-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border-default);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.brand-mark-word {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.brand-flow {
+  color: #ffffff;
+}
+
+.brand-pdv {
+  color: var(--brand-orange);
+}
+
+.brand-mark--lg .brand-mark-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+}
+
+.brand-mark--lg .brand-mark-word {
+  font-size: 34px;
+}
+
+.login-brand-pane .brand-mark {
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 1;
 }
 
 .sidebar-logo {
@@ -2412,8 +2464,9 @@ select:-webkit-autofill {
 }
 
 .app-shell--sidebar .stage {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  width: auto;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -2452,18 +2505,18 @@ select:-webkit-autofill {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  overflow: visible;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  overflow: visible !important;
   border-radius: 0;
 }
 
 .app-shell--sidebar .kpi,
 .app-shell--sidebar .metrics-grid .metric-card {
   background: var(--surface-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-md) !important;
   padding: 14px 16px;
   gap: 4px;
   box-shadow: var(--shadow-sm);
@@ -2472,7 +2525,7 @@ select:-webkit-autofill {
 
 .app-shell--sidebar .kpi + .kpi,
 .app-shell--sidebar .metrics-grid .metric-card + .metric-card {
-  border-left: 1px solid var(--border-default);
+  border-left: 1px solid var(--border-default) !important;
 }
 
 .app-shell--sidebar .kpi::before,
@@ -2773,6 +2826,15 @@ select:-webkit-autofill {
 
   .sidebar-logo {
     width: 120px;
+  }
+
+  .brand-mark-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .brand-mark-word {
+    font-size: 18px;
   }
 
   .sidebar-nav {

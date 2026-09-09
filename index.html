@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.1.0">
+  <link rel="stylesheet" href="css/style.css?v=3.1.1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -33,7 +33,10 @@
   <!-- TELA DE LOGIN DO SUPER ADMIN -->
   <div id="login-screen" class="login-screen">
     <aside class="login-brand-pane">
-      <img src="FlowPDV-Logo.png" alt="FlowPDV" class="login-wordmark">
+      <div class="brand-mark brand-mark--lg" aria-label="FlowPDV">
+        <img src="icon.png" alt="" class="brand-mark-icon">
+        <span class="brand-mark-word"><span class="brand-flow">Flow</span><span class="brand-pdv">PDV</span></span>
+      </div>
       <p class="login-brand-tagline login-tagline">Controle total das licenças, planos e operação das lojas.</p>
       <ul class="login-brand-points">
         <li>Licenças e terminais em tempo real</li>
@@ -68,7 +71,10 @@
   <div class="app-shell app-shell--sidebar" id="app-container" style="display: none;">
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <img src="FlowPDV-Logo.png" alt="FlowPDV" class="sidebar-logo">
+        <div class="brand-mark" aria-label="FlowPDV">
+          <img src="icon.png" alt="" class="brand-mark-icon">
+          <span class="brand-mark-word"><span class="brand-flow">Flow</span><span class="brand-pdv">PDV</span></span>
+        </div>
         <span class="badge-master">MASTER</span>
       </div>
       <nav class="sidebar-nav">
@@ -655,6 +661,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.1.0"></script>
+  <script src="js/app.js?v=3.1.1"></script>
 </body>
 </html>
