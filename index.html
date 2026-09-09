@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=2.3.0">
+  <link rel="stylesheet" href="css/style.css?v=3.0.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -32,114 +32,96 @@
 
   <!-- TELA DE LOGIN DO SUPER ADMIN -->
   <div id="login-screen" class="login-screen">
-    <div class="login-card">
+    <aside class="login-brand-pane">
       <img src="FlowPDV-Logo.png" alt="FlowPDV" class="login-wordmark">
-      <div class="login-badge-row">
-        <span class="badge-master">MASTER SAAS</span>
-        <span class="login-access-pill">Acesso restrito</span>
+      <p class="login-brand-tagline login-tagline">Controle total das licenças, planos e operação das lojas.</p>
+      <ul class="login-brand-points">
+        <li>Licenças e terminais em tempo real</li>
+        <li>Planos e faturamento (MRR)</li>
+        <li>Auditoria das lojas</li>
+      </ul>
+    </aside>
+    <section class="login-form-pane">
+      <div class="login-form-inner">
+        <div class="login-badge-row">
+          <span class="badge-master">MASTER SAAS</span>
+          <span class="login-access-pill">Acesso restrito</span>
+        </div>
+        <h1 class="login-form-title">Entrar no painel</h1>
+        <p class="login-subtitle">Use o e-mail e senha de super admin</p>
+        <form id="form-login-master" class="login-form" onsubmit="MasterApp.executarLogin(event)">
+          <div class="form-group">
+            <label class="form-label-login">E-mail</label>
+            <input type="email" id="login-email" class="input-login" required placeholder="seuemail@exemplo.com" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label class="form-label-login">Senha</label>
+            <input type="password" id="login-password" class="input-login" required placeholder="••••••••" autocomplete="current-password">
+          </div>
+          <div id="login-error-msg" class="login-error" style="display: none;">E-mail ou senha incorretos.</div>
+          <button type="submit" id="btn-submit-login" class="btn-login-primary">Entrar</button>
+        </form>
       </div>
-      <p class="login-subtitle">Painel de controle de licenças, planos e auditoria</p>
-
-      <form id="form-login-master" class="login-form" onsubmit="MasterApp.executarLogin(event)">
-        <div class="form-group">
-          <label class="form-label-login">E-mail do Administrador</label>
-          <input type="email" id="login-email" class="input-login" required placeholder="seuemail@exemplo.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label-login">Senha de Acesso</label>
-          <input type="password" id="login-password" class="input-login" required placeholder="••••••••">
-        </div>
-        <div id="login-error-msg" class="login-error" style="display: none;">
-          E-mail ou senha incorretos.
-        </div>
-        <button type="submit" id="btn-submit-login" class="btn-login-primary">
-          Entrar no Painel Master
-        </button>
-      </form>
-    </div>
+    </section>
   </div>
 
-  <div class="app-container" id="app-container" style="display: none;">
-    
-    <!-- Topo / Header -->
-    <header class="master-header">
-      <div class="brand-group">
+  <div class="app-shell" id="app-container" style="display: none;">
+    <header class="topbar master-header">
+      <div class="topbar-left brand-group">
         <img src="icon.png" alt="FlowPDV" class="brand-icon">
-        <div>
+        <div class="topbar-brand-text">
           <div class="brand-title">Flow<span>PDV</span> <span class="badge-master">MASTER</span></div>
-          <div class="brand-subtitle">Gestão de clientes, licenças e faturamento</div>
+          <div class="brand-subtitle">SaaS · Licenças</div>
         </div>
       </div>
-
-      <div class="header-actions">
+      <nav class="topbar-nav header-actions">
+        <button type="button" class="nav-pill btn-ghost" id="btn-header-auditoria" onclick="MasterApp.abrirModalAuditoria()">Auditoria</button>
+        <button type="button" class="nav-pill btn-ghost" id="btn-header-planos" onclick="MasterApp.abrirModalPlanos()">Planos</button>
+        <button type="button" class="nav-pill btn-primary-cta btn-novo-cliente" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">Nova licença</button>
         <div id="master-logged-user" class="header-user-chip">
           <span class="header-user-dot"></span>
           <span id="master-user-email">admin@flowpdv.com</span>
         </div>
-        <button type="button" class="btn-ghost" id="btn-header-auditoria" onclick="MasterApp.abrirModalAuditoria()">
-          Logs
-        </button>
-        <button type="button" class="btn-ghost" id="btn-header-planos" onclick="MasterApp.abrirModalPlanos()">
-          Planos
-        </button>
-        <button type="button" class="btn-primary-cta" id="btn-header-novo-cliente" onclick="MasterApp.abrirModalNovoCliente()">
-          Nova Licença
-        </button>
-        <button type="button" class="btn-logout" id="btn-header-logout" onclick="MasterApp.executarLogout()">
-          Sair
-        </button>
-      </div>
+        <button type="button" class="btn-logout" id="btn-header-logout" onclick="MasterApp.executarLogout()">Sair</button>
+      </nav>
     </header>
 
-    <!-- Conteúdo Principal -->
-    <main class="master-main">
-      
-      <!-- Cards de Métricas (MRR, Ativas, Vencendo, Bloqueadas) -->
-      <section class="metrics-grid">
-        <div class="metric-card mrr">
-          <div class="metric-header">
-            <span>Faturamento Mensal (MRR)</span>
-            <span class="metric-icon-tile mrr">$</span>
-          </div>
-          <div class="metric-value" id="metric-mrr">R$ 0,00</div>
-          <div class="metric-sub" id="metric-mrr-sub">Receita recorrente ativa</div>
-        </div>
-
-        <div class="metric-card ativas">
-          <div class="metric-header">
-            <span>Clientes Ativos</span>
-            <span class="metric-icon-tile ativas">●</span>
-          </div>
-          <div class="metric-value" id="metric-ativas">0</div>
-          <div class="metric-sub">Sistemas operando normalmente</div>
-        </div>
-
-        <div class="metric-card vencendo">
-          <div class="metric-header">
-            <span>Vencendo em 7 Dias</span>
-            <span class="metric-icon-tile vencendo">!</span>
-          </div>
-          <div class="metric-value" id="metric-vencendo">0</div>
-          <div class="metric-sub">Enviar lembrete de cobrança</div>
-        </div>
-
-        <div class="metric-card bloqueadas">
-          <div class="metric-header">
-            <span>Bloqueados / Inadimplentes</span>
-            <span class="metric-icon-tile bloqueadas">✕</span>
-          </div>
-          <div class="metric-value" id="metric-bloqueadas">0</div>
-          <div class="metric-sub">Acesso suspenso na nuvem</div>
+    <main class="workspace master-main">
+      <section class="page-hero">
+        <div>
+          <h1 class="page-hero-title">Licenças</h1>
+          <p class="page-hero-sub">Clientes ativos, vencimentos e terminais vinculados</p>
         </div>
       </section>
 
-      <!-- Barra de Pesquisa e Filtros -->
-      <section class="controls-bar">
-        <div class="search-box">
-          <span class="search-icon">⌕</span>
-          <input type="text" id="master-search-input" placeholder="Buscar estabelecimento, CNPJ, responsável ou licença..." oninput="MasterApp.filtrarTabela()">
+      <section class="stats-strip metrics-grid">
+        <div class="stat-cell metric-card mrr">
+          <span class="stat-label">MRR</span>
+          <strong class="stat-value metric-value" id="metric-mrr">R$ 0,00</strong>
+          <span class="stat-hint metric-sub" id="metric-mrr-sub">Receita recorrente</span>
         </div>
+        <div class="stat-cell metric-card ativas">
+          <span class="stat-label">Ativos</span>
+          <strong class="stat-value metric-value" id="metric-ativas">0</strong>
+          <span class="stat-hint metric-sub">Sistemas ok</span>
+        </div>
+        <div class="stat-cell metric-card vencendo">
+          <span class="stat-label">Vencendo 7d</span>
+          <strong class="stat-value metric-value" id="metric-vencendo">0</strong>
+          <span class="stat-hint metric-sub">Cobrança</span>
+        </div>
+        <div class="stat-cell metric-card bloqueadas">
+          <span class="stat-label">Bloqueados</span>
+          <strong class="stat-value metric-value" id="metric-bloqueadas">0</strong>
+          <span class="stat-hint metric-sub">Suspensos</span>
+        </div>
+      </section>
 
+      <section class="toolbar controls-bar">
+        <div class="search-box">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input type="text" id="master-search-input" placeholder="Buscar loja, CNPJ, responsável ou chave..." oninput="MasterApp.filtrarTabela()">
+        </div>
         <div class="filter-group">
           <button type="button" class="filter-btn active" data-filter="todos" onclick="MasterApp.setFiltro('todos', this)">Todos</button>
           <button type="button" class="filter-btn" data-filter="ativas" onclick="MasterApp.setFiltro('ativas', this)">Ativos</button>
@@ -148,44 +130,40 @@
         </div>
       </section>
 
-      <!-- Tabela Principal de Licenças dos Clientes -->
-      <section class="table-section">
-        <table class="master-table">
-          <thead>
-            <tr>
-              <th>Estabelecimento / Responsável</th>
-              <th>Chave de Licença</th>
-              <th>WhatsApp</th>
-              <th>Plano / Valor</th>
-              <th>Vencimento</th>
-              <th>Status</th>
-              <th>Terminais</th>
-              <th style="text-align: right;">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="master-table-tbody">
-            <!-- Renderizado dinamicamente via JS -->
-          </tbody>
-        </table>
+      <section class="data-panel table-section">
+        <div class="data-panel-scroll">
+          <table class="master-table">
+            <thead>
+              <tr>
+                <th>Estabelecimento</th>
+                <th>Licença</th>
+                <th>WhatsApp</th>
+                <th>Plano</th>
+                <th>Vencimento</th>
+                <th>Status</th>
+                <th>Terminais</th>
+                <th style="text-align: right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="master-table-tbody"></tbody>
+          </table>
+        </div>
       </section>
-
     </main>
   </div>
 
   <!-- MODAL: CADASTRAR / EDITAR CLIENTE & LICENÇA -->
   <div class="modal-overlay" id="modal-cliente">
-    <div class="modal-card">
-      
-      <!-- 1. CABEÇALHO FIXO -->
-      <div class="modal-header">
+    <div class="modal-drawer modal-card">
+      <div class="modal-head modal-header">
         <div class="modal-header-main">
-          <div class="modal-header-icon" aria-hidden="true">✎</div>
+          <img src="icon.png" alt="" class="modal-brand-thumb">
           <div class="modal-header-titles">
-            <span class="modal-eyebrow">Licenças</span>
+            <span class="modal-eyebrow">Licença</span>
             <h3 id="modal-cliente-title">Editar Cliente & Licença</h3>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalCliente()" title="Fechar Modal">✕</button>
+        <button type="button" class="btn-close" onclick="MasterApp.fecharModalCliente()" title="Fechar">✕</button>
       </div>
 
       <!-- 2. CORPO COM ROLAGEM DEDICADA -->
@@ -482,17 +460,17 @@
 
   <!-- MODAL: GERENCIAR PLANOS & MENSALIDADES -->
   <div class="modal-overlay" id="modal-planos">
-    <div class="modal-card" style="max-width: 680px;">
-      <div class="modal-header">
+    <div class="modal-sheet modal-card" style="max-width: 720px;">
+      <div class="modal-head modal-header">
         <div class="modal-header-main">
           <div class="modal-header-icon" aria-hidden="true">▣</div>
           <div class="modal-header-titles">
             <span class="modal-eyebrow">Comercial</span>
             <h3>Planos & Mensalidades</h3>
-            <span class="modal-subtitle">Crie e edite os planos oferecidos aos clientes</span>
+            <span class="modal-subtitle">Catálogo de planos oferecidos aos clientes</span>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalPlanos()" title="Fechar Modal">✕</button>
+        <button type="button" class="btn-close" onclick="MasterApp.fecharModalPlanos()" title="Fechar">✕</button>
       </div>
 
       <div class="modal-body" style="padding: 20px 24px;">
@@ -557,14 +535,14 @@
 
   <!-- MODAL: AUDITORIA & LOGS EM TEMPO REAL -->
   <div class="modal-overlay" id="modal-auditoria" onclick="if(event.target === this) MasterApp.fecharModalAuditoria()">
-    <div class="modal-card" style="max-width: 980px; width: 95%; max-height: 90vh;">
-      <div class="modal-header">
+    <div class="modal-sheet modal-card modal-sheet--wide" style="max-width: 1040px; width: 96%; max-height: 92vh;">
+      <div class="modal-head modal-header">
         <div class="modal-header-main">
           <div class="modal-header-icon" aria-hidden="true">☰</div>
           <div class="modal-header-titles">
             <span class="modal-eyebrow">Monitoramento</span>
-            <h3>Logs de Auditoria</h3>
-            <span class="modal-subtitle">Exclusões, caixas, cancelamentos e importações em tempo real</span>
+            <h3>Auditoria das lojas</h3>
+            <span class="modal-subtitle">Eventos em tempo real</span>
           </div>
         </div>
         <button type="button" class="btn-close" onclick="MasterApp.fecharModalAuditoria()">✕</button>
@@ -639,13 +617,13 @@
 
   <!-- MODAL: DETALHES DO LOG DE AUDITORIA -->
   <div class="modal-overlay" id="modal-detalhe-log">
-    <div class="modal-card" style="max-width: 580px; width: 95%; height: auto; max-height: 85vh; margin: auto;">
-      <div class="modal-header">
+    <div class="modal-sheet modal-card" style="max-width: 560px; width: 94%; height: auto; max-height: 85vh;">
+      <div class="modal-head modal-header">
         <div class="modal-header-main">
           <div class="modal-header-icon" aria-hidden="true">ⓘ</div>
           <div class="modal-header-titles">
             <span class="modal-eyebrow">Auditoria</span>
-            <h3>Detalhes do Registro</h3>
+            <h3>Detalhe do evento</h3>
           </div>
         </div>
         <button type="button" class="btn-close" onclick="MasterApp.fecharModalDetalheLog()">✕</button>
@@ -685,6 +663,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=2.3.0"></script>
+  <script src="js/app.js?v=3.0.0"></script>
 </body>
 </html>
