@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css?v=3.2.5">
+  <link rel="stylesheet" href="css/style.css?v=3.2.6">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.5')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.2.6')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.5');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.2.6');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -328,38 +328,45 @@
 
           <!-- ABA: PLANO -->
           <div class="cli-tab-panel" id="tab-plano" role="tabpanel" hidden>
-            <div class="form-grid">
-              <div class="form-group span-2">
-                <label>Plano Contratado *</label>
+            <div class="cli-plano-stack">
+              <div class="form-group">
+                <label>Plano contratado *</label>
                 <select id="cli-plano" required onchange="MasterApp.atualizarValorPlano()"></select>
                 <input type="hidden" id="cli-valor" value="89.90">
               </div>
-              <div class="form-group span-2 form-box-highlight">
-                <div class="vencimento-header-row">
-                  <label class="box-label">Vencimento & dias</label>
+
+              <div class="cli-plano-card">
+                <div class="cli-plano-card-head">
+                  <strong>Vencimento</strong>
                   <span id="modal-venc-feedback" class="venc-feedback-badge"></span>
                 </div>
-                <div class="vencimento-inputs-row">
-                  <input type="date" id="cli-vencimento" required class="venc-date-input" onclick="if(typeof this.showPicker==='function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
-                  <div class="venc-add-group">
-                    <input type="number" id="cli-dias-add" placeholder="Dias" value="30" class="venc-dias-number">
-                    <button type="button" class="btn-add-dias" onclick="MasterApp.adicionarDiasPersonalizadosForm()">➕ Adicionar</button>
+                <div class="cli-plano-date-row">
+                  <div class="form-group cli-plano-date">
+                    <label for="cli-vencimento">Data</label>
+                    <input type="date" id="cli-vencimento" required class="venc-date-input" onclick="if(typeof this.showPicker==='function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
                   </div>
+                  <div class="form-group cli-plano-dias">
+                    <label for="cli-dias-add">Dias</label>
+                    <input type="number" id="cli-dias-add" placeholder="30" value="30" class="venc-dias-number">
+                  </div>
+                  <button type="button" class="btn-add-dias cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
                 </div>
+                <p class="cli-tab-hint cli-plano-quick-label">Atalhos</p>
                 <div class="quick-days-grid">
-                  <button type="button" class="quick-day-btn cortesia" onclick="MasterApp.setDiasRapidosForm(7)">+7</button>
-                  <button type="button" class="quick-day-btn cortesia" onclick="MasterApp.setDiasRapidosForm(15)">+15</button>
-                  <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(30)">+30</button>
-                  <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(60)">+60</button>
-                  <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(90)">+90</button>
-                  <button type="button" class="quick-day-btn normal" onclick="MasterApp.setDiasRapidosForm(365)">+1 Ano</button>
+                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(7)">+7 dias</button>
+                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(15)">+15 dias</button>
+                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(30)">+30 dias</button>
+                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(60)">+60 dias</button>
+                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(90)">+90 dias</button>
+                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(365)">+1 ano</button>
                 </div>
               </div>
-              <div class="form-group span-2">
-                <label>Status do Sistema *</label>
+
+              <div class="form-group">
+                <label>Status do sistema *</label>
                 <select id="cli-status" required>
-                  <option value="ativa">🟢 Ativa / Liberado</option>
-                  <option value="bloqueada">🛑 Bloqueada</option>
+                  <option value="ativa">Ativa / Liberado</option>
+                  <option value="bloqueada">Bloqueada</option>
                 </select>
               </div>
             </div>
@@ -618,6 +625,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.2.5"></script>
+  <script src="js/app.js?v=3.2.6"></script>
 </body>
 </html>

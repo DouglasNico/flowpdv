@@ -3993,3 +3993,167 @@ select:-webkit-autofill {
 .modal-cliente-sheet .preset-cat-btn {
   height: 42px !important;
 }
+
+/* ==========================================================================
+   v3.2.6 — Altura fixa do modal + gap header/tabs + Plano organizado
+   ========================================================================== */
+#modal-cliente .modal-cliente-sheet {
+  height: min(720px, 90vh) !important;
+  max-height: min(720px, 90vh) !important;
+  min-height: min(720px, 90vh) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#modal-cliente .modal-cliente-sheet > .modal-head,
+#modal-cliente .modal-cliente-sheet > .modal-header {
+  flex: 0 0 auto;
+  padding: 18px 20px 14px !important;
+  margin: 0 !important;
+  border-bottom: none !important;
+}
+
+#modal-cliente .cli-tabs {
+  flex: 0 0 auto;
+  margin: 0 16px 12px !important;
+  padding: 6px !important;
+}
+
+#modal-cliente .modal-body--tabs {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  padding: 4px 20px 16px !important;
+}
+
+#modal-cliente .modal-footer--cliente {
+  flex: 0 0 auto;
+}
+
+/* Painel de aba sempre ocupa a área (evita jump visual interno) */
+#modal-cliente .cli-tab-panel.is-active {
+  min-height: 100%;
+}
+
+/* Plano */
+.cli-plano-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cli-plano-card {
+  padding: 14px;
+  background: #24384c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+}
+
+.cli-plano-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.cli-plano-card-head strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+
+#modal-cliente .venc-feedback-badge {
+  font-family: var(--font-sans) !important;
+  font-size: 11px !important;
+  font-weight: 800;
+  color: #6ee7b7 !important;
+  background: rgba(16, 185, 129, 0.14) !important;
+  border: 1px solid rgba(52, 211, 153, 0.28) !important;
+  border-radius: 999px;
+  padding: 5px 10px;
+  box-shadow: none !important;
+}
+
+.cli-plano-date-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.7fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.cli-plano-date-row .form-group {
+  margin: 0;
+}
+
+.cli-plano-date-row .venc-dias-number,
+.cli-plano-date-row .venc-date-input {
+  width: 100%;
+}
+
+.cli-plano-add {
+  height: 42px !important;
+  min-width: 110px;
+  padding: 0 14px !important;
+  border-radius: 10px !important;
+  background: var(--brand-orange) !important;
+  color: #fff !important;
+  border: none !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  cursor: pointer;
+}
+
+.cli-plano-add:hover {
+  background: var(--brand-orange-deep) !important;
+}
+
+.cli-plano-quick-label {
+  margin: 12px 0 8px !important;
+}
+
+#modal-cliente .quick-days-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin-top: 0 !important;
+}
+
+#modal-cliente .quick-day-btn {
+  height: 38px !important;
+  border-radius: 10px !important;
+  background: #1e3144 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+#modal-cliente .quick-day-btn:hover {
+  border-color: rgba(243, 146, 55, 0.5) !important;
+  background: rgba(243, 146, 55, 0.14) !important;
+  color: #fff !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+@media (max-width: 640px) {
+  #modal-cliente .modal-cliente-sheet {
+    height: 94vh !important;
+    min-height: 94vh !important;
+    max-height: 94vh !important;
+  }
+
+  .cli-plano-date-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cli-plano-add {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  #modal-cliente .quick-days-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
