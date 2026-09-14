@@ -244,6 +244,7 @@ select:-webkit-autofill {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   padding: 48px 56px;
   background:
     linear-gradient(160deg, rgba(243, 146, 55, 0.12) 0%, transparent 42%),
@@ -261,10 +262,12 @@ select:-webkit-autofill {
   pointer-events: none;
 }
 
-.login-brand-pane .login-wordmark,
-.login-brand-pane img {
-  width: min(280px, 70%);
+.login-hero-icon {
+  width: auto;
   height: auto;
+  max-width: min(220px, 70%);
+  max-height: 200px;
+  object-fit: contain;
   margin-bottom: 28px;
   position: relative;
   z-index: 1;
@@ -2323,10 +2326,9 @@ select:-webkit-autofill {
 .modal-brand-thumb {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
-  object-fit: cover;
-  border: 1px solid var(--border-default);
+  object-fit: contain;
   flex-shrink: 0;
+  background: transparent;
 }
 .modal-footer, .modal-foot {
   display: flex;
@@ -2417,11 +2419,9 @@ select:-webkit-autofill {
 .brand-mark-icon {
   width: 40px;
   height: 40px;
-  border-radius: 11px;
-  object-fit: cover;
+  object-fit: contain;
   flex-shrink: 0;
-  border: 1px solid var(--border-default);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  background: transparent;
 }
 
 .brand-mark-word {

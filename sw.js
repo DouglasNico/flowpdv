@@ -1,10 +1,11 @@
-// FlowPDV Master Admin Service Worker v3.3.4
+// FlowPDV Master Admin Service Worker v3.3.5
 // Network-first for app shell so deploys aparecem no primeiro refresh
-const CACHE_NAME = 'flowpdv-master-v3.3.4';
+const CACHE_NAME = 'flowpdv-master-v3.3.5';
 const ASSETS_TO_CACHE = [
-  './icon.png',
-  './FlowPDV-Logo.png',
-  './logoflow.png',
+  './logos/FlowPDV-icone-claro.png',
+  './logos/FlowPDV-icone-escuro.png',
+  './logos/FlowPDV-vertical-escuro.png',
+  './logos/FlowPDV-horizontal-escuro.png',
   './manifest.json'
 ];
 
