@@ -2729,7 +2729,7 @@ select:-webkit-autofill {
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  object-fit: cover;
+  object-fit: contain;
   background: var(--surface-inset);
   border: 1px solid var(--border-default);
   flex-shrink: 0;

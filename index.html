@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="logos/FlowPDV-icone-claro.png">
-  <link rel="stylesheet" href="css/style.css?v=3.3.5">
+  <link rel="stylesheet" href="css/style.css?v=3.3.6">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.5')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.6')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.5');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.6');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -198,7 +198,7 @@
                   <strong id="cli-logo-status-title">Logo da loja</strong>
                   <div id="cli-logo-preview-box" class="cli-logo-ready" style="display: none;">Pronta</div>
                 </div>
-                <span class="cli-logo-sub">PNG ou JPG · aparece no PDV e nos cards</span>
+                <span class="cli-logo-sub">PNG ou JPG · proporcional, até 600px no lado maior</span>
                 <div class="cli-logo-actions">
                   <input type="hidden" id="cli-logo-url" value="">
                   <input type="file" id="cli-logo-file" accept="image/*" hidden onchange="MasterApp.fazerUploadLogoComputador(event)">
@@ -637,6 +637,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.3.5"></script>
+  <script src="js/app.js?v=3.3.6"></script>
 </body>
 </html>

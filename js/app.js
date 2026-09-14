@@ -1606,20 +1606,24 @@ window.MasterApp = {
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
+        const MAX_LADO = 600;
+        const scale = Math.min(1, MAX_LADO / img.width, MAX_LADO / img.height);
+        const nw = Math.max(1, Math.round(img.width * scale));
+        const nh = Math.max(1, Math.round(img.height * scale));
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 240;
-        canvas.height = 240;
+        canvas.width = nw;
+        canvas.height = nh;
+        ctx.clearRect(0, 0, nw, nh);
+        ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, nw, nh);
 
-        ctx.clearRect(0, 0, 240, 240);
-        const scale = Math.min(240 / img.width, 240 / img.height);
-        const nw = img.width * scale;
-        const nh = img.height * scale;
-        const dx = (240 - nw) / 2;
-        const dy = (240 - nh) / 2;
-        ctx.drawImage(img, 0, 0, img.width, img.height, dx, dy, nw, nh);
-
-        const dataUrl = canvas.toDataURL('image/png');
+        let dataUrl = canvas.toDataURL('image/png');
+        if (dataUrl.length > 700000) {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, nw, nh);
+          ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, nw, nh);
+          dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        }
         
         const inputUrl = document.getElementById('cli-logo-url');
         if (inputUrl) {
