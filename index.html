@@ -5,7 +5,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FlowPDV Master — Gestão SaaS & Licenças</title>
   <link rel="icon" type="image/png" href="logos/FlowPDV-icone-claro.png">
   <link rel="manifest" href="manifest.json">
@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
   <link rel="apple-touch-icon" href="logos/FlowPDV-icone-claro.png">
-  <link rel="stylesheet" href="css/style.css?v=3.3.6">
+  <link rel="stylesheet" href="css/style.css?v=20260915">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -26,11 +26,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v3.3.6')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v20260915')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=3.3.6');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=20260915');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -626,7 +626,7 @@
       measurementId: "G-9RSWDKL8WP"
     };
 
-    const app = initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig, 'flowpdv-master');
     const db = getFirestore(app);
     const auth = getAuth(app);
 
@@ -637,6 +637,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=3.3.6"></script>
+  <script src="js/app.js?v=20260915"></script>
 </body>
 </html>

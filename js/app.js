@@ -97,6 +97,20 @@ window.MasterApp = {
     const { auth, onAuthStateChanged } = window.FirebaseAuth;
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        let autorizado = false;
+        try {
+          const token = await user.getIdTokenResult();
+          autorizado = token.claims.admin === true || ['dougnvds26@gmail.com', 'admin@flowpdv.com.br', 'contato@flowpdv.com.br'].includes(String(user.email || '').toLowerCase());
+        } catch (_) {}
+        if (auth.currentUser?.uid !== user.uid) return;
+        if (!autorizado) {
+          this.usuarioLogado = null;
+          this.clientes = [];
+          this.exibirTelaLogin();
+          const erro = document.getElementById('login-error-msg');
+          if (erro) { erro.textContent = 'Esta conta não possui acesso ao Painel Master.'; erro.style.display = 'block'; }
+          return;
+        }
         this.usuarioLogado = user;
         this.exibirPainelMaster(user);
       } else {
@@ -261,6 +275,7 @@ window.MasterApp = {
   },
 
   setModulosCheckboxes(modulos = {}) {
+    this.modulosOriginais = JSON.parse(JSON.stringify(modulos));
     const modFardos = document.getElementById('mod-fardos');
     const modBalanca = document.getElementById('mod-balanca');
     const modValidade = document.getElementById('mod-validade');
@@ -307,6 +322,7 @@ window.MasterApp = {
 
   getModulosCheckboxes() {
     return {
+      ...(this.modulosOriginais || {}),
       fardosPacks: document.getElementById('mod-fardos')?.checked ?? true,
       balancaPeso: document.getElementById('mod-balanca')?.checked ?? false,
       validadeLotes: document.getElementById('mod-validade')?.checked ?? true,
@@ -317,6 +333,7 @@ window.MasterApp = {
       fiscalNfce: document.getElementById('mod-fiscal')?.checked ?? true,
       tefCartao: document.getElementById('mod-tef')?.checked ?? true,
       pagamentos: {
+        ...(this.modulosOriginais?.pagamentos || {}),
         vouchers: document.getElementById('pag-vouchers')?.checked ?? false,
         voucherMarcaVr: document.getElementById('pag-marca-vr')?.checked ?? false,
         voucherMarcaAlelo: document.getElementById('pag-marca-alelo')?.checked ?? false,
@@ -353,7 +370,7 @@ window.MasterApp = {
     this.clientes = Array.from(clientesMap.values());
 
     try {
-      localStorage.setItem('flowpdv_master_clientes', JSON.stringify(this.clientes));
+      localStorage.setItem('flowpdv_master_clientes_' + (this.usuarioLogado?.uid || 'sem-sessao'), JSON.stringify(this.clientes));
       
       const licAtiva = this.clientes.find(c => c.status === 'ativa');
       if (licAtiva) {
@@ -437,7 +454,7 @@ window.MasterApp = {
 
   async carregarDados() {
     let list = [];
-    const saved = localStorage.getItem('flowpdv_master_clientes');
+    const saved = localStorage.getItem('flowpdv_master_clientes_' + (this.usuarioLogado?.uid || 'sem-sessao'));
     if (saved) {
       try {
         list = JSON.parse(saved);
@@ -447,8 +464,8 @@ window.MasterApp = {
     }
 
     if (!Array.isArray(list) || list.length === 0) {
-      list = this.getDefaultClientes();
-      localStorage.setItem('flowpdv_master_clientes', JSON.stringify(list));
+      list = [];
+      localStorage.setItem('flowpdv_master_clientes_' + (this.usuarioLogado?.uid || 'sem-sessao'), JSON.stringify(list));
     }
 
     this.clientes = list;
@@ -578,7 +595,7 @@ window.MasterApp = {
             if (iguais) return;
             alvo.categorias = categorias;
             alvo.categoriasExcluidas = backup.categoriasExcluidas || [];
-            try { localStorage.setItem('flowpdv_master_clientes', JSON.stringify(this.clientes)); } catch (e) {}
+            try { localStorage.setItem('flowpdv_master_clientes_' + (this.usuarioLogado?.uid || 'sem-sessao'), JSON.stringify(this.clientes)); } catch (e) {}
             this.renderTabela();
           }
         }
@@ -1517,7 +1534,7 @@ window.MasterApp = {
       return true;
     });
 
-    localStorage.setItem('flowpdv_master_clientes', JSON.stringify(this.clientes));
+    localStorage.setItem('flowpdv_master_clientes_' + (this.usuarioLogado?.uid || 'sem-sessao'), JSON.stringify(this.clientes));
     this.fecharModalCliente();
     this.renderMetrics();
     this.renderTabela();

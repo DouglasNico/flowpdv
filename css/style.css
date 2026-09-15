@@ -4649,3 +4649,17 @@ select:-webkit-autofill {
    v3.3.4 — Alinhamento Master com Flow, Vencimento 2 cols, Chave com padding,
             PIN do Gerente na aba Plano e aba renomeada para Terminal
    ========================================================================== */
+
+/* Navegação compacta, sem reduzir toda a interface por zoom. */
+@media (max-width: 640px) {
+  .sidebar { display:flex!important; flex-direction:column!important; gap:14px!important; padding:16px!important; }
+  .sidebar-brand { align-self:flex-start; }
+  .sidebar-nav { width:100%; display:grid!important; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+  .sidebar-nav .side-link { min-width:0; min-height:44px; height:44px!important; max-height:44px; padding:10px 6px; justify-content:center; gap:6px; font-size:12px; }
+  .sidebar-foot { display:flex!important; width:100%; gap:10px; margin-top:0!important; padding-top:0!important; }
+  .sidebar-user { flex:1; min-width:0; }
+  .side-logout { flex:0 0 64px; }
+  .stage { min-width:0; padding:22px 16px!important; }
+  input,select,textarea { font-size:16px!important; }
+  .modal { max-width:calc(100vw - 20px); }
+}

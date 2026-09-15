@@ -1,6 +1,6 @@
 // FlowPDV Master Admin Service Worker v3.3.6
 // Network-first for app shell so deploys aparecem no primeiro refresh
-const CACHE_NAME = 'flowpdv-master-v3.3.6';
+const CACHE_NAME = 'flowpdv-master-v20260915';
 const ASSETS_TO_CACHE = [
   './logos/FlowPDV-icone-claro.png',
   './logos/FlowPDV-icone-escuro.png',
@@ -19,7 +19,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+      Promise.all(keys.filter((key) => key.startsWith('flowpdv-master-') && key !== CACHE_NAME).map((key) => caches.delete(key)))
     ).then(() => self.clients.claim())
   );
 });
