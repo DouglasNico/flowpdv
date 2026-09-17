@@ -19,52 +19,52 @@ window.MasterApp = {
     adega: {
       icone: '🍷',
       nome: 'Adega & Depósito de Bebidas',
-      lista: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Combos']
+      lista: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere', 'Combos']
     },
     mercado: {
       icone: '🛒',
       nome: 'Supermercado & Mercearia',
-      lista: ['Alimentos', 'Carnes & Açougue', 'Bebidas', 'Laticínios & Frios', 'Hortifrúti', 'Padaria', 'Higiene & Limpeza', 'Matinais']
+      lista: ['Alimentos', 'Carnes & Açougue', 'Bebidas', 'Laticínios & Frios', 'Hortifrúti', 'Padaria', 'Bomboniere', 'Higiene & Limpeza', 'Matinais']
     },
     acougue: {
       icone: '🥩',
       nome: 'Açougue & Casa de Carnes',
-      lista: ['Bovinos', 'Suínos', 'Aves', 'Linguiças & Embutidos', 'Temperados & Espetos', 'Bebidas', 'Carvão & Acessórios']
+      lista: ['Bovinos', 'Suínos', 'Aves', 'Linguiças & Embutidos', 'Temperados & Espetos', 'Bebidas', 'Bomboniere', 'Carvão & Acessórios']
     },
     hortifruti: {
       icone: '🥬',
       nome: 'Hortifrúti & Sacolão',
-      lista: ['Frutas', 'Verduras & Folhas', 'Legumes & Raízes', 'Temperos & Ervas', 'Ovos & Grãos', 'Bebidas']
+      lista: ['Frutas', 'Verduras & Folhas', 'Legumes & Raízes', 'Temperos & Ervas', 'Ovos & Grãos', 'Bebidas', 'Bomboniere']
     },
     padaria: {
       icone: '🥖',
       nome: 'Padaria & Confeitaria',
-      lista: ['Pães', 'Bolos & Doces', 'Salgados', 'Frios & Laticínios', 'Café & Bebidas', 'Mercearia']
+      lista: ['Pães', 'Bolos & Doces', 'Salgados', 'Frios & Laticínios', 'Café & Bebidas', 'Mercearia', 'Bomboniere']
     },
     conveniencia: {
       icone: '🏪',
       nome: 'Loja de Conveniência',
-      lista: ['Bebidas Geladas', 'Salgados & Lanches', 'Snacks', 'Tabacaria', 'Doces & Chocolates', 'Energéticos', 'Gelo & Carvão']
+      lista: ['Bebidas Geladas', 'Salgados & Lanches', 'Snacks', 'Tabacaria', 'Doces & Chocolates', 'Bomboniere', 'Energéticos', 'Gelo & Carvão']
     },
     tabacaria: {
       icone: '🚬',
       nome: 'Tabacaria & Hookah',
-      lista: ['Essências', 'Carvão & Alumínio', 'Sedas & Filtros', 'Isqueiros & Maçaricos', 'Narguiles & Peças', 'Vapes & Pods', 'Bebidas']
+      lista: ['Essências', 'Carvão & Alumínio', 'Sedas & Filtros', 'Isqueiros & Maçaricos', 'Narguiles & Peças', 'Vapes & Pods', 'Bebidas', 'Bomboniere']
     },
     vestuario: {
       icone: '👗',
       nome: 'Loja de Roupas & Calçados',
-      lista: ['Feminino', 'Masculino', 'Infantil', 'Calçados', 'Acessórios', 'Íntimo']
+      lista: ['Feminino', 'Masculino', 'Infantil', 'Calçados', 'Acessórios', 'Íntimo', 'Bomboniere']
     },
     lanchonete: {
       icone: '🍔',
       nome: 'Lanchonete & Restaurante',
-      lista: ['Lanches & Burgers', 'Porções & Petiscos', 'Pizzas', 'Bebidas & Sucos', 'Sobremesas']
+      lista: ['Lanches & Burgers', 'Porções & Petiscos', 'Pizzas', 'Bebidas & Sucos', 'Sobremesas', 'Bomboniere']
     },
     geral: {
       icone: '⚡',
       nome: 'Comércio Geral / Varejo',
-      lista: ['Bebidas', 'Alimentos', 'Carnes', 'Limpeza', 'Higiene', 'Tabacaria', 'Acessórios']
+      lista: ['Bebidas', 'Alimentos', 'Carnes', 'Limpeza', 'Higiene', 'Tabacaria', 'Acessórios', 'Bomboniere']
     }
   },
 
@@ -383,7 +383,7 @@ window.MasterApp = {
           logoUrl: licAtiva.logoUrl || '',
           modulos: licAtiva.modulos || this.modulosPadraoPorRamo[licAtiva.ramoAtividade || 'adega'] || this.modulosPadraoPorRamo.adega,
           moduloComandas: licAtiva.moduloComandas || 'mesas_e_comandas',
-          categorias: (licAtiva.categorias && licAtiva.categorias.length > 0) ? licAtiva.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+          categorias: (licAtiva.categorias && licAtiva.categorias.length > 0) ? licAtiva.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere'],
           status: licAtiva.status,
           dataExpiracao: (licAtiva.vencimento && licAtiva.vencimento.includes('T')) ? licAtiva.vencimento : (licAtiva.vencimento + 'T23:59:59.000Z'),
           valorMensal: licAtiva.valorMensal,
@@ -419,7 +419,7 @@ window.MasterApp = {
             logoUrl: c.logoUrl || '',
             modulos: c.modulos || this.modulosPadraoPorRamo[c.ramoAtividade || 'adega'] || this.modulosPadraoPorRamo.adega,
             moduloComandas: c.moduloComandas || 'mesas_e_comandas',
-            categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+            categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere'],
             categoriasExcluidas: c.categoriasExcluidas || [],
             categoriasExcluidas: c.categoriasExcluidas || [],
             plano: c.plano,
@@ -490,7 +490,7 @@ window.MasterApp = {
         whatsapp: '(19) 99876-5432',
         icone: '🍷',
         logoUrl: '',
-        categorias: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Combos'],
+        categorias: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere', 'Combos'],
         plano: 'Mensal Pro',
         valorMensal: 89.90,
         vencimento: em15Dias,
@@ -505,7 +505,7 @@ window.MasterApp = {
         whatsapp: '(19) 99999-7777',
         icone: '🍷',
         logoUrl: '',
-        categorias: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+        categorias: ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere'],
         plano: 'Mensal Pro',
         valorMensal: 89.90,
         vencimento: em15Dias,
@@ -520,7 +520,7 @@ window.MasterApp = {
         whatsapp: '(19) 98111-2222',
         icone: '🏪',
         logoUrl: '',
-        categorias: ['Bebidas Geladas', 'Salgados & Lanches', 'Snacks', 'Tabacaria', 'Doces & Chocolates', 'Energéticos', 'Gelo & Carvão'],
+        categorias: ['Bebidas Geladas', 'Salgados & Lanches', 'Snacks', 'Tabacaria', 'Doces & Chocolates', 'Bomboniere', 'Energéticos', 'Gelo & Carvão'],
         plano: 'Mensal Pro',
         valorMensal: 89.90,
         vencimento: em3Dias,
@@ -535,7 +535,7 @@ window.MasterApp = {
         whatsapp: '(19) 97444-5555',
         icone: '🛒',
         logoUrl: '',
-        categorias: ['Alimentos', 'Carnes & Açougue', 'Bebidas', 'Laticínios & Frios', 'Hortifrúti', 'Padaria', 'Higiene & Limpeza'],
+        categorias: ['Alimentos', 'Carnes & Açougue', 'Bebidas', 'Laticínios & Frios', 'Hortifrúti', 'Padaria', 'Bomboniere', 'Higiene & Limpeza'],
         plano: 'Mensal Básico',
         valorMensal: 69.90,
         vencimento: ha5Dias,
@@ -625,7 +625,7 @@ window.MasterApp = {
                 modulos: data.modulos || null,
                 moduloComandas: data.moduloComandas || 'mesas_e_comandas',
                 logoUrl: data.logoUrl || '',
-                categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+                categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere'],
                 plano: data.plano || 'Mensal Pro',
                 valorMensal: data.valorMensal || 89.90,
                 vencimento: data.vencimento ? (data.vencimento.includes('T') ? data.vencimento.split('T')[0] : data.vencimento) : '2026-12-31',
@@ -739,7 +739,7 @@ window.MasterApp = {
               modulos: data.modulos || null,
               moduloComandas: data.moduloComandas || 'mesas_e_comandas',
               logoUrl: data.logoUrl || '',
-              categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos'],
+              categorias: (Array.isArray(data.categorias) && data.categorias.length > 0) ? data.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere'],
               plano: data.plano || 'Mensal Pro',
               valorMensal: data.valorMensal || 89.90,
               vencimento: data.vencimento ? (data.vencimento.includes('T') ? data.vencimento.split('T')[0] : data.vencimento) : '2026-12-31',
@@ -786,7 +786,7 @@ window.MasterApp = {
             const logoUrlFinal = cCloud.logoUrl || localLogo || '';
 
             const localCats = localCatsMap.get(cCloud.chaveLicenca) || localCatsMap.get(cCloud.id) || localCatsMap.get(cnpjClean) || null;
-            const catsFinal = (cCloud.categorias && cCloud.categorias.length > 0) ? cCloud.categorias : (localCats || ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos']);
+            const catsFinal = (cCloud.categorias && cCloud.categorias.length > 0) ? cCloud.categorias : (localCats || ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere']);
 
             const localMods = localModulosMap.get(cCloud.chaveLicenca) || localModulosMap.get(cCloud.id) || localModulosMap.get(cnpjClean) || null;
             const modulosFinal = cCloud.modulos || localMods || this.modulosPadraoPorRamo[cCloud.ramoAtividade || 'adega'] || this.modulosPadraoPorRamo.adega;
@@ -1208,7 +1208,7 @@ window.MasterApp = {
     const modulos = this.getModulosCheckboxes();
     const logoUrl = document.getElementById('cli-logo-url')?.value.trim() || '';
     const categoriasRaw = document.getElementById('cli-categorias')?.value.trim() || '';
-    const categorias = categoriasRaw ? categoriasRaw.split(',').map(s => s.trim()).filter(Boolean) : (this.presetsCategorias[ramoAtividade]?.lista || ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos']);
+    const categorias = categoriasRaw ? categoriasRaw.split(',').map(s => s.trim()).filter(Boolean) : (this.presetsCategorias[ramoAtividade]?.lista || ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere']);
 
     const cExistente = this.clientes.find(item => item && (item.id === idFinal || item.chaveLicenca === chaveLicenca));
 
@@ -1355,6 +1355,8 @@ window.MasterApp = {
       const hostname = isObjeto && term.hostname && term.hostname !== termId && term.hostname !== 'Computador Local' ? term.hostname : `Computador ${index + 1}`;
       const usuario = isObjeto && term.usuario && term.usuario !== 'Operador' && term.usuario !== 'User' ? term.usuario : (index === 0 ? 'Douglas Batista' : 'Administrador');
       const dataStr = isObjeto && term.ultimoAcesso ? new Date(term.ultimoAcesso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Ativo';
+      const tipoRaw = isObjeto ? String(term.tipoTerminal || 'caixa').toLowerCase() : 'caixa';
+      const tipoTerm = (tipoRaw === 'atendimento' || tipoRaw === 'comanda') ? 'atendimento' : 'caixa';
 
       return `
         <div class="terminal-item-card">
@@ -1367,6 +1369,11 @@ window.MasterApp = {
             <div style="font-size: 11px; color: var(--text-dim); margin-top: 3px; font-family: 'JetBrains Mono';">
               ID: <code style="color: #a5b4fc; background: rgba(255,255,255,0.06); padding: 1px 4px; border-radius: 3px;">${termId}</code> • <span style="color: #94a3b8;">${dataStr}</span>
             </div>
+            <label style="display:block; font-size: 11px; color: #cbd5e1; margin-top: 8px; font-weight: 700;">Função deste computador</label>
+            <select onchange="MasterApp.alterarTipoTerminal('${c.id}', '${termId}', this.value)" style="margin-top:4px; height:30px; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; font-size:12px; font-weight:700; padding:0 8px; max-width: 280px;">
+              <option value="caixa" ${tipoTerm === 'caixa' ? 'selected' : ''}>Caixa (PDV)</option>
+              <option value="atendimento" ${tipoTerm === 'atendimento' ? 'selected' : ''}>Atendimento (mesas/comandas)</option>
+            </select>
           </div>
           <button type="button" class="btn-desvincular-individual" onclick="MasterApp.desvincularTerminalIndividual('${c.id}', '${termId}')" title="Desvincular somente este computador">
             ❌ Desvincular
@@ -1398,6 +1405,25 @@ window.MasterApp = {
     if (contagemTerm) contagemTerm.textContent = (c.terminaisAtivos.length) + ' / ' + (c.limiteTerminais || 1);
 
     this.showToast('✅ Computador desvinculado com sucesso!');
+  },
+
+  async alterarTipoTerminal(clienteId, terminalId, tipo) {
+    const c = this.clientes.find(item => item && (item.id === clienteId || item.chaveLicenca === clienteId));
+    if (!c) return;
+    const valor = String(tipo || 'caixa').toLowerCase();
+    const normalizado = (valor === 'atendimento' || valor === 'comanda') ? 'atendimento' : 'caixa';
+    let lista = this.obterTerminaisDeduplicados(c.terminaisAtivos);
+    c.terminaisAtivos = lista.map(t => {
+      if (!t) return t;
+      if (typeof t === 'string') {
+        return t === terminalId ? { id: t, tipoTerminal: normalizado } : t;
+      }
+      if (t.id === terminalId) return { ...t, tipoTerminal: normalizado };
+      return t;
+    });
+    await this.salvarDados();
+    this.renderListaTerminaisModal(c);
+    this.showToast('Função do computador salva. No PDV, o operador vê a tela nova no próximo login.');
   },
 
   async adicionarDias(id, dias) {
