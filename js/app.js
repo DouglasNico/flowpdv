@@ -59,7 +59,7 @@ window.MasterApp = {
     lanchonete: {
       icone: '🍔',
       nome: 'Lanchonete & Restaurante',
-      lista: ['Lanches & Burgers', 'Porções & Petiscos', 'Pizzas', 'Bebidas & Sucos', 'Sobremesas', 'Bomboniere']
+      lista: ['Lanches', 'Porções', 'Pizzas', 'Combos', 'Adicionais', 'Bebidas', 'Sucos', 'Sobremesas', 'Bomboniere']
     },
     geral: {
       icone: '⚡',
@@ -77,7 +77,7 @@ window.MasterApp = {
     conveniencia: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
     tabacaria: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
     vestuario: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
-    lanchonete: { fardosPacks: false, balancaPeso: true, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    lanchonete: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
     geral: { fardosPacks: true, balancaPeso: true, validadeLotes: true, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true }
   },
 
@@ -269,9 +269,12 @@ window.MasterApp = {
     if (catEl) catEl.value = preset.lista.join(', ');
     this.atualizarPreviewCategorias();
 
-    // Aplica os módulos recomendados para o segmento
     const modulosPadrao = this.modulosPadraoPorRamo[tipo] || this.modulosPadraoPorRamo.geral;
     this.setModulosCheckboxes(modulosPadrao);
+    if (tipo === 'lanchonete') {
+      const comandasEl = document.getElementById('cli-modulo-comandas');
+      if (comandasEl) comandasEl.value = 'mesas_e_comandas';
+    }
   },
 
   setModulosCheckboxes(modulos = {}) {

@@ -171,8 +171,8 @@ code,
 /* Number inputs ? hide spinners */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
-  -webkit-appearance: none !important;
-  margin: 0 !important;
+  -webkit-appearance: none !important; 
+  margin: 0 !important; 
 }
 
 input[type='number'] {
@@ -1637,9 +1637,9 @@ select:-webkit-autofill {
   font-size: 12px;
 }
 
-.presets-category-grid {
+  .presets-category-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-top: 8px;
 }
@@ -1707,6 +1707,12 @@ select:-webkit-autofill {
   background: rgba(217, 70, 239, 0.15);
   color: #e879f9;
   border-color: rgba(217, 70, 239, 0.3);
+}
+
+.preset-cat-btn.cat-lanchonete {
+  background: rgba(249, 115, 22, 0.15);
+  color: #fb923c;
+  border-color: rgba(249, 115, 22, 0.3);
 }
 
 .preset-cat-btn.cat-geral {
