@@ -27,11 +27,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v20260923-master-ui')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v20260923-vencimento')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=20260923-master-ui');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=20260923-vencimento');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -41,7 +41,7 @@
     }
   </script>
   <link rel="stylesheet" href="css/reconstruction.css?v=20260923">
-  <link rel="stylesheet" href="css/master-polish.css?v=20260923-master-ui">
+  <link rel="stylesheet" href="css/master-polish.css?v=20260923-vencimento">
   <script src="flow-icons.js?v=20260923-svg"></script>
 </head>
 <body>
@@ -354,29 +354,29 @@
                 </div>
               </div>
 
-              <div class="cli-plano-card">
+              <div class="cli-plano-card cli-vencimento-card">
                 <div class="cli-plano-card-head">
-                  <strong>Vencimento</strong>
-                  <span id="modal-venc-feedback" class="venc-feedback-badge"></span>
+                  <strong>Vencimento da licença</strong>
+                  <span id="modal-venc-feedback" class="venc-feedback-badge" role="status"></span>
                 </div>
-                <div class="cli-plano-controls">
-                  <div class="cli-venc-field">
-                    <label for="cli-vencimento">Data</label>
-                    <input type="date" id="cli-vencimento" required class="venc-date-input" onclick="if(typeof this.showPicker==='function') this.showPicker();" onchange="MasterApp.atualizarFeedbackVencimentoModal()">
+                <label for="cli-vencimento">Válida até</label>
+                <input type="date" id="cli-vencimento" required class="venc-date-input" onchange="MasterApp.atualizarFeedbackVencimentoModal()" aria-describedby="cli-venc-ajuda">
+                <p id="cli-venc-ajuda" class="cli-venc-ajuda">Escolha uma data ou prorrogue o prazo abaixo. A mudança só vale ao salvar as alterações.</p>
+                <details id="cli-prorrogar" class="cli-prorrogar">
+                  <summary>Prorrogar prazo</summary>
+                  <p class="cli-venc-ajuda">Os dias são somados ao vencimento acima. Se já venceu, a contagem começa hoje.</p>
+                  <div class="cli-plano-shortcuts" aria-label="Quantidade de dias para prorrogar">
+                    <button type="button" class="quick-day-btn" data-prorrogar="7" onclick="MasterApp.setDiasRapidosForm(7)">7 dias</button>
+                    <button type="button" class="quick-day-btn" data-prorrogar="15" onclick="MasterApp.setDiasRapidosForm(15)">15 dias</button>
+                    <button type="button" class="quick-day-btn" data-prorrogar="30" onclick="MasterApp.setDiasRapidosForm(30)">30 dias</button>
                   </div>
-                  <div class="cli-venc-field">
-                    <label for="cli-dias-add">Adicionar dias</label>
-                    <div class="cli-venc-add-row">
-                      <input type="number" id="cli-dias-add" placeholder="30" value="30" class="venc-dias-number">
-                      <button type="button" id="cli-plano-add-btn" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Adicionar</button>
-                    </div>
+                  <label for="cli-dias-add">Dias para adicionar</label>
+                  <div class="cli-venc-add-row">
+                    <input type="number" id="cli-dias-add" min="1" max="3650" step="1" value="30" class="venc-dias-number" oninput="MasterApp.atualizarPreviaProrrogacao()" aria-describedby="cli-venc-previa">
+                    <button type="button" id="cli-plano-add-btn" class="cli-plano-add" onclick="MasterApp.adicionarDiasPersonalizadosForm()">Aplicar nova data</button>
                   </div>
-                </div>
-                <div class="cli-plano-shortcuts">
-                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(7)">+7</button>
-                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(15)">+15</button>
-                  <button type="button" class="quick-day-btn" onclick="MasterApp.setDiasRapidosForm(30)">+30</button>
-                </div>
+                  <p id="cli-venc-previa" class="cli-venc-previa" role="status"></p>
+                </details>
               </div>
 
               <div class="cli-plano-card cli-plano-chave">
@@ -642,6 +642,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=20260923-master-ui"></script>
+  <script src="js/app.js?v=20260923-vencimento"></script>
 </body>
 </html>

@@ -145,3 +145,21 @@ button:disabled { cursor: not-allowed; }
   #login-screen .login-form-pane { padding: 24px; }
   #login-screen .login-subtitle { margin-bottom: 16px; }
 }
+/* Plano e prazo: contraste estável e prorrogação com prévia antes de aplicar. */
+#modal-planos .plano-card-item:hover { background: #e8ece2; border-color: #b7c0ad; }
+#modal-cliente .cli-vencimento-card > label { display:block; margin-bottom:8px; }
+#modal-cliente .cli-vencimento-card > .venc-date-input { width:100%; min-width:0; }
+#modal-cliente .cli-vencimento-card .cli-plano-card-head { flex-wrap:wrap; }
+#modal-cliente .cli-venc-ajuda { margin:10px 0 0; color:var(--text-secondary); font-size:12px; line-height:1.6; }
+#modal-cliente .cli-prorrogar { margin-top:16px; border-top:1px solid var(--border-default); padding-top:12px; }
+#modal-cliente .cli-prorrogar summary { font-size:13px; font-weight:700; color:var(--text-primary); padding:6px 0; }
+#modal-cliente .cli-prorrogar .cli-plano-shortcuts { margin:12px 0; }
+#modal-cliente .cli-prorrogar label { display:block; margin:0 0 8px; }
+#modal-cliente .cli-prorrogar .cli-venc-add-row { display:grid; grid-template-columns:88px minmax(0,1fr); gap:8px; }
+#modal-cliente #form-cliente .cli-prorrogar .venc-dias-number { width:100% !important; }
+#modal-cliente .cli-prorrogar .cli-plano-add { min-width:0; }
+#modal-cliente #form-cliente .quick-day-btn[aria-pressed=true] { background:#dfe8d7 !important; border-color:#819372 !important; color:#263526 !important; }
+#modal-cliente .cli-venc-previa { color:var(--text-primary); font-size:13px; font-weight:650; margin:12px 0 0; line-height:1.5; }
+#modal-cliente .venc-feedback-badge[data-estado=vencida] { background:var(--danger-soft) !important; color:var(--danger) !important; border-color:#dba5a7 !important; }
+#modal-cliente .venc-feedback-badge[data-estado=proximo] { background:#fff2d8 !important; color:#795214 !important; border-color:#dfc389 !important; }
+#modal-cliente #form-cliente .cli-plano-add:disabled { opacity:.5; cursor:not-allowed; }

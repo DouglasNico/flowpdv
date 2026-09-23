@@ -1071,7 +1071,9 @@ window.MasterApp = {
 
     const d = new Date();
     d.setDate(d.getDate() + 30);
-    if (vencInput) vencInput.value = d.toISOString().split('T')[0];
+    if (vencInput) vencInput.value = this.dataLocalISO(d);
+    document.getElementById('cli-prorrogar').open = false;
+    this.atualizarFeedbackVencimentoModal();
 
     const moduloComandasSelect = document.getElementById('cli-modulo-comandas');
     if (moduloComandasSelect) moduloComandasSelect.value = 'mesas_e_comandas';
@@ -1160,6 +1162,8 @@ window.MasterApp = {
 
     this.renderListaTerminaisModal(c);
     this.previewLogo();
+    document.getElementById('cli-prorrogar').open = false;
+    document.getElementById('cli-dias-add').value = '30';
     this.atualizarFeedbackVencimentoModal();
     this.setAbaCliente('cliente');
     if (modal) {
@@ -1767,62 +1771,58 @@ window.MasterApp = {
     this.renderTabela();
   },
 
+  dataLocalISO(data = new Date()) {
+    return `${data.getFullYear()}-${String(data.getMonth()+1).padStart(2,'0')}-${String(data.getDate()).padStart(2,'0')}`;
+  },
+
+  calcularProrrogacaoForm() {
+    const dias = Number(document.getElementById('cli-dias-add')?.value);
+    if (!Number.isInteger(dias) || dias < 1 || dias > 3650) return null;
+    const hoje = this.dataLocalISO();
+    const atual = document.getElementById('cli-vencimento')?.value || hoje;
+    const base = atual > hoje ? atual : hoje;
+    const data = new Date(`${base}T12:00:00Z`);
+    data.setUTCDate(data.getUTCDate() + dias);
+    if (!Number.isFinite(data.getTime())) return null;
+    return {base, nova:data.toISOString().slice(0,10), dias};
+  },
+
+  atualizarPreviaProrrogacao() {
+    const previa = this.calcularProrrogacaoForm();
+    const texto = document.getElementById('cli-venc-previa');
+    const botao = document.getElementById('cli-plano-add-btn');
+    const formato = data => data.split('-').reverse().join('/');
+    if (texto) texto.textContent = previa ? `Ao aplicar: ${formato(previa.base)} → ${formato(previa.nova)}` : 'Informe um número inteiro de 1 a 3.650 dias.';
+    if (botao) botao.disabled = !previa;
+    document.querySelectorAll('[data-prorrogar]').forEach(btn => btn.setAttribute('aria-pressed',String(Number(btn.dataset.prorrogar) === previa?.dias)));
+  },
+
   setDiasRapidosForm(dias) {
-    const input = document.getElementById('cli-vencimento');
-    if (!input) return;
-    const d = new Date();
-    d.setDate(d.getDate() + dias);
-    input.value = d.toISOString().split('T')[0];
-    this.atualizarFeedbackVencimentoModal();
+    const input = document.getElementById('cli-dias-add');
+    if (input) input.value = dias;
+    this.atualizarPreviaProrrogacao();
   },
 
   adicionarDiasPersonalizadosForm() {
-    const inputDias = document.getElementById('cli-dias-add');
-    const inputVenc = document.getElementById('cli-vencimento');
-    const dias = parseInt(inputDias?.value) || 30;
-    if (!inputVenc) return;
-
-    const base = new Date(inputVenc.value > new Date().toISOString().split('T')[0] ? inputVenc.value : new Date());
-    base.setDate(base.getDate() + dias);
-    inputVenc.value = base.toISOString().split('T')[0];
+    const previa = this.calcularProrrogacaoForm();
+    const input = document.getElementById('cli-vencimento');
+    if (!previa || !input) return;
+    input.value = previa.nova;
     this.atualizarFeedbackVencimentoModal();
+    document.getElementById('cli-prorrogar').open = false;
+    input.focus({preventScroll:true});
   },
 
   atualizarFeedbackVencimentoModal() {
-    const inputVenc = document.getElementById('cli-vencimento');
-    const feedbackEl = document.getElementById('modal-venc-feedback');
-    if (!inputVenc || !feedbackEl) return;
-
-    const val = inputVenc.value;
-    if (!val) {
-      feedbackEl.style.display = 'none';
-      return;
-    }
-
-    const dias = this.calcularDiasRestantes(val);
-    feedbackEl.style.display = 'inline-block';
-
-    if (dias < 0) {
-      feedbackEl.style.background = 'rgba(239, 68, 68, 0.2)';
-      feedbackEl.style.color = '#f87171';
-      feedbackEl.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-      feedbackEl.textContent = ` Vencida (há ${Math.abs(dias)}d)`;
-    } else if (dias === 0) {
-      feedbackEl.style.background = 'rgba(239, 68, 68, 0.2)';
-      feedbackEl.style.color = '#f87171';
-      feedbackEl.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-      feedbackEl.textContent = "Vence Hoje (23:59)";
-    } else if (dias === 1) {
-      feedbackEl.style.background = 'rgba(245, 158, 11, 0.2)';
-      feedbackEl.style.color = '#fbbf24';
-      feedbackEl.style.border = '1px solid rgba(245, 158, 11, 0.4)';
-      feedbackEl.textContent = "Vence Amanhã";
-    } else {
-      feedbackEl.style.background = 'rgba(16, 185, 129, 0.2)';
-      feedbackEl.style.color = '#34d399';
-      feedbackEl.style.border = '1px solid rgba(16, 185, 129, 0.4)';
-      feedbackEl.textContent = ` Ativa (${dias}d restantes)`;
-    }
+    this.atualizarPreviaProrrogacao();
+    const input = document.getElementById('cli-vencimento');
+    const feedback = document.getElementById('modal-venc-feedback');
+    if (!input || !feedback) return;
+    feedback.style.removeProperty('display');
+    if (!input.value) { feedback.textContent = ''; return; }
+    const dias = this.calcularDiasRestantes(input.value);
+    feedback.dataset.estado = dias < 0 ? 'vencida' : dias <= 1 ? 'proximo' : 'regular';
+    feedback.textContent = dias < 0 ? `Venceu há ${Math.abs(dias)} dias` : dias === 0 ? 'Vence hoje' : dias === 1 ? 'Vence amanhã' : `Vence em ${dias} dias`;
   },
 
   // =========================================================================
