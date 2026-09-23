@@ -27,11 +27,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v20260923-svg')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v20260923-master-ui')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=20260923-svg');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=20260923-master-ui');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -41,6 +41,7 @@
     }
   </script>
   <link rel="stylesheet" href="css/reconstruction.css?v=20260923">
+  <link rel="stylesheet" href="css/master-polish.css?v=20260923-master-ui">
   <script src="flow-icons.js?v=20260923-svg"></script>
 </head>
 <body>
@@ -149,7 +150,7 @@
       <section class="stage-tools toolbar controls-bar">
         <div class="search-box">
           <span class="search-icon" aria-hidden="true"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><circle cx="10.5" cy="10.5" r="7"/><path d="m16 16 5 5"/></svg></span>
-          <input type="text" id="master-search-input" placeholder="Buscar loja, CNPJ, responsável ou chave..." oninput="MasterApp.filtrarTabela()">
+          <input type="text" id="master-search-input" aria-label="Buscar loja, CNPJ, responsável ou chave" placeholder="Buscar loja, CNPJ, responsável ou chave..." oninput="MasterApp.filtrarTabela()">
         </div>
         <div class="filter-group">
           <button type="button" class="filter-btn active" data-filter="todos" onclick="MasterApp.setFiltro('todos', this)">Todos</button>
@@ -170,13 +171,13 @@
     <div class="modal-sheet modal-card modal-cliente-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-cliente-title">
       <div class="modal-head modal-header">
         <div class="modal-header-main">
-          <img src="logos/FlowPDV-icone-escuro.png" alt="" class="modal-brand-thumb">
+          <img src="logos/FlowPDV-icone-claro.png" alt="" class="modal-brand-thumb">
           <div class="modal-header-titles">
             <span class="modal-eyebrow">Licença</span>
             <h3 id="modal-cliente-title">Editar Cliente & Licença</h3>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalCliente()" title="Fechar"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+        <button type="button" class="btn-close" aria-label="Fechar" onclick="MasterApp.fecharModalCliente()" title="Fechar"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
 
       <nav class="cli-tabs" role="tablist" aria-label="Seções da licença">
@@ -438,7 +439,7 @@
 
   <!-- MODAL: GERENCIAR PLANOS & MENSALIDADES -->
   <div class="modal-overlay" id="modal-planos">
-    <div class="modal-sheet modal-card" style="max-width: 720px;">
+    <div class="modal-sheet modal-card" role="dialog" aria-modal="true" aria-label="Planos e mensalidades" style="max-width: 720px;">
       <div class="modal-head modal-header">
         <div class="modal-header-main">
           <div class="modal-header-icon" aria-hidden="true"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h3"/></svg></div>
@@ -448,7 +449,7 @@
             <span class="modal-subtitle">Catálogo de planos oferecidos aos clientes</span>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalPlanos()" title="Fechar"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+        <button type="button" class="btn-close" aria-label="Fechar" onclick="MasterApp.fecharModalPlanos()" title="Fechar"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
 
       <div class="modal-body" style="padding: 20px 24px;">
@@ -459,7 +460,7 @@
           </h4>
           <form id="form-cadastrar-plano" onsubmit="MasterApp.salvarPlano(event)">
             <input type="hidden" id="plano-id" value="">
-            <div style="display: grid; grid-template-columns: 2fr 1.2fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="plano-form-grid">
               <div>
                 <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Nome do Plano *</label>
                 <input type="text" id="plano-nome" placeholder="Ex: Mensal Pro, Trimestral VIP" required style="width: 100%; height: 42px; background: #0b1120; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 12px; color: #fff; font-weight: 600;">
@@ -513,7 +514,7 @@
 
   <!-- MODAL: AUDITORIA & LOGS EM TEMPO REAL -->
   <div class="modal-overlay" id="modal-auditoria" onclick="if(event.target === this) MasterApp.fecharModalAuditoria()">
-    <div class="modal-sheet modal-card modal-sheet--wide" style="max-width: 1040px; width: 96%; max-height: 92vh;">
+    <div class="modal-sheet modal-card modal-sheet--wide" role="dialog" aria-modal="true" aria-label="Auditoria das lojas" style="max-width: 1040px; width: 96%; max-height: 92vh;">
       <div class="modal-head modal-header">
         <div class="modal-header-main">
           <div class="modal-header-icon" aria-hidden="true"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
@@ -523,7 +524,7 @@
             <span class="modal-subtitle">Eventos em tempo real</span>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalAuditoria()"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+        <button type="button" class="btn-close" aria-label="Fechar" onclick="MasterApp.fecharModalAuditoria()"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
 
       <div class="modal-body" style="padding: 16px 20px; overflow-y: auto;">
@@ -554,7 +555,7 @@
             </select>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 8px; height: 38px;">
+          <div class="audit-actions">
             <button type="button" class="btn-atualizar-auditoria" onclick="MasterApp.carregarLogsAuditoria()">
               <span><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="M20 7v5h-5M4 17v-5h5M5 7a8 8 0 0 1 14-2l1 2M4 17l1 2a8 8 0 0 0 14-2"/></svg> Atualizar</span>
             </button>
@@ -565,7 +566,7 @@
         </div>
 
         <!-- Tabela de Logs -->
-        <div style="max-height: 480px; overflow-y: auto; border: 1px solid #334155; border-radius: 10px;">
+        <div class="audit-scroll" tabindex="0" aria-label="Registros de auditoria, role para ver todas as colunas">
           <table class="master-table" style="font-size: 12px; margin: 0; width: 100%;">
             <thead>
               <tr style="position: sticky; top: 0; background: #24384c; z-index: 2;">
@@ -604,7 +605,7 @@
             <h3>Detalhe do evento</h3>
           </div>
         </div>
-        <button type="button" class="btn-close" onclick="MasterApp.fecharModalDetalheLog()"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+        <button type="button" class="btn-close" aria-label="Fechar" onclick="MasterApp.fecharModalDetalheLog()"><svg class="flow-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-.15em;flex-shrink:0;pointer-events:none"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
       <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; flex: 1 1 auto; max-height: calc(85vh - 70px);">
         <div id="detalhe-log-conteudo">
@@ -641,6 +642,6 @@
       window.MasterApp.onFirebaseReady();
     }
   </script>
-  <script src="js/app.js?v=20260923-svg"></script>
+  <script src="js/app.js?v=20260923-master-ui"></script>
 </body>
 </html>

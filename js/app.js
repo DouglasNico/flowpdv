@@ -1639,6 +1639,9 @@ window.MasterApp = {
       p.hidden = !on;
     });
     if (btnEl) btnEl.classList.add('is-active');
+    const body = document.querySelector('#modal-cliente .modal-body--tabs');
+    if (body) body.scrollTop = 0;
+    tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === tabId)));
   },
 
   fazerUploadLogoComputador(event) {
@@ -1993,13 +1996,13 @@ window.MasterApp = {
           <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
             <span style="font-size: 18px; flex-shrink: 0;">${FlowIcons.from("🏷️")}</span>
             <div style="min-width: 0; overflow: hidden;">
-              <div style="font-weight: 800; font-size: 14px; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.nome}</div>
+              <div style="font-weight: 800; font-size: 14px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.nome}</div>
               <div style="font-size: 11px; color: var(--text-dim);">${p.periodo === 'mês' ? 'Mensalidade Padrão' : 'Plano Recorrente'}</div>
             </div>
           </div>
           
-          <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-            <div style="text-align: right; min-width: 125px;">
+          <div class="plano-card-actions">
+            <div class="plano-card-price">
               <div style="font-size: 15px; font-weight: 900; color: var(--accent-green); font-family: 'JetBrains Mono', monospace; line-height: 1.2;">
                 R$ ${valorFmt}
               </div>
@@ -2296,21 +2299,21 @@ window.MasterApp = {
 
   getBadgeTipoAuditoria(tipo) {
     const mapa = {
-      'cortesia': { label: "Cortesia PDV", bg: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: 'rgba(168, 85, 247, 0.35)' },
-      'cortesia_licenca': { label: "Cortesia Licença", bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', border: 'rgba(236, 72, 153, 0.35)' },
-      'renovacao_licenca': { label: "Renovação", bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
-      'alteracao_status': { label: "Status", bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
-      'exclusao_produto': { label: "Exclusão", bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: 'rgba(239, 68, 68, 0.35)' },
-      'cadastro_produto': { label: "Cadastro", bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
-      'edicao_produto': { label: "Edição", bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.35)' },
-      'ajuste_estoque': { label: "Ajuste Estoque", bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
-      'importacao_planilha': { label: "Importação", bg: 'rgba(14, 165, 233, 0.15)', color: '#38bdf8', border: 'rgba(14, 165, 233, 0.35)' },
-      'fechamento_caixa': { label: "Fech. Caixa", bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
-      'abertura_caixa': { label: "Abert. Caixa", bg: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: 'rgba(99, 102, 241, 0.35)' },
-      'sangria_caixa': { label: "Sangria", bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
-      'cancelamento_venda': { label: "Cancelamento", bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', border: 'rgba(236, 72, 153, 0.35)' }
+      'cortesia': { label: "Cortesia PDV", bg: 'rgba(168, 85, 247, 0.15)', color: '#713aa8', border: 'rgba(168, 85, 247, 0.35)' },
+      'cortesia_licenca': { label: "Cortesia Licença", bg: 'rgba(236, 72, 153, 0.15)', color: '#9c245f', border: 'rgba(236, 72, 153, 0.35)' },
+      'renovacao_licenca': { label: "Renovação", bg: 'rgba(16, 185, 129, 0.15)', color: 'var(--ok)', border: 'rgba(16, 185, 129, 0.35)' },
+      'alteracao_status': { label: "Status", bg: 'rgba(245, 158, 11, 0.15)', color: 'var(--warn)', border: 'rgba(245, 158, 11, 0.35)' },
+      'exclusao_produto': { label: "Exclusão", bg: 'rgba(239, 68, 68, 0.15)', color: 'var(--danger)', border: 'rgba(239, 68, 68, 0.35)' },
+      'cadastro_produto': { label: "Cadastro", bg: 'rgba(16, 185, 129, 0.15)', color: 'var(--ok)', border: 'rgba(16, 185, 129, 0.35)' },
+      'edicao_produto': { label: "Edição", bg: 'rgba(59, 130, 246, 0.15)', color: '#245b9c', border: 'rgba(59, 130, 246, 0.35)' },
+      'ajuste_estoque': { label: "Ajuste Estoque", bg: 'rgba(245, 158, 11, 0.15)', color: 'var(--warn)', border: 'rgba(245, 158, 11, 0.35)' },
+      'importacao_planilha': { label: "Importação", bg: 'rgba(14, 165, 233, 0.15)', color: 'var(--accent-cyan)', border: 'rgba(14, 165, 233, 0.35)' },
+      'fechamento_caixa': { label: "Fech. Caixa", bg: 'rgba(16, 185, 129, 0.15)', color: 'var(--ok)', border: 'rgba(16, 185, 129, 0.35)' },
+      'abertura_caixa': { label: "Abert. Caixa", bg: 'rgba(99, 102, 241, 0.15)', color: '#514392', border: 'rgba(99, 102, 241, 0.35)' },
+      'sangria_caixa': { label: "Sangria", bg: 'rgba(245, 158, 11, 0.15)', color: 'var(--warn)', border: 'rgba(245, 158, 11, 0.35)' },
+      'cancelamento_venda': { label: "Cancelamento", bg: 'rgba(236, 72, 153, 0.15)', color: '#9c245f', border: 'rgba(236, 72, 153, 0.35)' }
     };
-    const b = mapa[tipo] || { label: 'ℹ️ ' + (tipo || 'Evento'), bg: 'rgba(148, 163, 184, 0.15)', color: '#cbd5e1', border: 'rgba(148, 163, 184, 0.3)' };
+    const b = mapa[tipo] || { label: '' + (tipo || 'Evento'), bg: 'rgba(148, 163, 184, 0.15)', color: 'var(--text-secondary)', border: 'rgba(148, 163, 184, 0.3)' };
     return `<span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: ${b.bg}; color: ${b.color}; border: 1px solid ${b.border}; display: inline-block; white-space: nowrap;">${b.label}</span>`;
   },
 
@@ -2322,7 +2325,7 @@ window.MasterApp = {
     if (!tbody) return;
 
     if (!logs || logs.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: #94a3b8;">Nenhum registro de auditoria encontrado para os filtros selecionados.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">Nenhum registro de auditoria encontrado para os filtros selecionados.</td></tr>`;
       return;
     }
 
@@ -2336,25 +2339,25 @@ window.MasterApp = {
       // Conteúdo da descrição / botão
       let conteudoDescricao = '';
       if (l.tipo === 'cortesia') {
-        conteudoDescricao = `<button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 11px; font-weight: 700; cursor: pointer; padding: 4px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(56,189,248,0.12)'; this.style.transform='none'">${FlowIcons.from("🔍")} Ver detalhes</button>`;
+        conteudoDescricao = `<button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" class="audit-details-btn">${FlowIcons.from("🔍")} Ver detalhes</button>`;
       } else {
         conteudoDescricao = `<span>${descFull}</span>`;
       }
 
       return `
-        <tr style="border-bottom: 1px solid #334155; transition: background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
-          <td style="padding: 10px 12px; font-family: 'JetBrains Mono'; font-size: 11.5px; color: #cbd5e1; white-space: nowrap;">${dataHora}</td>
+        <tr style="border-bottom: 1px solid var(--border-default); transition: background 0.15s;">
+          <td style="padding: 10px 12px; font-family: 'JetBrains Mono'; font-size: 11.5px; color: var(--text-secondary); white-space: nowrap;">${dataHora}</td>
           <td style="padding: 10px 12px;">
-            <strong style="color: #fff; display: block; font-size: 12.5px;">${l.razaoSocial || 'Loja'}</strong>
-            <span style="font-size: 10px; color: #94a3b8; font-family: 'JetBrains Mono';">${l.chaveLicenca || ''}</span>
+            <strong style="color: var(--text-primary); display: block; font-size: 12.5px;">${l.razaoSocial || 'Loja'}</strong>
+            <span style="font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono';">${l.chaveLicenca || ''}</span>
           </td>
-          <td style="padding: 10px 12px; font-weight: 700; color: #e2e8f0; font-size: 12.5px;">${FlowIcons.from("👤")} ${l.operador || 'Operador'}</td>
+          <td style="padding: 10px 12px; font-weight: 700; color: var(--text-primary); font-size: 12.5px;">${FlowIcons.from("👤")} ${l.operador || 'Operador'}</td>
           <td style="padding: 10px 12px;">${badge}</td>
-          <td style="padding: 10px 12px; color: #e2e8f0; line-height: 1.4; font-size: 12px; max-width: 320px;">
+          <td style="padding: 10px 12px; color: var(--text-primary); line-height: 1.4; font-size: 12px; max-width: 320px;">
             ${conteudoDescricao}
           </td>
           <td style="padding: 10px 8px; text-align: center; width: 40px;">
-            <button type="button" onclick="MasterApp.excluirLogIndividual('${l.id}')" title="Excluir este registro" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.3)'; this.style.borderColor='#f87171';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.borderColor='rgba(239,68,68,0.25)';">
+            <button type="button" onclick="MasterApp.excluirLogIndividual('${l.id}')" title="Excluir este registro" class="audit-delete-btn">
               ${FlowIcons.from("🗑️")}
             </button>
           </td>
@@ -2425,8 +2428,8 @@ window.MasterApp = {
       if (motivoTexto) {
         detalhesExtra += `
           <div style="background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 10px 12px;">
-            <strong style="color: #fbbf24; font-size: 11px;">${FlowIcons.from("📝")} Motivo da Cortesia:</strong>
-            <span style="color: #e2e8f0; font-size: 13px; margin-left: 6px; font-weight: 600;">${motivoTexto}</span>
+            <strong style="color: var(--warn); font-size: 11px;">${FlowIcons.from("📝")} Motivo da Cortesia:</strong>
+            <span style="color: var(--text-primary); font-size: 13px; margin-left: 6px; font-weight: 600;">${motivoTexto}</span>
           </div>`;
       }
 
@@ -2434,13 +2437,13 @@ window.MasterApp = {
       if (Array.isArray(det.itens) && det.itens.length > 0) {
         detalhesExtra += `
           <div style="background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 10px; padding: 12px;">
-            <strong style="color: #c084fc; font-size: 12px; display: block; margin-bottom: 8px;">${FlowIcons.from("🛒")} Itens da Cortesia (${det.itens.length}):</strong>
+            <strong style="color: #713aa8; font-size: 12px; display: block; margin-bottom: 8px;">${FlowIcons.from("🛒")} Itens da Cortesia (${det.itens.length}):</strong>
             <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
               <thead>
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                  <th style="text-align: left; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Produto</th>
-                  <th style="text-align: center; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Qtd</th>
-                  <th style="text-align: right; padding: 4px 8px; color: #94a3b8; font-weight: 600;">Preço Un.</th>
+                  <th style="text-align: left; padding: 4px 8px; color: var(--text-muted); font-weight: 600;">Produto</th>
+                  <th style="text-align: center; padding: 4px 8px; color: var(--text-muted); font-weight: 600;">Qtd</th>
+                  <th style="text-align: right; padding: 4px 8px; color: var(--text-muted); font-weight: 600;">Preço Un.</th>
                 </tr>
               </thead>
               <tbody>
@@ -2448,9 +2451,9 @@ window.MasterApp = {
                   const preco = parseFloat(item.precoVenda || item.preco || item.valor || item.precoUnitario || 0);
                   return `
                   <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <td style="padding: 5px 8px; color: #e2e8f0; font-weight: 600;">${item.nome || 'Produto'}</td>
-                    <td style="padding: 5px 8px; text-align: center; color: #94a3b8; font-family: 'JetBrains Mono';">${item.quantidade || 1}x</td>
-                    <td style="padding: 5px 8px; text-align: right; color: #34d399; font-family: 'JetBrains Mono'; font-weight: 700;">R$ ${preco.toFixed(2).replace('.', ',')}</td>
+                    <td style="padding: 5px 8px; color: var(--text-primary); font-weight: 600;">${item.nome || 'Produto'}</td>
+                    <td style="padding: 5px 8px; text-align: center; color: var(--text-muted); font-family: 'JetBrains Mono';">${item.quantidade || 1}x</td>
+                    <td style="padding: 5px 8px; text-align: right; color: var(--ok); font-family: 'JetBrains Mono'; font-weight: 700;">R$ ${preco.toFixed(2).replace('.', ',')}</td>
                   </tr>`;
                 }).join('')}
               </tbody>
@@ -2462,8 +2465,8 @@ window.MasterApp = {
       if (det.valorOriginal !== undefined) {
         detalhesExtra += `
           <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px;">
-            <span style="font-size: 12px; color: #94a3b8;">${FlowIcons.from("💰")} Total da cortesia:</span>
-            <strong style="font-family: 'JetBrains Mono'; color: #f87171; font-size: 15px;">R$ ${parseFloat(det.valorOriginal).toFixed(2).replace('.', ',')}</strong>
+            <span style="font-size: 12px; color: var(--text-muted);">${FlowIcons.from("💰")} Total da cortesia:</span>
+            <strong style="font-family: 'JetBrains Mono'; color: var(--danger); font-size: 15px;">R$ ${parseFloat(det.valorOriginal).toFixed(2).replace('.', ',')}</strong>
           </div>`;
       }
     }
@@ -2473,7 +2476,7 @@ window.MasterApp = {
     const descricaoBloco = isCortesia ? '' : `
         <div style="background: rgba(14, 165, 233, 0.04); border: 1px solid rgba(14, 165, 233, 0.15); border-radius: 10px; padding: 12px 14px;">
           <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 6px;">${FlowIcons.from("📋")} Descrição</span>
-          <p style="color: #e2e8f0; font-size: 13px; line-height: 1.6; margin: 0; word-break: break-word;">${log.descricao || 'Sem detalhes'}</p>
+          <p style="color: var(--text-primary); font-size: 13px; line-height: 1.6; margin: 0; word-break: break-word;">${log.descricao || 'Sem detalhes'}</p>
         </div>`;
 
     document.getElementById('detalhe-log-conteudo').innerHTML = `
@@ -2481,26 +2484,26 @@ window.MasterApp = {
         <!-- Header com badge e data -->
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           ${badge}
-          <span style="font-family: 'JetBrains Mono'; font-size: 12px; color: #94a3b8;">${FlowIcons.from("🕐")} ${dataHora}</span>
+          <span style="font-family: 'JetBrains Mono'; font-size: 12px; color: var(--text-muted);">${FlowIcons.from("🕐")} ${dataHora}</span>
         </div>
 
         <!-- Informações principais -->
         <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-default); border-radius: 8px; padding: 10px 12px;">
             <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Estabelecimento</span>
-            <strong style="color: #fff; font-size: 13px;">${log.razaoSocial || 'Loja'}</strong>
+            <strong style="color: var(--text-primary); font-size: 13px;">${log.razaoSocial || 'Loja'}</strong>
           </div>
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-default); border-radius: 8px; padding: 10px 12px;">
             <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Operador</span>
-            <strong style="color: #e2e8f0; font-size: 13px;">${FlowIcons.from("👤")} ${log.operador || 'Operador'}</strong>
+            <strong style="color: var(--text-primary); font-size: 13px;">${FlowIcons.from("👤")} ${log.operador || 'Operador'}</strong>
           </div>
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-default); border-radius: 8px; padding: 10px 12px;">
             <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Licença</span>
-            <code style="color: #818cf8; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${log.chaveLicenca || 'N/D'}</code>
+            <code style="color: #514392; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${log.chaveLicenca || 'N/D'}</code>
           </div>
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-default); border-radius: 8px; padding: 10px 12px;">
             <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Computador</span>
-            <code style="color: #38bdf8; font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${hostnameResolvido}</code>
+            <code style="color: var(--accent-cyan); font-size: 12px; font-family: 'JetBrains Mono'; font-weight: 700;">${hostnameResolvido}</code>
           </div>
         </div>
 
