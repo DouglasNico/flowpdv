@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png?v=20260917h">
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260917h">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#273545">
+  <meta name="theme-color" content="#f5f4ef">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FlowMaster">
@@ -27,11 +27,11 @@
             const keys = await caches.keys();
             await Promise.all(
               keys
-                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v20260915')
+                .filter((k) => k.startsWith('flowpdv-master-') && k !== 'flowpdv-master-v20260923-interface')
                 .map((k) => caches.delete(k))
             );
           }
-          const reg = await navigator.serviceWorker.register('./sw.js?v=20260915');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=20260923-interface');
           await reg.update();
           console.log('PWA Service Worker ativo:', reg.scope);
         } catch (err) {
@@ -40,6 +40,7 @@
       });
     }
   </script>
+  <link rel="stylesheet" href="css/reconstruction.css?v=20260923">
 </head>
 <body>
 
@@ -115,9 +116,9 @@
     <div class="stage">
       <header class="stage-header">
         <div class="stage-heading">
-          <p class="stage-kicker">Painel SaaS</p>
-          <h1 class="stage-title">Licenças</h1>
-          <p class="stage-sub">Clientes ativos, vencimento e terminais.</p>
+          
+          <h1 class="stage-title">Lojas e licenças</h1>
+          <p class="stage-sub">Acompanhe os acessos, os vencimentos e a operação de cada loja.</p>
         </div>
       </header>
 
@@ -128,12 +129,12 @@
           <span class="kpi-hint metric-sub" id="metric-mrr-sub">Receita recorrente</span>
         </article>
         <article class="kpi metric-card ativas">
-          <span class="kpi-label">Ativos</span>
+          <span class="kpi-label">Lojas ativas</span>
           <strong class="kpi-value metric-value" id="metric-ativas">0</strong>
-          <span class="kpi-hint metric-sub">Sistemas ok</span>
+          <span class="kpi-hint metric-sub">Licenças em operação</span>
         </article>
         <article class="kpi metric-card vencendo">
-          <span class="kpi-label">Vencendo 7d</span>
+          <span class="kpi-label">Vencem em 7 dias</span>
           <strong class="kpi-value metric-value" id="metric-vencendo">0</strong>
           <span class="kpi-hint metric-sub">Cobrança</span>
         </article>
@@ -203,9 +204,9 @@
                 <div class="cli-logo-actions">
                   <input type="hidden" id="cli-logo-url" value="">
                   <input type="file" id="cli-logo-file" accept="image/*" hidden onchange="MasterApp.fazerUploadLogoComputador(event)">
-                  <button type="button" class="btn-attach-logo" onclick="document.getElementById('cli-logo-file').click()">Anexar imagem</button>
+                  <button type="button" class="btn-attach-logo" onclick="document.getElementById('cli-logo-file').click()">Adicionar foto</button>
                   <input type="text" id="cli-logo-url-visible" class="cli-logo-url" placeholder="ou cole um link https://…" oninput="MasterApp.onLogoUrlVisibleInput()" autocomplete="off">
-                  <button type="button" class="btn-logo-clear" id="cli-logo-clear" style="display:none" onclick="MasterApp.limparLogoCliente()" title="Remover logo">✕</button>
+                  <button type="button" class="btn-logo-clear" id="cli-logo-clear" style="display:none" onclick="MasterApp.limparLogoCliente()" title="Remover logo">Remover foto</button>
                 </div>
               </div>
             </div>
@@ -213,7 +214,7 @@
             <div class="form-grid cli-form-grid">
               <div class="form-group span-2">
                 <label>Razão Social / Nome Fantasia *</label>
-                <input type="text" id="cli-nome" required placeholder="Ex: Adega do Douglas">
+                <input type="text" id="cli-nome" required placeholder="Nome da loja">
               </div>
               <div class="form-group">
                 <label>CNPJ ou CPF *</label>
@@ -221,11 +222,11 @@
               </div>
               <div class="form-group">
                 <label>Responsável</label>
-                <input type="text" id="cli-responsavel" placeholder="Ex: Douglas Nico">
+                <input type="text" id="cli-responsavel" placeholder="Nome do responsável">
               </div>
               <div class="form-group">
                 <label>WhatsApp *</label>
-                <input type="text" id="cli-whatsapp" required placeholder="(19) 99999-7777">
+                <input type="text" id="cli-whatsapp" required placeholder="DDD e número">
               </div>
               <div class="form-group">
                 <label>Segmento *</label>
