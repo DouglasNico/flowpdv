@@ -153,7 +153,7 @@ window.MasterApp = {
     if (errorEl) errorEl.style.display = 'none';
     if (btnSubmit) {
       btnSubmit.disabled = true;
-      btnSubmit.innerHTML = '<span>⏳ Autenticando...</span>';
+      btnSubmit.innerHTML = "<span> Autenticando...</span>";
     }
 
     try {
@@ -163,19 +163,19 @@ window.MasterApp = {
     } catch (err) {
       console.error('[Auth Error]', err);
       if (errorEl) {
-        let msg = '❌ E-mail ou senha incorretos.';
-        if (err.code === 'auth/user-not-found') msg = '❌ Usuário não cadastrado no Firebase.';
-        if (err.code === 'auth/wrong-password') msg = '❌ Senha incorreta.';
-        if (err.code === 'auth/invalid-credential') msg = '❌ Credenciais inválidas. Verifique seu e-mail e senha.';
-        if (err.code === 'auth/invalid-email') msg = '❌ E-mail em formato inválido.';
-        if (err.code === 'auth/too-many-requests') msg = '⚠️ Muitas tentativas. Aguarde alguns instantes.';
+        let msg = "E-mail ou senha incorretos.";
+        if (err.code === 'auth/user-not-found') msg = "Usuário não cadastrado no Firebase.";
+        if (err.code === 'auth/wrong-password') msg = "Senha incorreta.";
+        if (err.code === 'auth/invalid-credential') msg = "Credenciais inválidas. Verifique seu e-mail e senha.";
+        if (err.code === 'auth/invalid-email') msg = "E-mail em formato inválido.";
+        if (err.code === 'auth/too-many-requests') msg = "Muitas tentativas. Aguarde alguns instantes.";
         errorEl.textContent = msg;
         errorEl.style.display = 'block';
       }
     } finally {
       if (btnSubmit) {
         btnSubmit.disabled = false;
-        btnSubmit.innerHTML = '<span>🔐 Entrar no Painel Master</span>';
+        btnSubmit.innerHTML = "<span> Entrar no Painel Master</span>";
       }
     }
   },
@@ -976,7 +976,7 @@ window.MasterApp = {
 
         const logoHtml = c.logoUrl && c.logoUrl.length > 5
           ? '<img class="lic-avatar" src="' + c.logoUrl + '" alt="">'
-          : '<div class="lic-avatar lic-avatar--emoji">' + (c.icone || '🏪') + '</div>';
+          : '<div class="lic-avatar lic-avatar--emoji">' + FlowIcons.from(c.icone || '🏪') + '</div>';
 
         const dataStr = this.formatarDataExibicao(c.vencimento);
         const maxTerm = parseInt(c.limiteTerminais) || 1;
@@ -1290,7 +1290,7 @@ window.MasterApp = {
     this.renderTabela();
 
     if (btn) btn.innerHTML = oldText;
-    this.showToast('🎉 "' + nome + '" atualizada com sucesso!');
+    this.showToast("\"" + nome + '" atualizada com sucesso!');
   },
 
   obterTerminaisDeduplicados(terminaisRaw) {
@@ -1337,7 +1337,7 @@ window.MasterApp = {
 
     this.renderListaTerminaisModal(c);
     this.renderTabela();
-    this.showToast('🔄 Computadores desvinculados com sucesso na nuvem!');
+    this.showToast("Computadores desvinculados com sucesso na nuvem!");
   },
 
   renderListaTerminaisModal(c) {
@@ -1365,9 +1365,9 @@ window.MasterApp = {
         <div class="terminal-item-card">
           <div class="terminal-item-info">
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span style="font-size: 16px;">💻</span>
+              <span style="font-size: 16px;">${FlowIcons.from("💻")}</span>
               <strong style="color: #38bdf8; font-size: 13px; font-family: 'JetBrains Mono'; font-weight: 800;">${hostname}</strong>
-              <span class="badge-terminal-user">👤 ${usuario}</span>
+              <span class="badge-terminal-user">${FlowIcons.from("👤")} ${usuario}</span>
             </div>
             <div style="font-size: 11px; color: var(--text-dim); margin-top: 3px; font-family: 'JetBrains Mono';">
               ID: <code style="color: #a5b4fc; background: rgba(255,255,255,0.06); padding: 1px 4px; border-radius: 3px;">${termId}</code> • <span style="color: #94a3b8;">${dataStr}</span>
@@ -1379,7 +1379,7 @@ window.MasterApp = {
             </select>
           </div>
           <button type="button" class="btn-desvincular-individual" onclick="MasterApp.desvincularTerminalIndividual('${c.id}', '${termId}')" title="Desvincular somente este computador">
-            ❌ Desvincular
+            ${FlowIcons.from("❌")} Desvincular
           </button>
         </div>
       `;
@@ -1407,7 +1407,7 @@ window.MasterApp = {
     const contagemTerm = document.getElementById('cli-terminais-contagem');
     if (contagemTerm) contagemTerm.textContent = (c.terminaisAtivos.length) + ' / ' + (c.limiteTerminais || 1);
 
-    this.showToast('✅ Computador desvinculado com sucesso!');
+    this.showToast("Computador desvinculado com sucesso!");
   },
 
   async alterarTipoTerminal(clienteId, terminalId, tipo) {
@@ -1465,7 +1465,7 @@ window.MasterApp = {
 
     this.renderMetrics();
     this.renderTabela();
-    this.showToast('🎉 +' + dias + ' dias adicionados para "' + c.nome + '"!');
+    this.showToast("+" + dias + ' dias adicionados para "' + c.nome + '"!');
   },
 
   async toggleBloqueio(id) {
@@ -1567,7 +1567,7 @@ window.MasterApp = {
     this.fecharModalCliente();
     this.renderMetrics();
     this.renderTabela();
-    this.showToast('🗑️ Licença excluída com sucesso da nuvem!');
+    this.showToast("Licença excluída com sucesso da nuvem!");
   },
 
   previewLogo() {
@@ -1598,7 +1598,7 @@ window.MasterApp = {
         }
       }
     } else {
-      imgDiv.innerHTML = '🏪';
+      imgDiv.innerHTML = FlowIcons.svg('store');
       box.style.display = 'none';
       if (clearBtn) clearBtn.style.display = 'none';
       if (visible) {
@@ -1646,7 +1646,7 @@ window.MasterApp = {
     if (!file) return;
 
     const statusTitle = document.getElementById('cli-logo-status-title');
-    if (statusTitle) statusTitle.textContent = '⏳ Processando imagem...';
+    if (statusTitle) statusTitle.textContent = "Processando imagem...";
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -1676,7 +1676,7 @@ window.MasterApp = {
           inputUrl.value = dataUrl;
         }
 
-        if (statusTitle) statusTitle.textContent = '🎉 Foto do computador pronta!';
+        if (statusTitle) statusTitle.textContent = "Foto do computador pronta!";
         this.previewLogo();
       };
       img.src = e.target.result;
@@ -1803,22 +1803,22 @@ window.MasterApp = {
       feedbackEl.style.background = 'rgba(239, 68, 68, 0.2)';
       feedbackEl.style.color = '#f87171';
       feedbackEl.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-      feedbackEl.textContent = `⚠️ Vencida (há ${Math.abs(dias)}d)`;
+      feedbackEl.textContent = ` Vencida (há ${Math.abs(dias)}d)`;
     } else if (dias === 0) {
       feedbackEl.style.background = 'rgba(239, 68, 68, 0.2)';
       feedbackEl.style.color = '#f87171';
       feedbackEl.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-      feedbackEl.textContent = '⏳ Vence Hoje (23:59)';
+      feedbackEl.textContent = "Vence Hoje (23:59)";
     } else if (dias === 1) {
       feedbackEl.style.background = 'rgba(245, 158, 11, 0.2)';
       feedbackEl.style.color = '#fbbf24';
       feedbackEl.style.border = '1px solid rgba(245, 158, 11, 0.4)';
-      feedbackEl.textContent = '⏳ Vence Amanhã';
+      feedbackEl.textContent = "Vence Amanhã";
     } else {
       feedbackEl.style.background = 'rgba(16, 185, 129, 0.2)';
       feedbackEl.style.color = '#34d399';
       feedbackEl.style.border = '1px solid rgba(16, 185, 129, 0.4)';
-      feedbackEl.textContent = `🟢 Ativa (${dias}d restantes)`;
+      feedbackEl.textContent = ` Ativa (${dias}d restantes)`;
     }
   },
 
@@ -1991,7 +1991,7 @@ window.MasterApp = {
       return `
         <div class="plano-card-item">
           <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
-            <span style="font-size: 18px; flex-shrink: 0;">🏷️</span>
+            <span style="font-size: 18px; flex-shrink: 0;">${FlowIcons.from("🏷️")}</span>
             <div style="min-width: 0; overflow: hidden;">
               <div style="font-weight: 800; font-size: 14px; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.nome}</div>
               <div style="font-size: 11px; color: var(--text-dim);">${p.periodo === 'mês' ? 'Mensalidade Padrão' : 'Plano Recorrente'}</div>
@@ -2009,10 +2009,10 @@ window.MasterApp = {
             </div>
             <div style="display: flex; gap: 6px; flex-shrink: 0;">
               <button type="button" class="btn-action-icon edit" onclick="MasterApp.editarPlano('${p.id}')" title="Editar Plano">
-                ✏️
+                ${FlowIcons.from("✏️")}
               </button>
               <button type="button" class="btn-action-icon delete" onclick="MasterApp.excluirPlano('${p.id}')" title="Excluir Plano">
-                🗑️
+                ${FlowIcons.from("🗑️")}
               </button>
             </div>
           </div>
@@ -2035,11 +2035,11 @@ window.MasterApp = {
     const periodo = periodoSelect ? periodoSelect.value : 'mês';
 
     if (!nome) {
-      this.showToast('⚠️ Informe o nome do plano!', 'error');
+      this.showToast("Informe o nome do plano!", 'error');
       return;
     }
     if (valor <= 0) {
-      this.showToast('⚠️ Informe um valor válido para o plano!', 'error');
+      this.showToast("Informe um valor válido para o plano!", 'error');
       return;
     }
 
@@ -2048,7 +2048,7 @@ window.MasterApp = {
       const idx = this.planos.findIndex(p => p.id === id);
       if (idx >= 0) {
         this.planos[idx] = { ...this.planos[idx], nome, valor, periodo };
-        this.showToast(`✨ Plano "${nome}" atualizado com sucesso!`, 'success');
+        this.showToast(` Plano "${nome}" atualizado com sucesso!`, 'success');
       }
     } else {
       // Criar novo
@@ -2059,7 +2059,7 @@ window.MasterApp = {
         valor,
         periodo
       });
-      this.showToast(`🎉 Novo plano "${nome}" criado com sucesso!`, 'success');
+      this.showToast(` Novo plano "${nome}" criado com sucesso!`, 'success');
     }
 
     this.salvarPlanosNuvem();
@@ -2076,8 +2076,8 @@ window.MasterApp = {
     document.getElementById('plano-valor').value = p.valor;
     document.getElementById('plano-periodo').value = p.periodo || 'mês';
 
-    document.getElementById('plano-form-title').innerHTML = '<span>✏️</span> Editar Plano: ' + p.nome;
-    document.getElementById('btn-salvar-plano').textContent = '💾 Atualizar Plano';
+    document.getElementById('plano-form-title').innerHTML = "<span></span> Editar Plano: " + p.nome;
+    document.getElementById('btn-salvar-plano').textContent = "Atualizar Plano";
     document.getElementById('btn-cancelar-edicao-plano').style.display = 'inline-block';
     
     document.getElementById('plano-nome').focus();
@@ -2087,8 +2087,8 @@ window.MasterApp = {
     const form = document.getElementById('form-cadastrar-plano');
     if (form) form.reset();
     document.getElementById('plano-id').value = '';
-    document.getElementById('plano-form-title').innerHTML = '<span>➕</span> Novo Plano';
-    document.getElementById('btn-salvar-plano').textContent = '💾 Salvar Plano';
+    document.getElementById('plano-form-title').innerHTML = "<span></span> Novo Plano";
+    document.getElementById('btn-salvar-plano').textContent = "Salvar Plano";
     document.getElementById('btn-cancelar-edicao-plano').style.display = 'none';
   },
 
@@ -2097,7 +2097,7 @@ window.MasterApp = {
     if (!p) return;
 
     if (this.planos.length <= 1) {
-      this.showToast('⚠️ Você precisa manter pelo menos 1 plano cadastrado no sistema.', 'warning');
+      this.showToast("Você precisa manter pelo menos 1 plano cadastrado no sistema.", 'warning');
       return;
     }
 
@@ -2106,7 +2106,7 @@ window.MasterApp = {
       await this.salvarPlanosNuvem();
       this.cancelarEdicaoPlano();
       this.renderListaPlanosModal();
-      this.showToast(`🗑️ Plano "${p.nome}" excluído.`, 'info');
+      this.showToast(` Plano "${p.nome}" excluído.`, 'info');
     }
   },
 
@@ -2160,7 +2160,7 @@ window.MasterApp = {
     try {
       if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
         navigator.clipboard.writeText(chave).then(() => {
-          this.showToast('📋 Chave copiada: ' + chave, 'success');
+          this.showToast("Chave copiada: " + chave, 'success');
         }).catch(() => {
           this.fallbackCopiar(chave);
         });
@@ -2179,7 +2179,7 @@ window.MasterApp = {
     tempInput.select();
     try {
       document.execCommand('copy');
-      this.showToast('📋 Chave copiada: ' + texto, 'success');
+      this.showToast("Chave copiada: " + texto, 'success');
     } catch (err) {}
     document.body.removeChild(tempInput);
   },
@@ -2217,7 +2217,7 @@ window.MasterApp = {
       clientesOrdenados.forEach(c => {
         const nome = c.nome || c.razaoSocial || c.id;
         const chave = c.chaveLicenca || c.id;
-        html += `<option value="${chave}">${c.icone || '🏪'} ${nome} (${chave})</option>`;
+        html += `<option value="${chave}">${nome} (${chave})</option>`;
       });
 
       select.innerHTML = html;
@@ -2230,7 +2230,7 @@ window.MasterApp = {
   async carregarLogsAuditoria() {
     const tbody = document.getElementById('tabela-auditoria-tbody');
     if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #94a3b8;">⏳ Carregando histórico de auditoria...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #94a3b8;">${FlowIcons.from("⏳")} Carregando histórico de auditoria...</td></tr>`;
     }
 
     try {
@@ -2296,19 +2296,19 @@ window.MasterApp = {
 
   getBadgeTipoAuditoria(tipo) {
     const mapa = {
-      'cortesia': { label: '🎁 Cortesia PDV', bg: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: 'rgba(168, 85, 247, 0.35)' },
-      'cortesia_licenca': { label: '🎁 Cortesia Licença', bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', border: 'rgba(236, 72, 153, 0.35)' },
-      'renovacao_licenca': { label: '🔄 Renovação', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
-      'alteracao_status': { label: '🔒 Status', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
-      'exclusao_produto': { label: '🗑️ Exclusão', bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: 'rgba(239, 68, 68, 0.35)' },
-      'cadastro_produto': { label: '➕ Cadastro', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
-      'edicao_produto': { label: '✏️ Edição', bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.35)' },
-      'ajuste_estoque': { label: '📦 Ajuste Estoque', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
-      'importacao_planilha': { label: '📊 Importação', bg: 'rgba(14, 165, 233, 0.15)', color: '#38bdf8', border: 'rgba(14, 165, 233, 0.35)' },
-      'fechamento_caixa': { label: '💰 Fech. Caixa', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
-      'abertura_caixa': { label: '🔓 Abert. Caixa', bg: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: 'rgba(99, 102, 241, 0.35)' },
-      'sangria_caixa': { label: '💸 Sangria', bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
-      'cancelamento_venda': { label: '⚡ Cancelamento', bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', border: 'rgba(236, 72, 153, 0.35)' }
+      'cortesia': { label: "Cortesia PDV", bg: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: 'rgba(168, 85, 247, 0.35)' },
+      'cortesia_licenca': { label: "Cortesia Licença", bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', border: 'rgba(236, 72, 153, 0.35)' },
+      'renovacao_licenca': { label: "Renovação", bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
+      'alteracao_status': { label: "Status", bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
+      'exclusao_produto': { label: "Exclusão", bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: 'rgba(239, 68, 68, 0.35)' },
+      'cadastro_produto': { label: "Cadastro", bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
+      'edicao_produto': { label: "Edição", bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.35)' },
+      'ajuste_estoque': { label: "Ajuste Estoque", bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
+      'importacao_planilha': { label: "Importação", bg: 'rgba(14, 165, 233, 0.15)', color: '#38bdf8', border: 'rgba(14, 165, 233, 0.35)' },
+      'fechamento_caixa': { label: "Fech. Caixa", bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.35)' },
+      'abertura_caixa': { label: "Abert. Caixa", bg: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: 'rgba(99, 102, 241, 0.35)' },
+      'sangria_caixa': { label: "Sangria", bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' },
+      'cancelamento_venda': { label: "Cancelamento", bg: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', border: 'rgba(236, 72, 153, 0.35)' }
     };
     const b = mapa[tipo] || { label: 'ℹ️ ' + (tipo || 'Evento'), bg: 'rgba(148, 163, 184, 0.15)', color: '#cbd5e1', border: 'rgba(148, 163, 184, 0.3)' };
     return `<span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: ${b.bg}; color: ${b.color}; border: 1px solid ${b.border}; display: inline-block; white-space: nowrap;">${b.label}</span>`;
@@ -2336,7 +2336,7 @@ window.MasterApp = {
       // Conteúdo da descrição / botão
       let conteudoDescricao = '';
       if (l.tipo === 'cortesia') {
-        conteudoDescricao = `<button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 11px; font-weight: 700; cursor: pointer; padding: 4px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(56,189,248,0.12)'; this.style.transform='none'">🔍 Ver detalhes</button>`;
+        conteudoDescricao = `<button type="button" onclick="MasterApp.abrirModalDetalheLog(${idx})" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 11px; font-weight: 700; cursor: pointer; padding: 4px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(56,189,248,0.12)'; this.style.transform='none'">${FlowIcons.from("🔍")} Ver detalhes</button>`;
       } else {
         conteudoDescricao = `<span>${descFull}</span>`;
       }
@@ -2348,14 +2348,14 @@ window.MasterApp = {
             <strong style="color: #fff; display: block; font-size: 12.5px;">${l.razaoSocial || 'Loja'}</strong>
             <span style="font-size: 10px; color: #94a3b8; font-family: 'JetBrains Mono';">${l.chaveLicenca || ''}</span>
           </td>
-          <td style="padding: 10px 12px; font-weight: 700; color: #e2e8f0; font-size: 12.5px;">👤 ${l.operador || 'Operador'}</td>
+          <td style="padding: 10px 12px; font-weight: 700; color: #e2e8f0; font-size: 12.5px;">${FlowIcons.from("👤")} ${l.operador || 'Operador'}</td>
           <td style="padding: 10px 12px;">${badge}</td>
           <td style="padding: 10px 12px; color: #e2e8f0; line-height: 1.4; font-size: 12px; max-width: 320px;">
             ${conteudoDescricao}
           </td>
           <td style="padding: 10px 8px; text-align: center; width: 40px;">
             <button type="button" onclick="MasterApp.excluirLogIndividual('${l.id}')" title="Excluir este registro" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.3)'; this.style.borderColor='#f87171';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.borderColor='rgba(239,68,68,0.25)';">
-              🗑️
+              ${FlowIcons.from("🗑️")}
             </button>
           </td>
         </tr>
@@ -2425,7 +2425,7 @@ window.MasterApp = {
       if (motivoTexto) {
         detalhesExtra += `
           <div style="background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 10px 12px;">
-            <strong style="color: #fbbf24; font-size: 11px;">📝 Motivo da Cortesia:</strong>
+            <strong style="color: #fbbf24; font-size: 11px;">${FlowIcons.from("📝")} Motivo da Cortesia:</strong>
             <span style="color: #e2e8f0; font-size: 13px; margin-left: 6px; font-weight: 600;">${motivoTexto}</span>
           </div>`;
       }
@@ -2434,7 +2434,7 @@ window.MasterApp = {
       if (Array.isArray(det.itens) && det.itens.length > 0) {
         detalhesExtra += `
           <div style="background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 10px; padding: 12px;">
-            <strong style="color: #c084fc; font-size: 12px; display: block; margin-bottom: 8px;">🛒 Itens da Cortesia (${det.itens.length}):</strong>
+            <strong style="color: #c084fc; font-size: 12px; display: block; margin-bottom: 8px;">${FlowIcons.from("🛒")} Itens da Cortesia (${det.itens.length}):</strong>
             <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
               <thead>
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
@@ -2462,7 +2462,7 @@ window.MasterApp = {
       if (det.valorOriginal !== undefined) {
         detalhesExtra += `
           <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px;">
-            <span style="font-size: 12px; color: #94a3b8;">💰 Total da cortesia:</span>
+            <span style="font-size: 12px; color: #94a3b8;">${FlowIcons.from("💰")} Total da cortesia:</span>
             <strong style="font-family: 'JetBrains Mono'; color: #f87171; font-size: 15px;">R$ ${parseFloat(det.valorOriginal).toFixed(2).replace('.', ',')}</strong>
           </div>`;
       }
@@ -2472,7 +2472,7 @@ window.MasterApp = {
     const isCortesia = log.tipo === 'cortesia' && log.detalhes && (log.detalhes.motivo || (Array.isArray(log.detalhes.itens) && log.detalhes.itens.length > 0));
     const descricaoBloco = isCortesia ? '' : `
         <div style="background: rgba(14, 165, 233, 0.04); border: 1px solid rgba(14, 165, 233, 0.15); border-radius: 10px; padding: 12px 14px;">
-          <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 6px;">📋 Descrição</span>
+          <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 6px;">${FlowIcons.from("📋")} Descrição</span>
           <p style="color: #e2e8f0; font-size: 13px; line-height: 1.6; margin: 0; word-break: break-word;">${log.descricao || 'Sem detalhes'}</p>
         </div>`;
 
@@ -2481,7 +2481,7 @@ window.MasterApp = {
         <!-- Header com badge e data -->
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           ${badge}
-          <span style="font-family: 'JetBrains Mono'; font-size: 12px; color: #94a3b8;">🕐 ${dataHora}</span>
+          <span style="font-family: 'JetBrains Mono'; font-size: 12px; color: #94a3b8;">${FlowIcons.from("🕐")} ${dataHora}</span>
         </div>
 
         <!-- Informações principais -->
@@ -2492,7 +2492,7 @@ window.MasterApp = {
           </div>
           <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
             <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Operador</span>
-            <strong style="color: #e2e8f0; font-size: 13px;">👤 ${log.operador || 'Operador'}</strong>
+            <strong style="color: #e2e8f0; font-size: 13px;">${FlowIcons.from("👤")} ${log.operador || 'Operador'}</strong>
           </div>
           <div style="background: rgba(255,255,255,0.03); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px;">
             <span style="display: block; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 3px;">Licença</span>
@@ -2543,7 +2543,7 @@ window.MasterApp = {
       }
 
       this.filtrarLogsAuditoria();
-      this.showToast('🗑️ Registro excluído com sucesso!');
+      this.showToast("Registro excluído com sucesso!");
     } catch (err) {
       console.error('Erro ao excluir log:', err);
       this.showToast('Erro ao excluir: ' + err.message, 'error');
@@ -2580,9 +2580,9 @@ window.MasterApp = {
 
       if (promessas.length > 0) {
         await Promise.all(promessas);
-        this.showToast(`🧹 ${apagados} logs com mais de 30 dias foram excluídos!`, 'success');
+        this.showToast(` ${apagados} logs com mais de 30 dias foram excluídos!`, 'success');
       } else {
-        this.showToast('ℹ️ Nenhum log antigo (>30 dias) encontrado para exclusão.', 'info');
+        this.showToast("Nenhum log antigo (>30 dias) encontrado para exclusão.", 'info');
       }
 
       this.carregarLogsAuditoria();
