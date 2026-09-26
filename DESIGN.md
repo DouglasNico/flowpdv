@@ -48,12 +48,14 @@ components:
 
 Uma bancada administrativa organizada como um livro de registros. A navegação grafite sustenta o contexto; o conteúdo repousa sobre papel marfim e superfícies brancas. Lojas e licenças aparecem em linhas comparáveis, com ações explícitas e estados discretos.
 
+Publicação autorizada pelo usuário para esta noite; confirmação da publicação pendente. Testes funcionais completos ficam para amanhã, junto da revisão e otimização adiadas.
+
 **Key Characteristics:**
 - Navegação grafite e conteúdo claro.
 - Licenças em registros comparáveis.
 - Ações explícitas, códigos e valores legíveis.
 
-Extração estática de `css/reconstruction.css` e dos estilos-base existentes em 23/09/2026. A implementação está em reconstrução. Testes completos, revisão e otimização foram adiados pelo usuário; não houve validação renderizada nesta documentação. A expressão específica da rodada está em `.impeccable/surface-brief.md`.
+Extração estática de `css/reconstruction.css` e dos estilos-base existentes em 23/09/2026. A implementação está em reconstrução. Não houve validação renderizada nesta documentação. A expressão específica da rodada está em `.impeccable/surface-brief.md`.
 
 ## Colors
 

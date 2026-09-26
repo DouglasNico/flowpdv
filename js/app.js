@@ -58,7 +58,7 @@ window.MasterApp = {
     },
     lanchonete: {
       icone: '🍔',
-      nome: 'Lanchonete & Restaurante',
+      nome: 'Lanchonete, Pizzaria & Restaurante',
       lista: ['Lanches', 'Porções', 'Pizzas', 'Combos', 'Adicionais', 'Bebidas', 'Sucos', 'Sobremesas', 'Bomboniere']
     },
     geral: {
@@ -77,7 +77,7 @@ window.MasterApp = {
     conveniencia: { fardosPacks: true, balancaPeso: false, validadeLotes: true, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
     tabacaria: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
     vestuario: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
-    lanchonete: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true },
+    lanchonete: { fardosPacks: false, balancaPeso: false, validadeLotes: false, gradeRoupas: false, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true, cardapioOnline: true },
     geral: { fardosPacks: true, balancaPeso: true, validadeLotes: true, gradeRoupas: true, fiadoWhatsApp: true, importadorXml: true, fiscalNfce: true, tefCartao: true }
   },
 
@@ -270,7 +270,7 @@ window.MasterApp = {
     this.atualizarPreviewCategorias();
 
     const modulosPadrao = this.modulosPadraoPorRamo[tipo] || this.modulosPadraoPorRamo.geral;
-    this.setModulosCheckboxes(modulosPadrao);
+    this.setModulosCheckboxes({ ...modulosPadrao, combos: tipo === 'lanchonete' });
     if (tipo === 'lanchonete') {
       const comandasEl = document.getElementById('cli-modulo-comandas');
       if (comandasEl) comandasEl.value = 'mesas_e_comandas';
@@ -279,6 +279,8 @@ window.MasterApp = {
 
   setModulosCheckboxes(modulos = {}) {
     this.modulosOriginais = JSON.parse(JSON.stringify(modulos));
+    const modCombos = document.getElementById('mod-combos');
+    if (modCombos) modCombos.checked = modulos.combos === true;
     const modFardos = document.getElementById('mod-fardos');
     const modBalanca = document.getElementById('mod-balanca');
     const modValidade = document.getElementById('mod-validade');
@@ -299,6 +301,8 @@ window.MasterApp = {
     if (modXml) modXml.checked = modulos.importadorXml !== false;
     if (modFiscal) modFiscal.checked = modulos.fiscalNfce !== false;
     if (modTef) modTef.checked = modulos.tefCartao !== false;
+    const modCardapio = document.getElementById('mod-cardapio-online');
+    if (modCardapio) modCardapio.checked = modulos.cardapioOnline === true;
     const setPagamento = (id, valor, padrao = false) => {
       const el = document.getElementById(id);
       if (el) el.checked = valor !== undefined ? valor === true : padrao;
@@ -326,6 +330,7 @@ window.MasterApp = {
   getModulosCheckboxes() {
     return {
       ...(this.modulosOriginais || {}),
+      combos: document.getElementById('mod-combos')?.checked === true,
       fardosPacks: document.getElementById('mod-fardos')?.checked ?? true,
       balancaPeso: document.getElementById('mod-balanca')?.checked ?? false,
       validadeLotes: document.getElementById('mod-validade')?.checked ?? true,
@@ -335,6 +340,7 @@ window.MasterApp = {
       importadorXml: document.getElementById('mod-xml')?.checked ?? true,
       fiscalNfce: document.getElementById('mod-fiscal')?.checked ?? true,
       tefCartao: document.getElementById('mod-tef')?.checked ?? true,
+      cardapioOnline: document.getElementById('mod-cardapio-online')?.checked === true,
       pagamentos: {
         ...(this.modulosOriginais?.pagamentos || {}),
         vouchers: document.getElementById('pag-vouchers')?.checked ?? false,
@@ -425,6 +431,11 @@ window.MasterApp = {
             categorias: (c.categorias && c.categorias.length > 0) ? c.categorias : ['Cervejas', 'Destilados', 'Vinhos', 'Não Alcoólicos', 'Gelo & Carvão', 'Tabacaria', 'Petiscos', 'Bomboniere'],
             categoriasExcluidas: c.categoriasExcluidas || [],
             categoriasExcluidas: c.categoriasExcluidas || [],
+            tipoContratacao: c.tipoContratacao || (c.tipoLicenca === 'web' ? 'apenas_web' : 'completo'),
+            tipoLicenca: c.tipoLicenca || (c.tipoContratacao === 'apenas_web' ? 'web' : 'desktop_web'),
+            emailAcesso: c.emailAcesso || c.emailCliente || '',
+            emailCliente: c.emailAcesso || c.emailCliente || '',
+            exigirTrocaSenha: c.exigirTrocaSenha === true,
             plano: c.plano,
             valorMensal: c.valorMensal,
             vencimento: c.vencimento,
@@ -446,6 +457,22 @@ window.MasterApp = {
               categorias: payload.categorias,
               categoriasExcluidas: payload.categoriasExcluidas || []
             }, { merge: true }).catch(() => {});
+            // Espelha Combos, Cardápio e Dados de Acesso na loja V2 sem substituir o mapa inteiro de módulos.
+            const lojaId = 'legado-' + String(c.chaveLicenca).trim().toLowerCase();
+            const combos = payload.modulos?.combos === true;
+            const cardapioOnline = payload.modulos?.cardapioOnline === true || payload.tipoContratacao === 'apenas_web';
+            try {
+              const { updateDoc } = window.FirebaseDB;
+              if (typeof updateDoc === 'function') {
+                await updateDoc(doc(db, 'lojas_v2', lojaId), {
+                  'modulos.combos': combos,
+                  'modulos.cardapio': cardapioOnline,
+                  'tipoContratacao': payload.tipoContratacao,
+                  'emailAcesso': payload.emailAcesso,
+                  'exigirTrocaSenha': payload.exigirTrocaSenha
+                });
+              }
+            } catch (_) { /* regras/loja ausente: trigger servidor cobre */ }
           }
         }
         console.log('[Firebase Master] Salvo com sucesso!');
@@ -1078,6 +1105,14 @@ window.MasterApp = {
     const moduloComandasSelect = document.getElementById('cli-modulo-comandas');
     if (moduloComandasSelect) moduloComandasSelect.value = 'mesas_e_comandas';
 
+    const tipoContratacaoSelect = document.getElementById('cli-tipo-contratacao');
+    if (tipoContratacaoSelect) tipoContratacaoSelect.value = 'completo';
+    const emailInput = document.getElementById('cli-email');
+    if (emailInput) emailInput.value = '';
+    const exigirTrocaCheckbox = document.getElementById('cli-exigir-troca');
+    if (exigirTrocaCheckbox) exigirTrocaCheckbox.checked = true;
+    this.gerarSenhaProvisoria();
+
     this.previewLogo();
     this.setAbaCliente('cliente');
     if (modal) {
@@ -1113,6 +1148,15 @@ window.MasterApp = {
     const statusInput = document.getElementById('cli-status');
     const moduloComandasSelect = document.getElementById('cli-modulo-comandas');
     const btnExcluir = document.getElementById('btn-excluir-cliente');
+
+    const tipoContratacaoSelect = document.getElementById('cli-tipo-contratacao');
+    if (tipoContratacaoSelect) tipoContratacaoSelect.value = c.tipoContratacao || (c.tipoLicenca === 'web' ? 'apenas_web' : 'completo');
+    const emailInput = document.getElementById('cli-email');
+    if (emailInput) emailInput.value = c.emailAcesso || c.emailCliente || c.email || '';
+    const senhaTempInput = document.getElementById('cli-senha-temp');
+    if (senhaTempInput) senhaTempInput.value = '';
+    const exigirTrocaCheckbox = document.getElementById('cli-exigir-troca');
+    if (exigirTrocaCheckbox) exigirTrocaCheckbox.checked = c.exigirTrocaSenha !== false;
 
     const titleEl = document.getElementById('modal-cliente-title');
     if (titleEl) titleEl.innerText = 'Editar Cliente & Licença';
@@ -1240,6 +1284,10 @@ window.MasterApp = {
     }
     const limiteTerminais = Math.max(1, parseInt(document.getElementById('cli-limite-terminais')?.value) || 1);
     const moduloComandas = document.getElementById('cli-modulo-comandas')?.value || 'mesas_e_comandas';
+    const tipoContratacao = document.getElementById('cli-tipo-contratacao')?.value || 'completo';
+    const emailAcesso = document.getElementById('cli-email')?.value.trim().toLowerCase() || '';
+    const senhaTemp = document.getElementById('cli-senha-temp')?.value.trim() || '';
+    const exigirTrocaSenha = document.getElementById('cli-exigir-troca')?.checked ?? true;
 
     const novoCliente = {
       id: idFinal,
@@ -1264,7 +1312,13 @@ window.MasterApp = {
       chaveLicenca,
       pinGerente,
       limiteTerminais,
-      terminaisAtivos: Array.isArray(cExistente?.terminaisAtivos) ? cExistente.terminaisAtivos : []
+      terminaisAtivos: Array.isArray(cExistente?.terminaisAtivos) ? cExistente.terminaisAtivos : [],
+      tipoContratacao,
+      tipoLicenca: tipoContratacao === 'apenas_web' ? 'web' : 'desktop_web',
+      emailAcesso,
+      emailCliente: emailAcesso,
+      senhaTemp: senhaTemp || cExistente?.senhaTemp || '',
+      exigirTrocaSenha: senhaTemp ? exigirTrocaSenha : (cExistente?.exigirTrocaSenha ?? false)
     };
 
     const docClean = String(documento || '').replace(/\D/g, '');
@@ -1289,12 +1343,99 @@ window.MasterApp = {
 
     await this.salvarDados(novoCliente.id);
 
+    if (emailAcesso && senhaTemp) {
+      await this.provisionarUsuarioLojista(emailAcesso, senhaTemp, nome, chaveLicenca, novoCliente.id);
+    }
+
     this.fecharModalCliente();
     this.renderMetrics();
     this.renderTabela();
 
     if (btn) btn.innerHTML = oldText;
     this.showToast("\"" + nome + '" atualizada com sucesso!');
+  },
+
+  gerarSenhaProvisoria() {
+    const prefix = 'Flow@';
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    const input = document.getElementById('cli-senha-temp');
+    if (input) input.value = `${prefix}${rand}`;
+  },
+
+  copiarDadosAcessoCliente() {
+    const nome = document.getElementById('cli-nome')?.value.trim() || 'Lojista';
+    const tipoContratacao = document.getElementById('cli-tipo-contratacao')?.value || 'completo';
+    const chave = document.getElementById('cli-chave')?.value.trim() || '';
+    const email = document.getElementById('cli-email')?.value.trim() || '';
+    const senha = document.getElementById('cli-senha-temp')?.value.trim() || '';
+    const exigirTroca = document.getElementById('cli-exigir-troca')?.checked;
+    
+    let texto = `*FlowPDV - Dados de Acesso da sua Loja*\n\n`;
+    texto += `Olá *${nome}*, seu acesso ao FlowPDV foi configurado com sucesso!\n\n`;
+    texto += `🔑 *Chave da Licença:* \`${chave}\`\n`;
+    if (email) {
+      texto += `📧 *E-mail:* ${email}\n`;
+    }
+    if (senha) {
+      texto += `🔒 *Senha Provisória:* \`${senha}\`\n`;
+      if (exigirTroca) {
+        texto += `⚠️ *Atenção:* No seu 1º acesso, o sistema pedirá para você cadastrar sua senha definitiva.\n`;
+      }
+    }
+    texto += `\n🌐 *Painel Gestão Web:* https://flowpdv.app.br/gestao\n`;
+    if (tipoContratacao === 'completo') {
+      texto += `💻 *Instalador PDV Desktop:* https://flowpdv.app.br/download\n`;
+    }
+    texto += `\nQualquer dúvida, conte com nosso suporte! 🚀`;
+
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(texto).then(() => {
+        this.showToast('📋 Dados de acesso copiados para a área de transferência!');
+      }).catch(() => {
+        alert('Copie os dados manualmente:\n\n' + texto);
+      });
+    } else {
+      alert('Copie os dados manualmente:\n\n' + texto);
+    }
+  },
+
+  async provisionarUsuarioLojista(email, senha, nome, chaveLicenca, clienteId) {
+    if (!email || !senha) return;
+    try {
+      const { initializeApp, getAuth, createUserWithEmailAndPassword, signOut, firebaseConfig } = window.FirebaseAuth || {};
+      if (typeof initializeApp === 'function' && typeof createUserWithEmailAndPassword === 'function' && firebaseConfig) {
+        const appName = 'flow-provision-' + Date.now();
+        const tempApp = initializeApp(firebaseConfig, appName);
+        const tempAuth = getAuth(tempApp);
+        try {
+          const userCred = await createUserWithEmailAndPassword(tempAuth, email, senha);
+          console.log('[Master] Usuário lojista provisionado no Firebase Auth:', email, userCred.user.uid);
+          if (window.FirebaseDB?.db) {
+            const { db, setDoc, doc } = window.FirebaseDB;
+            const lojaId = 'legado-' + String(chaveLicenca).trim().toLowerCase();
+            await setDoc(doc(db, 'usuarios_lojistas', userCred.user.uid), {
+              email,
+              nome,
+              chaveLicenca,
+              lojaId,
+              clienteId,
+              exigirTrocaSenha: true,
+              criadoEm: new Date().toISOString()
+            }, { merge: true });
+          }
+        } catch (authErr) {
+          if (authErr.code === 'auth/email-already-in-use') {
+            console.log('[Master] E-mail já cadastrado no Auth:', email);
+          } else {
+            console.warn('[Master] Aviso ao provisionar Auth:', authErr.message);
+          }
+        } finally {
+          try { await signOut(tempAuth); } catch {}
+        }
+      }
+    } catch (e) {
+      console.warn('[Master] Provisionamento ignorado ou falhou:', e);
+    }
   },
 
   obterTerminaisDeduplicados(terminaisRaw) {

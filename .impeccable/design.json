@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-23T06:57:34.032Z",
+  "generatedAt": "2026-09-23T07:03:21.4411309Z",
   "title": "Design System: FlowPDV Master",
   "extensions": {
     "colorMeta": {
@@ -227,7 +227,7 @@
   ],
   "narrative": {
     "northStar": "Livro de registros",
-    "overview": "Uma bancada administrativa organizada como um livro de registros. A navegação grafite sustenta o contexto; o conteúdo repousa sobre papel marfim e superfícies brancas. Lojas e licenças aparecem em linhas comparáveis, com ações explícitas e estados discretos.",
+    "overview": "Uma bancada administrativa organizada como um livro de registros. A navegação grafite sustenta o contexto; o conteúdo repousa sobre papel marfim e superfícies brancas. Lojas e licenças aparecem em linhas comparáveis, com ações explícitas e estados discretos.\n\nPublicação autorizada pelo usuário para esta noite; confirmação da publicação pendente. Testes funcionais completos ficam para amanhã, junto da revisão e otimização adiadas.",
     "keyCharacteristics": [
       "Navegação grafite e conteúdo claro.",
       "Licenças em registros comparáveis.",
