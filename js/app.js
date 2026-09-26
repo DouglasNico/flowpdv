@@ -1344,7 +1344,7 @@ window.MasterApp = {
     await this.salvarDados(novoCliente.id);
 
     if (emailAcesso && senhaTemp) {
-      await this.provisionarUsuarioLojista(emailAcesso, senhaTemp, nome, chaveLicenca, novoCliente.id);
+      await this.provisionarUsuarioLojista(emailAcesso, senhaTemp, nome, chaveLicenca, novoCliente.id, novoCliente);
     }
 
     this.fecharModalCliente();
@@ -1399,8 +1399,43 @@ window.MasterApp = {
     }
   },
 
-  async provisionarUsuarioLojista(email, senha, nome, chaveLicenca, clienteId) {
+  async provisionarUsuarioLojista(email, senha, nome, chaveLicenca, clienteId, dadosCliente = {}) {
     if (!email || !senha) return;
+    const chaveNorm = String(chaveLicenca).trim().toUpperCase();
+    const lojaId = 'legado-' + chaveNorm.toLowerCase();
+    const slug = chaveNorm.toLowerCase();
+
+    // 1. Tentar via Cloud Function Admin V2 oficial
+    try {
+      const { fn, httpsCallable } = window.FirebaseFunctions || {};
+      if (fn && typeof httpsCallable === 'function') {
+        const callLojista = httpsCallable(fn, 'adminCriarOuAtualizarLojistaV2');
+        const res = await callLojista({
+          email,
+          senhaTemporaria: senha,
+          nome,
+          chaveLicenca: chaveNorm,
+          lojaId,
+          slug,
+          exigirTrocaSenha: dadosCliente.exigirTrocaSenha !== false,
+          tipoContratacao: dadosCliente.tipoContratacao || 'completo',
+          modulos: {
+            cardapio: true,
+            combos: true,
+            mesas: dadosCliente.moduloComandas !== 'desativado',
+            comandas: dadosCliente.moduloComandas === 'mesas_e_comandas' || dadosCliente.moduloComandas === 'apenas_comandas',
+            delivery: true,
+            retirada: true
+          }
+        });
+        console.log('[Master] Usuário lojista provisionado com sucesso via Cloud Function V2:', res.data);
+        return;
+      }
+    } catch (fnErr) {
+      console.warn('[Master] Aviso na Function adminCriarOuAtualizarLojistaV2, executando fallback local:', fnErr);
+    }
+
+    // 2. Fallback direto via Firebase Auth secundário + Firestore
     try {
       const { initializeApp, getAuth, createUserWithEmailAndPassword, signOut, firebaseConfig } = window.FirebaseAuth || {};
       if (typeof initializeApp === 'function' && typeof createUserWithEmailAndPassword === 'function' && firebaseConfig) {
@@ -1412,16 +1447,26 @@ window.MasterApp = {
           console.log('[Master] Usuário lojista provisionado no Firebase Auth:', email, userCred.user.uid);
           if (window.FirebaseDB?.db) {
             const { db, setDoc, doc } = window.FirebaseDB;
-            const lojaId = 'legado-' + String(chaveLicenca).trim().toLowerCase();
             await setDoc(doc(db, 'usuarios_lojistas', userCred.user.uid), {
               email,
               nome,
-              chaveLicenca,
+              chaveLicenca: chaveNorm,
               lojaId,
               clienteId,
-              exigirTrocaSenha: true,
+              exigirTrocaSenha: dadosCliente.exigirTrocaSenha !== false,
               criadoEm: new Date().toISOString()
             }, { merge: true });
+
+            // Também espelha em lojas_v2 para garantir a correspondência de e-mail e módulos
+            await setDoc(doc(db, 'lojas_v2', lojaId), {
+              emailAcesso: email,
+              nome,
+              slug,
+              tipoContratacao: dadosCliente.tipoContratacao || 'completo',
+              exigirTrocaSenha: dadosCliente.exigirTrocaSenha !== false,
+              ativo: true,
+              atualizadoEm: new Date().toISOString()
+            }, { merge: true }).catch(() => {});
           }
         } catch (authErr) {
           if (authErr.code === 'auth/email-already-in-use') {
